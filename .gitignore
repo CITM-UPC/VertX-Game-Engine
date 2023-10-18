@@ -27,13 +27,15 @@
 *.lib
 
 # Executables
+.vs/Game_Engine/v16/
+.vs/VertX_GameEngine/v16/
+Editor/x64/
+Engine/x64/
+x64/Debug/
 *.exe
 *.out
 *.app
 *.ipch
-.vs/VertX_GameEngine/v16/.suo
-.vs/VertX_GameEngine/v16/.suo
-*.db
 *.opendb
 *.db-shm
 *.db-wal

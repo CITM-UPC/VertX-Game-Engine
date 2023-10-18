@@ -21,7 +21,7 @@
   imgui:x64-windows is already installed
   jsoncpp:x64-windows is already installed
   sdl2:x64-windows is already installed
-  Total install time: 44.9 us
+  Total install time: 38.9 us
   imgui provides CMake targets:
   
     # this is heuristically generated, and may not be correct

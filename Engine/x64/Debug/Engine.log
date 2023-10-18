@@ -29,7 +29,7 @@
   jsoncpp:x64-windows is already installed
   opengl:x64-windows is already installed
   sdl2:x64-windows is already installed
-  Total install time: 61.5 us
+  Total install time: 66.6 us
   assimp provides CMake targets:
   
     # this is heuristically generated, and may not be correct
