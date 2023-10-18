@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 
 using namespace std;
 
@@ -16,8 +16,8 @@ Json::Value GetFile(string path) {
 	bool parsingSuccessful = Json::parseFromStream(reader, file, &obj, &errors);
 
 	if (!parsingSuccessful) {
-		ENGINE_LOG("JSONCPP: ERROR: ");
-		ENGINE_LOG("%s", errors);
+		LOG_("ENGINE: JsonCPP: ERROR: ");
+		LOG_("%s", errors);
 	}
 
 	file.close();

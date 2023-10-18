@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 #include "Graphic.h"
 #include "Texture2D.h"
 

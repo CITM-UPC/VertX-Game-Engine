@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 #include "..\Editor\Globals.h"
 #include "ModuleRenderer3D_ENGINE.h"
 #include "GL/glew.h"
@@ -19,12 +19,12 @@ ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE()
 // Called before render is available
 bool ModuleRenderer3D_ENGINE::Init()
 {
-	ENGINE_LOG("Creating 3D Renderer context");
+	LOG_("ENGINE: Creating 3D Renderer context");
 	bool ret = true;
 
 	if (targetWindow == NULL)
 	{
-		ENGINE_LOG("Target window has not been set. Try initializing the variable with 'SetTargetWindow()'");
+		LOG_("ENGINE: Target window has not been set. Try initializing the variable with 'SetTargetWindow()'");
 		ret = false;
 	}
 
@@ -32,7 +32,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 	context = SDL_GL_CreateContext(targetWindow);
 	if (context == NULL)
 	{
-		ENGINE_LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		LOG_("ENGINE: OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -40,7 +40,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 	{
 		//Use Vsync
 		if (vsync && SDL_GL_SetSwapInterval(1) < 0)
-			ENGINE_LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			LOG_("ENGINE: Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -50,7 +50,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			ENGINE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			LOG_("ENGINE: Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -62,7 +62,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			ENGINE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			LOG_("ENGINE: Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -76,7 +76,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			ENGINE_LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			LOG_("ENGINE: Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -88,11 +88,10 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-		//glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
+		//glEnable(GL_LIGHTING);
 	}
 
-	
 	OnResize(screen_width, screen_height);
 
 	return ret;
@@ -150,7 +149,7 @@ engine_status ModuleRenderer3D_ENGINE::PostUpdate()
 // Called before quitting
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
-	ENGINE_LOG("Destroying 3D Renderer");
+	LOG_("ENGINE: Destroying 3D Renderer");
 	SDL_GL_DeleteContext(context);
 	targetWindow = nullptr;
 	delete targetWindow;
@@ -165,7 +164,7 @@ void ModuleRenderer3D_ENGINE::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = glm::perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = glm::perspective(70.0f, (float)width / (float)height, 0.125f, 512.0f);
 	glLoadMatrixf(glm::value_ptr(ProjectionMatrix));
 
 	glMatrixMode(GL_MODELVIEW);
@@ -215,15 +214,15 @@ void ModuleRenderer3D_ENGINE::DrawAxis(float lineWidth)
 	
 	glColor3ub(255, 0, 0);
 	glVertex3d(0, 0, 0);
-	glVertex3d(0.8, 0, 0);
+	glVertex3d(1.0, 0, 0);
 
 	glColor3ub(0, 255, 0);
 	glVertex3d(0, 0, 0);
-	glVertex3d(0, 0.8, 0);
+	glVertex3d(0, 1.0, 0);
 	
-	glColor3ub(0, 0, 1);
+	glColor3ub(0, 0, 200);
 	glVertex3d(0, 0, 0);
-	glVertex3d(0, 0, 0.8);
+	glVertex3d(0, 0, 1.0);
 	
 	glEnd();
 }

@@ -58,3 +58,14 @@ Engine/x64/Debug/Engine.tlog/Lib-link.read.1.tlog
 *.db
 *.db
 .vs/VertX_GameEngine/v16/.suo
+*.idb
+.vs/VertX_GameEngine/v16/.suo
+*.db
+*.ilk
+*.log
+*.tlog
+*.tlog
+*.pdb
+*.tlog
+*.tlog
+*.pdb

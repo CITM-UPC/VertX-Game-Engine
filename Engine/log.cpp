@@ -1,7 +1,7 @@
 #pragma once
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 
-void engineLog(const char file[], int line, const char* format, ...)
+void Log(const char file[], int line, const char* format, ...)
 {
 	static char tmp_string[4096];
 	static char tmp_string2[4096];

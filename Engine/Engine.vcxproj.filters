@@ -44,7 +44,7 @@
     <ClInclude Include="GameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine_Globals.h">
+    <ClInclude Include="Globals_ENGINE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine_Module.h">

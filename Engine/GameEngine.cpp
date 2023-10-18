@@ -30,7 +30,7 @@ bool GameEngine::Start()
 {
 	bool ret = true;
 
-	ENGINE_LOG("Game Engine Start --------------");
+	LOG_("ENGINE: Game Engine Start --------------");
 	for (auto const& item : list_modules)
 	{
 		ret = item->Start();
@@ -92,6 +92,7 @@ bool GameEngine::CleanUp()
 {
 	bool ret = true;
 
+	LOG_("ENGINE: Game Engine CleanUp --------------")
 	for (auto const& item : list_modules)
 	{
 		ret = item->CleanUp();

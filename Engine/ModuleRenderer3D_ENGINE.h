@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine_Module.h"
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 #include "SDL2/SDL.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "GL/glew.h"

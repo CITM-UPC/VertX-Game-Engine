@@ -1,6 +1,6 @@
 #include "Mesh.h"
 #include <GL/glew.h>
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
@@ -100,6 +100,7 @@ Mesh::Mesh(Mesh&& b) noexcept :
 
 void Mesh::draw() {
 
+    // Draw/Render the mesh as white by default in case we don't have a texture applied to it
     glColor4ub(255, 255, 255, 255);
 
     glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);

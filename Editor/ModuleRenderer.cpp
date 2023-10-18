@@ -43,9 +43,14 @@ update_status ModuleRenderer::PostUpdate()
 	App->gEngine->renderer3D_engine->DrawAxis(4.0f);
 	App->gEngine->renderer3D_engine->DrawGrid(100, 1, true);
 
+	// We render first the Engine's Renderer 3D into the Editor's Renderer
 	App->gEngine->renderer3D_engine->PostUpdate();
+
+	// Now we render the ImGUI stuff after the Engine's Renderer 3D
 	App->imgui->RenderImGUI();
 
+
+	// Updating/Swapping the window with OpenGL rendering. Used in a double-buffered OpenGL context
 	SDL_GL_SwapWindow(App->window->window);
 
 	return UPDATE_CONTINUE;

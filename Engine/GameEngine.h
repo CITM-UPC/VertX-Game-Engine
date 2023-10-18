@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include "Engine_Globals.h"
+#include "Globals_ENGINE.h"
 #include "Engine_Module.h"
 #include "ModuleRenderer3D_ENGINE.h"
 //#include "ModuleInput.h"
