@@ -1,4 +1,4 @@
-﻿  Downloading https://github.com/microsoft/vcpkg-tool/releases/download/2023-09-15/vcpkg.exe -> C:\Users\adria\Documents\GitHub\Kingdom\vcpkg\vcpkg.exe... done.
+﻿  Downloading https://github.com/microsoft/vcpkg-tool/releases/download/2023-09-15/vcpkg.exe -> C:\Users\adria\Documents\GitHub\VertX-Game-Engine\vcpkg\vcpkg.exe... done.
   Validating signature... done.
   
   vcpkg package management program version 2023-09-15-ac02a9f660977426b8ec6392919fbb1d51b10998
@@ -15,13 +15,13 @@
   Read more about vcpkg telemetry at docs/about/privacy.md
   Computing installation plan...
   The following packages are already installed:
-      assimp:x64-windows -> 5.2.5
+      assimp:x64-windows -> 5.3.1#2
       devil[core,tiff,openexr,libpng,libjpeg,lcms,jasper]:x64-windows -> 1.8.0#11
       glew:x64-windows -> 2.2.0#3
       glm:x64-windows -> 2023-06-08
-      jsoncpp:x64-windows -> 1.9.5
+      jsoncpp:x64-windows -> 1.9.5#1
       opengl:x64-windows -> 2022-12-04#3
-      sdl2[core,base]:x64-windows -> 2.28.3
+      sdl2[core,base]:x64-windows -> 2.28.4#1
   assimp:x64-windows is already installed
   devil:x64-windows is already installed
   glew:x64-windows is already installed
@@ -29,7 +29,7 @@
   jsoncpp:x64-windows is already installed
   opengl:x64-windows is already installed
   sdl2:x64-windows is already installed
-  Total install time: 82.5 us
+  Total install time: 83.2 us
   assimp provides CMake targets:
   
     # this is heuristically generated, and may not be correct
@@ -135,11 +135,39 @@
   ..\vcpkg\installed\x64-windows\bin\zlib.pdb
   ..\vcpkg\installed\x64-windows\bin\zlib1.dll
          48 archivo(s) copiado(s).
+  GameEngine.cpp
   Engine_ModuleRenderer3D.cpp
-C:\Users\adria\Documents\GitHub\Kingdom\GameEngine\Engine_ModuleRenderer3D.cpp(155,21): warning C4150: deletion of pointer to incomplete type 'SDL_Window'; no destructor called
-C:\Users\adria\Documents\GitHub\Kingdom\vcpkg\installed\x64-windows\include\SDL2\SDL_video.h(95): message : see declaration of 'SDL_Window'
+C:\Users\adria\Documents\GitHub\VertX-Game-Engine\GameEngine\Engine_ModuleRenderer3D.cpp(155,21): warning C4150: deletion of pointer to incomplete type 'SDL_Window'; no destructor called
+C:\Users\adria\Documents\GitHub\VertX-Game-Engine\vcpkg\installed\x64-windows\include\SDL2\SDL_video.h(95): message : see declaration of 'SDL_Window'
+  Engine_log.cpp
+  Camera.cpp
+  Camera.h
+  Mesh.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility(142,1): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2006): message : see reference to function template instantiation 'void std::_Construct_in_place<_Ty,Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(_Ty &,Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&) noexcept(false)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2725): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2726): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Users\adria\Documents\GitHub\VertX-Game-Engine\GameEngine\Mesh.cpp(44): message : see reference to function template instantiation 'std::shared_ptr<Mesh> std::make_shared<Mesh,Mesh::Formats,_Ty*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,_Ty *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh::V3T2
+          ]
+  Texture2D.cpp
+  Generating Code...
 x64\Debug\Camera.obj : warning LNK4042: object specified more than once; extras ignored
 glu32.lib(GLU32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in glew32.lib(glew32.dll); second definition ignored
 opengl32.lib(OPENGL32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in glew32.lib(glew32.dll); second definition ignored
 sdl2.lib(SDL2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in glew32.lib(glew32.dll); second definition ignored
-  GameEngine.vcxproj -> C:\Users\adria\Documents\GitHub\Kingdom\x64\Debug\GameEngine.lib
+  GameEngine.vcxproj -> C:\Users\adria\Documents\GitHub\VertX-Game-Engine\x64\Debug\GameEngine.lib
