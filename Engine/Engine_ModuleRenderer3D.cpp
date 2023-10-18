@@ -7,8 +7,8 @@
 Engine_ModuleRenderer3D::Engine_ModuleRenderer3D(GameEngine* gEngine, bool start_enabled) : Engine_Module(gEngine, start_enabled)
 {
 	vsync = false;
-	screen_width = 1024;
-	screen_height = 768;
+	screen_width = 1280;
+	screen_height = 720;
 }
 
 // Destructor
@@ -69,7 +69,7 @@ bool Engine_ModuleRenderer3D::Init()
 		glClearDepth(1.0f);
 
 		//Initialize clear color
-		glClearColor(0.15f, 0.15f, 0.15f, 0.15f);
+		glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
 
 		//Check for error
 		error = glGetError();
@@ -91,7 +91,7 @@ bool Engine_ModuleRenderer3D::Init()
 		glEnable(GL_COLOR_MATERIAL);
 	}
 
-	// Projection matrix for
+	
 	OnResize(screen_width, screen_height);
 
 	return ret;

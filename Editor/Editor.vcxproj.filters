@@ -16,6 +16,9 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{03983f49-8eb1-4b3a-b872-5250df58d944}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Editor Modules">
+      <UniqueIdentifier>{21da6cc3-8217-4a3d-a56b-b6813fba239b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -24,43 +27,43 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="log.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleInput.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
     <ClCompile Include="ModuleRenderer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleUI.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleWindow.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Module.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
     <ClInclude Include="ModuleInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
     <ClInclude Include="ModuleRenderer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleUI.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleWindow.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

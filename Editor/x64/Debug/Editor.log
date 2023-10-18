@@ -21,7 +21,7 @@
   imgui:x64-windows is already installed
   jsoncpp:x64-windows is already installed
   sdl2:x64-windows is already installed
-  Total install time: 44.7 us
+  Total install time: 34.9 us
   imgui provides CMake targets:
   
     # this is heuristically generated, and may not be correct
@@ -93,11 +93,12 @@
   ..\vcpkg\installed\x64-windows\bin\zlib1.dll
          48 archivo(s) copiado(s).
   Application.cpp
-  main.cpp
   ModuleInput.cpp
   ModuleRenderer.cpp
   ModuleUI.cpp
   ModuleWindow.cpp
+  log.cpp
+  main.cpp
   Generating Code...
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Editor.vcxproj -> C:\Users\adria\Documents\GitHub\VertX-Game-Engine\x64\Debug\Editor.exe
