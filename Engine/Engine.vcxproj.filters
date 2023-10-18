@@ -21,10 +21,10 @@
     <ClCompile Include="GameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine_ModuleRenderer3D.cpp">
+    <ClCompile Include="ModuleRenderer3D_ENGINE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine_log.cpp">
+    <ClCompile Include="log.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
     <ClCompile Include="Camera.h">
@@ -50,7 +50,7 @@
     <ClInclude Include="Engine_Module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine_ModuleRenderer3D.h">
+    <ClInclude Include="ModuleRenderer3D_ENGINE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphic.h">

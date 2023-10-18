@@ -115,7 +115,6 @@ update_status ModuleInput::PreUpdate()
 			}
 		}
 
-		//This here works (sends input to ImGui). Maybe should be in ModuleUI.cpp?
 		ImGui_ImplSDL2_ProcessEvent(&e);
 	}
 

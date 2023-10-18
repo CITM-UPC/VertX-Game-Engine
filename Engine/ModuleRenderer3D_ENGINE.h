@@ -3,14 +3,13 @@
 #include "Engine_Globals.h"
 #include "SDL2/SDL.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "GL/glew.h"
 
-#include "GL/glew.h"//testing
-
-class Engine_ModuleRenderer3D : public Engine_Module
+class ModuleRenderer3D_ENGINE : public Engine_Module
 {
 public:
-	Engine_ModuleRenderer3D(GameEngine* gEngine, bool start_enabled = true);
-	~Engine_ModuleRenderer3D();
+	ModuleRenderer3D_ENGINE(GameEngine* gEngine, bool start_enabled = true);
+	~ModuleRenderer3D_ENGINE();
 
 	bool Init();
 	engine_status PreUpdate();
@@ -21,6 +20,8 @@ public:
 	void OnResize(int width, int height);
 
 	void DrawGrid(int size, int step, bool xzAxis = true, bool xyAxis = false, bool zyAxis = false);
+
+	void DrawAxis(float lineWidth = 1.0f);
 
 	void SetTargetWindow(SDL_Window* target) { 
 		targetWindow = target; 

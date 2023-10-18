@@ -1,22 +1,23 @@
 #include "GameEngine.h"
 #include "Engine_Globals.h"
-#include "Engine_ModuleRenderer3D.h"
+#include "..\Editor\Globals.h"
+#include "ModuleRenderer3D_ENGINE.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
 
-Engine_ModuleRenderer3D::Engine_ModuleRenderer3D(GameEngine* gEngine, bool start_enabled) : Engine_Module(gEngine, start_enabled)
+ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(GameEngine* gEngine, bool start_enabled) : Engine_Module(gEngine, start_enabled)
 {
 	vsync = false;
-	screen_width = 1280;
-	screen_height = 720;
+	screen_width = SCREEN_WIDTH;
+	screen_height = SCREEN_HEIGHT;
 }
 
 // Destructor
-Engine_ModuleRenderer3D::~Engine_ModuleRenderer3D()
+ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE()
 {}
 
 // Called before render is available
-bool Engine_ModuleRenderer3D::Init()
+bool ModuleRenderer3D_ENGINE::Init()
 {
 	ENGINE_LOG("Creating 3D Renderer context");
 	bool ret = true;
@@ -71,7 +72,7 @@ bool Engine_ModuleRenderer3D::Init()
 		//Initialize clear color
 		glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
 
-		//Check for error
+		//Check for an error
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
@@ -98,7 +99,7 @@ bool Engine_ModuleRenderer3D::Init()
 }
 
 // PreUpdate: clear buffer
-engine_status Engine_ModuleRenderer3D::PreUpdate()
+engine_status ModuleRenderer3D_ENGINE::PreUpdate()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -115,7 +116,7 @@ engine_status Engine_ModuleRenderer3D::PreUpdate()
 	return ENGINE_UPDATE_CONTINUE;
 }
 
-engine_status Engine_ModuleRenderer3D::Update()
+engine_status ModuleRenderer3D_ENGINE::Update()
 {
 
 
@@ -123,17 +124,18 @@ engine_status Engine_ModuleRenderer3D::Update()
 }
 
 // PostUpdate present buffer to screen
-engine_status Engine_ModuleRenderer3D::PostUpdate()
+engine_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
 #pragma region TriangleTest
 
-	/*glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glColor4ub(255, 0, 0, 255);
+	// Triangle for testing
+	/*glColor4ub(255, 0, 0, 255);
 	glBegin(GL_TRIANGLES);
 	glVertex3d(-0.25, 0, 0);
 	glVertex3d(0.25, 0, 0);
@@ -146,10 +148,9 @@ engine_status Engine_ModuleRenderer3D::PostUpdate()
 }
 
 // Called before quitting
-bool Engine_ModuleRenderer3D::CleanUp()
+bool ModuleRenderer3D_ENGINE::CleanUp()
 {
 	ENGINE_LOG("Destroying 3D Renderer");
-
 	SDL_GL_DeleteContext(context);
 	targetWindow = nullptr;
 	delete targetWindow;
@@ -158,7 +159,7 @@ bool Engine_ModuleRenderer3D::CleanUp()
 }
 
 
-void Engine_ModuleRenderer3D::OnResize(int width, int height)
+void ModuleRenderer3D_ENGINE::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
@@ -171,17 +172,17 @@ void Engine_ModuleRenderer3D::OnResize(int width, int height)
 	glLoadIdentity();
 }
 
-void Engine_ModuleRenderer3D::DrawGrid(int size, int step, bool xzAxis, bool xyAxis, bool zyAxis)
+void ModuleRenderer3D_ENGINE::DrawGrid(int size, int step, bool xzAxis, bool xyAxis, bool zyAxis)
 {
 	glLineWidth(1.0);
-    glColor3ub(128, 128, 128);
+    glColor3ub(128, 128, 128);	// Grey Color
 
     glBegin(GL_LINES);
     for (int i = -size; i <= size; i += step) {
 
 		if (xzAxis)
 		{
-			//XZ plane
+			//XZ grid plane
 			glVertex3i(i, 0, -size);
 			glVertex3i(i, 0, size);
 			glVertex3i(-size, 0, i);
@@ -189,7 +190,7 @@ void Engine_ModuleRenderer3D::DrawGrid(int size, int step, bool xzAxis, bool xyA
 		}
 		if (xyAxis)
 		{
-			//XY plane
+			//XY grid plane
 			glVertex2i(i, -size);
 			glVertex2i(i, size);
 			glVertex2i(-size, i);
@@ -197,7 +198,7 @@ void Engine_ModuleRenderer3D::DrawGrid(int size, int step, bool xzAxis, bool xyA
 		}
 		if (zyAxis)
 		{
-			//ZY plane
+			//ZY grid plane
 			glVertex3i(0, i, -size);
 			glVertex3i(0, i, size);
 			glVertex3i(0, -size, i);
@@ -205,6 +206,24 @@ void Engine_ModuleRenderer3D::DrawGrid(int size, int step, bool xzAxis, bool xyA
 		}
     }
     glEnd();
+}
 
-	//drawCubeTest();
+void ModuleRenderer3D_ENGINE::DrawAxis(float lineWidth)
+{
+	glLineWidth(lineWidth);
+	glBegin(GL_LINES);
+	
+	glColor3ub(255, 0, 0);
+	glVertex3d(0, 0, 0);
+	glVertex3d(0.8, 0, 0);
+
+	glColor3ub(0, 255, 0);
+	glVertex3d(0, 0, 0);
+	glVertex3d(0, 0.8, 0);
+	
+	glColor3ub(0, 0, 1);
+	glVertex3d(0, 0, 0);
+	glVertex3d(0, 0, 0.8);
+	
+	glEnd();
 }

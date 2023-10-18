@@ -1,6 +1,6 @@
 ﻿#include "Globals.h"
 #include "Application.h"
-#include "ModuleUI.h"
+#include "ModuleImGUI.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
 #include "ModuleInput.h" 
@@ -8,15 +8,14 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 
-ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
 
-// Destructor
-ModuleUI::~ModuleUI()
+ModuleImGUI::~ModuleImGUI()
 {}
 
-bool ModuleUI::Init()
+bool ModuleImGUI::Init()
 {
 	LOG("Creating UI");
 
@@ -27,13 +26,13 @@ bool ModuleUI::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
 
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->gEngine->renderer3D->context);
+	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->gEngine->renderer3D_engine->context);
 	ImGui_ImplOpenGL3_Init();
 
 	return true;
 }
 
-update_status ModuleUI::PreUpdate()
+update_status ModuleImGUI::PreUpdate()
 {
 	//This here does not work. Currently in Input.cpp
 	//ImGui_ImplSDL2_ProcessEvent(&pollevent); 
@@ -118,14 +117,16 @@ update_status ModuleUI::PreUpdate()
 	if (options)
 	{
 		ImGui::Begin("Options Window");
+
 		ImGui::Text("This window is a placeholder.\nFunctionality is WIP");
 		static bool testBool = false;
 		if (ImGui::Checkbox("VSYNC", &testBool)) { LOG("Checkbox Pressed"); };
+		
 		ImGui::End();
 	}
 	if (about) {
 		ImGui::Begin("About");
-		// To recode, this sucks
+		
 		ImGui::Text("This Engine of Mine v0.1\nA 3D Game Engine for the Game Engines subject");
 		ImGui::Text("By Jonathan Cacay & Ethan Martin\n3rd Party Libraries used :");
 		ImGui::Text("LIBRARIES HERE");
@@ -133,6 +134,7 @@ update_status ModuleUI::PreUpdate()
 		ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the Software), \nto deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, \nand /or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions : ");
 		ImGui::Text("The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.");
 		ImGui::Text("THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, \nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER \nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS \nIN THE SOFTWARE.");
+		
 		ImGui::End();
 	}
 	if (demoWindow)
@@ -164,7 +166,7 @@ update_status ModuleUI::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleUI::CleanUp()
+bool ModuleImGUI::CleanUp()
 {
 	LOG("Destroying UI");
 
@@ -175,7 +177,7 @@ bool ModuleUI::CleanUp()
 	return true;
 }
 
-void ModuleUI::RenderUI()
+void ModuleImGUI::RenderImGUI()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -3,10 +3,10 @@
 GameEngine::GameEngine()
 {
 	//input = new ModuleInput(this);
-	renderer3D = new Engine_ModuleRenderer3D(this);
+	renderer3D_engine = new ModuleRenderer3D_ENGINE(this);
 
 	//AddModule(input);
-	AddModule(renderer3D);
+	AddModule(renderer3D_engine);
 }
 
 GameEngine::~GameEngine()

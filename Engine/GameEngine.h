@@ -3,18 +3,18 @@
 #include <list>
 #include "Engine_Globals.h"
 #include "Engine_Module.h"
+#include "ModuleRenderer3D_ENGINE.h"
 //#include "ModuleInput.h"
-#include "Engine_ModuleRenderer3D.h"
-//#include "ModuleAudio.h"
 
 #include "Camera.h"
 
 class GameEngine
 {
 public:
+	
+	ModuleRenderer3D_ENGINE* renderer3D_engine;
+
 	//ModuleInput* input;
-	Engine_ModuleRenderer3D* renderer3D;
-	//ModuleAudio* audio;
 
 	Camera cam;
 

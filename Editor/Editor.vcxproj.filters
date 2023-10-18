@@ -36,7 +36,7 @@
     <ClCompile Include="ModuleRenderer.cpp">
       <Filter>Source Files\Editor Modules</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleUI.cpp">
+    <ClCompile Include="ModuleImGUI.cpp">
       <Filter>Source Files\Editor Modules</Filter>
     </ClCompile>
     <ClCompile Include="ModuleWindow.cpp">
@@ -53,7 +53,7 @@
     <ClInclude Include="ModuleRenderer.h">
       <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleUI.h">
+    <ClInclude Include="ModuleImGUI.h">
       <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
     <ClInclude Include="ModuleWindow.h">

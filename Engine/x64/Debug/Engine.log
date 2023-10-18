@@ -29,7 +29,7 @@
   jsoncpp:x64-windows is already installed
   opengl:x64-windows is already installed
   sdl2:x64-windows is already installed
-  Total install time: 56.9 us
+  Total install time: 87.4 us
   assimp provides CMake targets:
   
     # this is heuristically generated, and may not be correct
@@ -135,9 +135,33 @@
   ..\vcpkg\installed\x64-windows\bin\zlib.pdb
   ..\vcpkg\installed\x64-windows\bin\zlib1.dll
          48 archivo(s) copiado(s).
-  Engine_ModuleRenderer3D.cpp
-C:\Users\adria\Documents\GitHub\VertX-Game-Engine\Engine\Engine_ModuleRenderer3D.cpp(155,21): warning C4150: deletion of pointer to incomplete type 'SDL_Window'; no destructor called
+  GameEngine.cpp
+  ModuleRenderer3D_ENGINE.cpp
+C:\Users\adria\Documents\GitHub\VertX-Game-Engine\Engine\ModuleRenderer3D_ENGINE.cpp(156,21): warning C4150: deletion of pointer to incomplete type 'SDL_Window'; no destructor called
 C:\Users\adria\Documents\GitHub\VertX-Game-Engine\vcpkg\installed\x64-windows\include\SDL2\SDL_video.h(95): message : see declaration of 'SDL_Window'
+  Mesh.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility(142,1): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2006): message : see reference to function template instantiation 'void std::_Construct_in_place<_Ty,Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(_Ty &,Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&) noexcept(false)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2725): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\memory(2726): message : see reference to function template instantiation 'std::_Ref_count_obj2<_Ty>::_Ref_count_obj2<Mesh::Formats,Mesh::V3T2*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,Mesh::V3T2 *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh
+          ]
+C:\Users\adria\Documents\GitHub\VertX-Game-Engine\Engine\Mesh.cpp(44): message : see reference to function template instantiation 'std::shared_ptr<Mesh> std::make_shared<Mesh,Mesh::Formats,_Ty*,unsigned __int64,unsigned int*,unsigned __int64>(Mesh::Formats &&,_Ty *&&,unsigned __int64 &&,unsigned int *&&,unsigned __int64 &&)' being compiled
+          with
+          [
+              _Ty=Mesh::V3T2
+          ]
+  Generating Code...
 x64\Debug\Camera.obj : warning LNK4042: object specified more than once; extras ignored
 glu32.lib(GLU32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in glew32.lib(glew32.dll); second definition ignored
 opengl32.lib(OPENGL32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in glew32.lib(glew32.dll); second definition ignored

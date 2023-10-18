@@ -3,17 +3,17 @@
 #include "Globals.h"
 
 
-class ModuleUI : public Module
+class ModuleImGUI : public Module
 {
 public:
-	ModuleUI(Application* app, bool start_enabled = true);
-	~ModuleUI();
+	ModuleImGUI(Application* app, bool start_enabled = true);
+	~ModuleImGUI();
 
 	bool Init();
 	update_status PreUpdate();
 	bool CleanUp();
 
-	void RenderUI();
+	void RenderImGUI();
 
 private:
 	bool dockSpaceEnabled = true;

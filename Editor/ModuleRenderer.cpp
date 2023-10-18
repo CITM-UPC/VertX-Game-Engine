@@ -16,7 +16,7 @@ bool ModuleRenderer::Init()
 	LOG("Creating Renderer context");
 	bool ret = true;
 
-	ret = App->gEngine->renderer3D->Init();
+	ret = App->gEngine->renderer3D_engine->Init();
 
 	return ret;
 }
@@ -24,14 +24,14 @@ bool ModuleRenderer::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer::PreUpdate()
 {
-	App->gEngine->renderer3D->PreUpdate();
+	App->gEngine->renderer3D_engine->PreUpdate();
 
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleRenderer::Update()
 {
-	App->gEngine->renderer3D->Update();
+	App->gEngine->renderer3D_engine->Update();
 
 	return UPDATE_CONTINUE;
 }
@@ -39,10 +39,12 @@ update_status ModuleRenderer::Update()
 // PostUpdate present buffer to screen
 update_status ModuleRenderer::PostUpdate()
 {
-	App->gEngine->renderer3D->DrawGrid(100, 1, true);
+	// Drawing XYZ axis + XZ grid
+	App->gEngine->renderer3D_engine->DrawAxis(4.0f);
+	App->gEngine->renderer3D_engine->DrawGrid(100, 1, true);
 
-	App->gEngine->renderer3D->PostUpdate();
-	App->ui->RenderUI();
+	App->gEngine->renderer3D_engine->PostUpdate();
+	App->imgui->RenderImGUI();
 
 	SDL_GL_SwapWindow(App->window->window);
 
@@ -54,7 +56,7 @@ bool ModuleRenderer::CleanUp()
 {
 	LOG("Destroying Renderer");
 
-	App->gEngine->renderer3D->CleanUp();
+	App->gEngine->renderer3D_engine->CleanUp();
 
 	return true;
 }
