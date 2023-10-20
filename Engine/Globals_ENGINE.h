@@ -25,14 +25,24 @@ void Log(const char file[], int line, const char* format, ...);
 
 typedef unsigned int uint;
 
-// GLM library type definitions
+// GLM library type definitions --------
+/* DOUBLE VECTORS */
 typedef glm::dvec2 vec2;
 typedef glm::dvec3 vec3;
 typedef glm::dvec4 vec4;
-typedef glm::dmat4 mat4;
 
+/* FLOAT VECTORS */
 typedef glm::vec2 vec2f;
 typedef glm::vec3 vec3f;
 typedef glm::vec4 vec4f;
 
+/* DOUBLE MATRIXS */
+typedef glm::dmat2x2 mat2;
+typedef glm::dmat3x3 mat3;
+typedef glm::dmat4x4 mat4;
+
+/* FLOAT MATRIXS */
+typedef glm::mat2x2 mat2f;
+typedef glm::mat3x3 mat3f;
+typedef glm::mat4x4 mat4f;
 

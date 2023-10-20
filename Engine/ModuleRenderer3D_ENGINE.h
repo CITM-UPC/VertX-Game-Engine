@@ -37,8 +37,8 @@ public:
 public:
 
 	SDL_GLContext context;
-	glm::mat3x3 NormalMatrix;
-	glm::mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	glm::mat3 NormalMatrix;
+	glm::mat4 modelMatrix, viewMatrix, projectionMatrix;
 
 private:
 

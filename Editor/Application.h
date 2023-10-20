@@ -16,7 +16,6 @@ public:
 	ModuleInput* input;
 	ModuleRenderer* renderer;
 	ModuleImGUI* imgui;
-
 	GameEngine* gEngine;
 
 private:

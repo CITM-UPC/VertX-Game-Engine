@@ -14,4 +14,10 @@ public:
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
+
+public:
+
+	void FreeCameraMovement();
+
+	/*glm::quat X, Y, Z;*/
 };

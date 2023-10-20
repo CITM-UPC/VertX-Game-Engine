@@ -108,9 +108,18 @@ engine_status ModuleRenderer3D_ENGINE::PreUpdate()
 	gluPerspective(gEngine->cam.fov, gEngine->cam.aspectRatio, gEngine->cam.clippingPlaneViewNear, gEngine->cam.clippingPlaneViewFar);
 
 	glMatrixMode(GL_MODELVIEW);
-	gluLookAt(gEngine->cam.camCenter.x, gEngine->cam.camCenter.y,	gEngine->cam.camCenter.z,
+	glLoadIdentity();
+	gluLookAt(gEngine->cam.camCenterPos.x, gEngine->cam.camCenterPos.y,	gEngine->cam.camCenterPos.z,
 			  gEngine->cam.lookAtPos.x, gEngine->cam.lookAtPos.y, gEngine->cam.lookAtPos.z,
 			  gEngine->cam.upVector.x , gEngine->cam.upVector.y , gEngine->cam.upVector.z);
+	
+	
+	viewMatrix = glm::lookAt(gEngine->cam.camCenterPos,
+							 gEngine->cam.lookAtPos,
+							 gEngine->cam.upVector);
+
+	glLoadMatrixf(glm::value_ptr(viewMatrix));
+
 
 	return ENGINE_UPDATE_CONTINUE;
 }
@@ -164,8 +173,8 @@ void ModuleRenderer3D_ENGINE::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = glm::perspective(70.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(glm::value_ptr(ProjectionMatrix));
+	projectionMatrix = glm::perspective(70.0f, (float)width / (float)height, 0.125f, 512.0f);
+	glLoadMatrixf(glm::value_ptr(projectionMatrix));
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
