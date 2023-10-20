@@ -1,6 +1,6 @@
 #pragma once
 
-class GameEngine;
+class ModuleGameEngine;
 
 class Engine_Module
 {
@@ -8,9 +8,9 @@ private :
 	bool enabled;
 
 public:
-	GameEngine* gEngine;
+	ModuleGameEngine* game_engine;
 
-	Engine_Module(GameEngine* parent, bool start_enabled = true) : gEngine(parent)
+	Engine_Module(ModuleGameEngine* parent, bool start_enabled = true) : game_engine(parent)
 	{}
 
 	virtual ~Engine_Module()
@@ -26,17 +26,17 @@ public:
 		return true;
 	}
 
-	virtual engine_status PreUpdate()
+	virtual engine_update_status PreUpdate()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}
 
-	virtual engine_status Update()
+	virtual engine_update_status Update()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}
 
-	virtual engine_status PostUpdate()
+	virtual engine_update_status PostUpdate()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}

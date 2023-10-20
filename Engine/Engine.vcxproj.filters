@@ -16,54 +16,60 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{8681f5ec-1258-4e70-9774-ccbe8d20071e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine Modules">
+      <UniqueIdentifier>{7d1d7a7b-f8f5-4663-bb7f-36633adbba78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{f69fe16b-2b40-400a-a919-0d2079078cce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleRenderer3D_ENGINE.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="log.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleGameEngine.cpp">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleRenderer3D_ENGINE.cpp">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClCompile>
     <ClCompile Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Globals_ENGINE.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine_Module.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleRenderer3D_ENGINE.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JSONParser.h">
       <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine_Module.h">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleGameEngine.h">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleRenderer3D_ENGINE.h">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals_ENGINE.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphic.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

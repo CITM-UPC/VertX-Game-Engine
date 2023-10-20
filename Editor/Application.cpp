@@ -2,8 +2,7 @@
 
 Application::Application()
 {
-	gEngine = new GameEngine();
-
+	game_engine = new ModuleGameEngine();
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	renderer = new ModuleRenderer(this);
@@ -96,7 +95,7 @@ bool Application::CleanUp()
 		if (ret != true) return ret;
 	}
 
-	delete gEngine;
+	delete game_engine;
 
 	return ret;
 }

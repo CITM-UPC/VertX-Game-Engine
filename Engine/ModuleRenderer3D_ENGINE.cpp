@@ -1,11 +1,11 @@
-#include "GameEngine.h"
+#include "ModuleGameEngine.h"
 #include "Globals_ENGINE.h"
 #include "..\Editor\Globals.h"
 #include "ModuleRenderer3D_ENGINE.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
 
-ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(GameEngine* gEngine, bool start_enabled) : Engine_Module(gEngine, start_enabled)
+ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
 {
 	vsync = false;
 	screen_width = SCREEN_WIDTH;
@@ -98,25 +98,25 @@ bool ModuleRenderer3D_ENGINE::Init()
 }
 
 // PreUpdate: clear buffer
-engine_status ModuleRenderer3D_ENGINE::PreUpdate()
+engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(gEngine->cam.fov, gEngine->cam.aspectRatio, gEngine->cam.clippingPlaneViewNear, gEngine->cam.clippingPlaneViewFar);
+	gluPerspective(game_engine->camera.fov, game_engine->camera.aspectRatio, game_engine->camera.clippingPlaneViewNear, game_engine->camera.clippingPlaneViewFar);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(gEngine->cam.camCenterPos.x, gEngine->cam.camCenterPos.y,	gEngine->cam.camCenterPos.z,
-			  gEngine->cam.lookAtPos.x, gEngine->cam.lookAtPos.y, gEngine->cam.lookAtPos.z,
-			  gEngine->cam.upVector.x , gEngine->cam.upVector.y , gEngine->cam.upVector.z);
+	gluLookAt(game_engine->camera.worldPosVec.x, game_engine->camera.worldPosVec.y, game_engine->camera.worldPosVec.z,
+			game_engine->camera.focusPosVec.x, game_engine->camera.focusPosVec.y, game_engine->camera.focusPosVec.z,
+			game_engine->camera.upVec.x , game_engine->camera.upVec.y , game_engine->camera.upVec.z);
 	
 	
-	viewMatrix = glm::lookAt(gEngine->cam.camCenterPos,
-							 gEngine->cam.lookAtPos,
-							 gEngine->cam.upVector);
+	viewMatrix = glm::lookAt(game_engine->camera.worldPosVec,
+							game_engine->camera.focusPosVec,
+							game_engine->camera.upVec);
 
 	glLoadMatrixf(glm::value_ptr(viewMatrix));
 
@@ -124,7 +124,7 @@ engine_status ModuleRenderer3D_ENGINE::PreUpdate()
 	return ENGINE_UPDATE_CONTINUE;
 }
 
-engine_status ModuleRenderer3D_ENGINE::Update()
+engine_update_status ModuleRenderer3D_ENGINE::Update()
 {
 
 
@@ -132,7 +132,7 @@ engine_status ModuleRenderer3D_ENGINE::Update()
 }
 
 // PostUpdate present buffer to screen
-engine_status ModuleRenderer3D_ENGINE::PostUpdate()
+engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
 #pragma region TriangleTest
 
@@ -159,6 +159,7 @@ engine_status ModuleRenderer3D_ENGINE::PostUpdate()
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
 	LOG_("ENGINE: Destroying 3D Renderer");
+
 	SDL_GL_DeleteContext(context);
 	targetWindow = nullptr;
 	delete targetWindow;
@@ -180,7 +181,7 @@ void ModuleRenderer3D_ENGINE::OnResize(int width, int height)
 	glLoadIdentity();
 }
 
-void ModuleRenderer3D_ENGINE::DrawGrid(int size, int step, bool xzAxis, bool xyAxis, bool zyAxis)
+void ModuleRenderer3D_ENGINE::DrawGrid(int size, int step, bool xzAxis)
 {
 	glLineWidth(1.0);
     glColor3ub(128, 128, 128);	// Grey Color
@@ -196,22 +197,6 @@ void ModuleRenderer3D_ENGINE::DrawGrid(int size, int step, bool xzAxis, bool xyA
 			glVertex3i(-size, 0, i);
 			glVertex3i(size, 0, i);
 		}
-		if (xyAxis)
-		{
-			//XY grid plane
-			glVertex2i(i, -size);
-			glVertex2i(i, size);
-			glVertex2i(-size, i);
-			glVertex2i(size, i);
-		}
-		if (zyAxis)
-		{
-			//ZY grid plane
-			glVertex3i(0, i, -size);
-			glVertex3i(0, i, size);
-			glVertex3i(0, -size, i);
-			glVertex3i(0, size, i);
-		}
     }
     glEnd();
 }
@@ -221,15 +206,18 @@ void ModuleRenderer3D_ENGINE::DrawAxis(float lineWidth)
 	glLineWidth(lineWidth);
 	glBegin(GL_LINES);
 	
-	glColor3ub(255, 0, 0);
+	// X
+	glColor3ub(255, 0, 0);	// Red
 	glVertex3d(0, 0, 0);
 	glVertex3d(1.0, 0, 0);
 
-	glColor3ub(0, 255, 0);
+	// Y
+	glColor3ub(0, 255, 0);	// Green
 	glVertex3d(0, 0, 0);
 	glVertex3d(0, 1.0, 0);
 	
-	glColor3ub(0, 0, 200);
+	// Z
+	glColor3ub(0, 0, 200);	// Blue
 	glVertex3d(0, 0, 0);
 	glVertex3d(0, 0, 1.0);
 	

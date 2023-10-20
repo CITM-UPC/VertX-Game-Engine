@@ -19,7 +19,7 @@ bool ModuleRenderer::Init()
 	LOG("Creating Renderer context");
 	bool ret = true;
 
-	ret = App->gEngine->renderer3D_engine->Init();
+	ret = App->game_engine->renderer3D_engine->Init();
 
 	return ret;
 }
@@ -27,7 +27,7 @@ bool ModuleRenderer::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer::PreUpdate()
 {
-	App->gEngine->renderer3D_engine->PreUpdate();
+	App->game_engine->renderer3D_engine->PreUpdate();
 
 	return UPDATE_CONTINUE;
 }
@@ -37,12 +37,14 @@ update_status ModuleRenderer::Update()
 	// Compute camera movement based on player's input so it can be later updated by the renderer
 	FreeCameraMovement();
 
+	// Function to reset camera parameters to the initial ones
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		App->gEngine->cam.ResetCameraParameters();
+		App->game_engine->camera.ResetCameraParameters();
 
-	App->gEngine->renderer3D_engine->Update();
 
-	
+
+	App->game_engine->renderer3D_engine->Update();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -50,11 +52,12 @@ update_status ModuleRenderer::Update()
 update_status ModuleRenderer::PostUpdate()
 {
 	// Drawing XYZ axis + XZ grid
-	App->gEngine->renderer3D_engine->DrawAxis(4.0f);
-	App->gEngine->renderer3D_engine->DrawGrid(100, 1, true);
+	App->game_engine->renderer3D_engine->DrawAxis(4.0f);
+	App->game_engine->renderer3D_engine->DrawGrid(200, 1);
+
 
 	// We render first the Engine's Renderer 3D into the Editor's Renderer
-	App->gEngine->renderer3D_engine->PostUpdate();
+	App->game_engine->renderer3D_engine->PostUpdate();
 
 	// Now we render the ImGUI stuff after the Engine's Renderer 3D
 	App->imgui->RenderImGUI();
@@ -71,7 +74,8 @@ bool ModuleRenderer::CleanUp()
 {
 	LOG("Destroying Renderer");
 
-	App->gEngine->renderer3D_engine->CleanUp();
+
+	App->game_engine->renderer3D_engine->CleanUp();
 
 	return true;
 }
@@ -83,7 +87,7 @@ void ModuleRenderer::FreeCameraMovement()
 	float cameraSpeedMultiplier = 3.0f;
 
 	// Normalized vector of the substraction of the Camera Focus Vec and the Camera Position Vec, then multiplied by the speed we want
-	vec3 normalizedVec = (cameraSpeed * (glm::normalize(App->gEngine->cam.lookAtPos - App->gEngine->cam.camCenterPos)));
+	vec3 normalizedVec = (cameraSpeed * (glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec)));
 
 
 	// Rotation matrix definition
@@ -110,15 +114,15 @@ void ModuleRenderer::FreeCameraMovement()
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 		{
 			// Compute FORWARD camera movement
-			App->gEngine->cam.camCenterPos += normalizedVec;
-			App->gEngine->cam.lookAtPos += normalizedVec;
+			App->game_engine->camera.worldPosVec += normalizedVec;
+			App->game_engine->camera.focusPosVec += normalizedVec;
 		}
 		// Check if 'S' key is pressed
 		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 		{
 			// Compute BACKWARDS camera movement
-			App->gEngine->cam.camCenterPos -= normalizedVec;
-			App->gEngine->cam.lookAtPos -= normalizedVec;
+			App->game_engine->camera.worldPosVec -= normalizedVec;
+			App->game_engine->camera.focusPosVec -= normalizedVec;
 		}
 
 		// Check if 'A' key is pressed
@@ -126,8 +130,8 @@ void ModuleRenderer::FreeCameraMovement()
 		{
 			// Compute LEFT camera movement
 			normalVec.y = 0; // Set to zero the Y component, otherwise it gets f*ucked idk why tbh
-			App->gEngine->cam.lookAtPos -= normalVec;
-			App->gEngine->cam.camCenterPos -= normalVec;
+			App->game_engine->camera.worldPosVec -= normalVec;
+			App->game_engine->camera.focusPosVec -= normalVec;
 		}
 
 		// Check if 'D' key is pressed
@@ -135,8 +139,8 @@ void ModuleRenderer::FreeCameraMovement()
 		{
 			// Compute RIGHT camera movement
 			normalVec.y = 0;	
-			App->gEngine->cam.lookAtPos += normalVec;
-			App->gEngine->cam.camCenterPos += normalVec;
+			App->game_engine->camera.worldPosVec += normalVec;
+			App->game_engine->camera.focusPosVec += normalVec;
 		}
 		
 	}
@@ -152,7 +156,7 @@ void ModuleRenderer::FreeCameraMovement()
 
 		float Sensitivity = 0.25f;
 
-		App->gEngine->cam.camCenterPos -= App->gEngine->cam.lookAtPos;
+		App->game_engine->camera.camCenterPos -= App->game_engine->camera.lookAtPos;
 
 		if (dx != 0)
 		{
@@ -179,7 +183,7 @@ void ModuleRenderer::FreeCameraMovement()
 			}
 		}
 
-		App->gEngine->cam.camCenterPos = App->gEngine->cam.lookAtPos + Z * length(App->gEngine->cam.camCenterPos);
+		App->game_engine->camera.camCenterPos = App->game_engine->camera.lookAtPos + Z * length(App->game_engine->camera.camCenterPos);
 	}
 	*/
 

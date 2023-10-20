@@ -6,13 +6,6 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-enum engine_status
-{
-	ENGINE_UPDATE_CONTINUE = 1,
-	ENGINE_UPDATE_STOP,
-	ENGINE_UPDATE_ERROR
-};
-
 #define LOG_(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
 
 void Log(const char file[], int line, const char* format, ...);
@@ -24,6 +17,13 @@ void Log(const char file[], int line, const char* format, ...);
 #define HAVE_M_PI
 
 typedef unsigned int uint;
+
+enum engine_update_status
+{
+	ENGINE_UPDATE_CONTINUE = 1,
+	ENGINE_UPDATE_STOP,
+	ENGINE_UPDATE_ERRORF
+};
 
 // GLM library type definitions --------
 /* DOUBLE VECTORS */

@@ -1,22 +1,17 @@
 #pragma once
-
 #include <list>
 #include "Globals_ENGINE.h"
 #include "Engine_Module.h"
 #include "ModuleRenderer3D_ENGINE.h"
-//#include "ModuleInput.h"
-
 #include "Camera.h"
 
-class GameEngine
+class ModuleGameEngine
 {
 public:
 	
 	ModuleRenderer3D_ENGINE* renderer3D_engine;
 
-	//ModuleInput* input;
-
-	Camera cam;
+	Camera camera;
 
 private:
 
@@ -24,14 +19,14 @@ private:
 
 public:
 
-	GameEngine();
-	~GameEngine();
+	ModuleGameEngine();
+	~ModuleGameEngine();
 
 	bool Init();
 	bool Start();
-	engine_status PreUpdate();
-	engine_status Update();
-	engine_status PostUpdate();
+	engine_update_status PreUpdate();
+	engine_update_status Update();
+	engine_update_status PostUpdate();
 	bool CleanUp();
 
 private:

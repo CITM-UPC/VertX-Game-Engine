@@ -1,6 +1,6 @@
-#include "GameEngine.h"
+#include "ModuleGameEngine.h"
 
-GameEngine::GameEngine()
+ModuleGameEngine::ModuleGameEngine()
 {
 	//input = new ModuleInput(this);
 	renderer3D_engine = new ModuleRenderer3D_ENGINE(this);
@@ -9,12 +9,12 @@ GameEngine::GameEngine()
 	AddModule(renderer3D_engine);
 }
 
-GameEngine::~GameEngine()
+ModuleGameEngine::~ModuleGameEngine()
 {
 	list_modules.clear();
 }
 
-bool GameEngine::Init()
+bool ModuleGameEngine::Init()
 {
 	bool ret = true;
 
@@ -26,7 +26,7 @@ bool GameEngine::Init()
 	return ret;
 }
 
-bool GameEngine::Start()
+bool ModuleGameEngine::Start()
 {
 	bool ret = true;
 
@@ -39,17 +39,17 @@ bool GameEngine::Start()
 	return ret;
 }
 
-void GameEngine::PrepareUpdate()
+void ModuleGameEngine::PrepareUpdate()
 {
 }
 
-void GameEngine::FinishUpdate()
+void ModuleGameEngine::FinishUpdate()
 {
 }
 
-engine_status GameEngine::PreUpdate()
+engine_update_status ModuleGameEngine::PreUpdate()
 {
-	engine_status ret = ENGINE_UPDATE_CONTINUE;
+	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
 
 	for (auto const& item : list_modules)
 	{
@@ -60,9 +60,9 @@ engine_status GameEngine::PreUpdate()
 	return ret;
 }
 
-engine_status GameEngine::Update()
+engine_update_status ModuleGameEngine::Update()
 {
-	engine_status ret = ENGINE_UPDATE_CONTINUE;
+	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
 	PrepareUpdate();
 
 	for (auto const& item : list_modules)
@@ -75,9 +75,9 @@ engine_status GameEngine::Update()
 	return ret;
 }
 
-engine_status GameEngine::PostUpdate()
+engine_update_status ModuleGameEngine::PostUpdate()
 {
-	engine_status ret = ENGINE_UPDATE_CONTINUE;
+	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
 
 	for (auto const& item : list_modules)
 	{
@@ -88,7 +88,7 @@ engine_status GameEngine::PostUpdate()
 	return ret;
 }
 
-bool GameEngine::CleanUp()
+bool ModuleGameEngine::CleanUp()
 {
 	bool ret = true;
 
@@ -102,7 +102,7 @@ bool GameEngine::CleanUp()
 	return ret;
 }
 
-void GameEngine::AddModule(Engine_Module* mod)
+void ModuleGameEngine::AddModule(Engine_Module* mod)
 {
 	list_modules.push_back(mod);
 }

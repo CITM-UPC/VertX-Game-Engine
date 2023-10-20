@@ -7,7 +7,7 @@
 #include "ModuleInput.h"
 #include "ModuleRenderer.h"
 #include "ModuleImGUI.h"
-#include "..\Engine\GameEngine.h"
+#include "..\Engine\ModuleGameEngine.h"
 
 class Application
 {
@@ -16,7 +16,7 @@ public:
 	ModuleInput* input;
 	ModuleRenderer* renderer;
 	ModuleImGUI* imgui;
-	GameEngine* gEngine;
+	ModuleGameEngine* game_engine;
 
 private:
 
