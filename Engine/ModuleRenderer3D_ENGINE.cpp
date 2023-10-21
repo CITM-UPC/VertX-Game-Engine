@@ -248,7 +248,7 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 
 engine_update_status ModuleRenderer3D_ENGINE::Update()
 {
-	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
