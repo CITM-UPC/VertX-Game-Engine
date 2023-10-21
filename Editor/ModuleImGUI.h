@@ -13,11 +13,15 @@ public:
 	update_status PreUpdate();
 	bool CleanUp();
 
+public:
+
 	void RenderImGUI();
 
+	void RenderImGUIAboutWindow();
+
 private:
-	bool dockSpaceEnabled = true;
-	bool options = false;
-	bool about = false;
-	bool demoWindow = false;
+	
+	
+	bool aboutWindow = false;
+	bool optionsWindow = false;
 };
