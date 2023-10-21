@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "Mesh.h"
 
 
 ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
@@ -48,6 +49,8 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Copy the file to the destination folder
 	if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
 		LOG("File copied to: %s", destinationPath.c_str());
+		/*static auto mesh_ptrs = Mesh::loadFromFile(destinationPath);
+		for (auto& mesh_ptr : mesh_ptrs) mesh_ptr->draw();*/
 	}
 	else {
 		LOG("Failed to copy the file. Error code: %d", GetLastError());
@@ -245,11 +248,11 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 // Called before quitting
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
-
 	const char* targetDirectory = "FBX_Assets";
 
 	// Recursive cleanup of files and subdirectories
 	CleanUpDirectory(targetDirectory);
+
 	// Remove the target directory
 	if (!RemoveDirectory(targetDirectory)) {
 		LOG("Failed to remove the directory: %s", targetDirectory);
