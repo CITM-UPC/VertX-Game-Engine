@@ -35,6 +35,7 @@ public:
 	}
 
 	void HandleFileDrop(const char* filePath);
+	void CleanUpDirectory(const char* directory);
 
 public:
 

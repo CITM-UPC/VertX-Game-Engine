@@ -28,28 +28,62 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Define the target directory within your project
 	const char* targetDirectory = "FBX_Assets";
 
+	// Ensure the target directory exists or create it
+	if (!CreateDirectoryA(targetDirectory, nullptr)) {
+		if (GetLastError() != ERROR_ALREADY_EXISTS) {
+			LOG("Failed to create the target directory: %s", targetDirectory);
+			return;
+		}
+	}
+
 	// Extract the filename from the file path
 	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
 	std::string filename = (lastBackslash) ? lastBackslash + 1 : filePath;
 
-	// Combine the target directory with the filename
+	// Combine the target directory with the filename to create the destination path
 	std::string destinationPath = targetDirectory;
 	destinationPath += "\\"; // Use backslashes for Windows
 	destinationPath += filename;
 
-	// Create the target directory if it doesn't exist
-	if (!CreateDirectory(destinationPath.c_str(), NULL)) {
-		LOG("Failed to create the target directory: %s", targetDirectory);
-		return;
-	}
-
-	// Copy the file
+	// Copy the file to the destination folder
 	if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
 		LOG("File copied to: %s", destinationPath.c_str());
 	}
 	else {
 		LOG("Failed to copy the file. Error code: %d", GetLastError());
 	}
+}
+
+void ModuleRenderer3D_ENGINE::CleanUpDirectory(const char* directory) {
+	// Recursive cleanup of files and subdirectories within the specified directory
+	// Add code to delete files, similar to the previous cleanup examples
+
+	WIN32_FIND_DATA findFileData;
+	HANDLE hFind = FindFirstFile((std::string(directory) + "\\*").c_str(), &findFileData);
+
+	if (hFind == INVALID_HANDLE_VALUE) {
+		return; // No files or directories found
+	}
+
+	do {
+		std::string fileName = findFileData.cFileName;
+		std::string filePath = std::string(directory) + "\\" + fileName;
+
+		if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+			if (fileName != "." && fileName != "..") {
+				// Recursively clean up subdirectories
+				CleanUpDirectory(filePath.c_str());
+			}
+		}
+		else {
+			// Delete files
+			if (!DeleteFile(filePath.c_str())) {
+				LOG("Failed to delete file: %s", filePath.c_str());
+			}
+		}
+	} while (FindNextFile(hFind, &findFileData) != 0);
+
+	FindClose(hFind);
 }
 
 // Called before render is available
@@ -211,6 +245,16 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 // Called before quitting
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
+
+	const char* targetDirectory = "FBX_Assets";
+
+	// Recursive cleanup of files and subdirectories
+	CleanUpDirectory(targetDirectory);
+	// Remove the target directory
+	if (!RemoveDirectory(targetDirectory)) {
+		LOG("Failed to remove the directory: %s", targetDirectory);
+	}
+
 	LOG_("ENGINE: Destroying 3D Renderer");
 
 	SDL_GL_DeleteContext(context);
