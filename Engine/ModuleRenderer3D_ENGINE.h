@@ -34,6 +34,8 @@ public:
 		vsync = active; 
 	}
 
+	void HandleFileDrop(const char* filePath);
+
 public:
 
 	SDL_GLContext context;

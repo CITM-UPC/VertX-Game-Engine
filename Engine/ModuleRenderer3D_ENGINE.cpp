@@ -4,6 +4,10 @@
 #include "ModuleRenderer3D_ENGINE.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+
 
 ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
 {
@@ -15,6 +19,38 @@ ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, 
 // Destructor
 ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE()
 {}
+
+
+void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
+	// Log the dropped filename using your custom LOG() function or printf
+	LOG("Dropped file: %s", filePath);
+
+	// Define the target directory within your project
+	const char* targetDirectory = "FBX_Assets";
+
+	// Extract the filename from the file path
+	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
+	std::string filename = (lastBackslash) ? lastBackslash + 1 : filePath;
+
+	// Combine the target directory with the filename
+	std::string destinationPath = targetDirectory;
+	destinationPath += "\\"; // Use backslashes for Windows
+	destinationPath += filename;
+
+	// Create the target directory if it doesn't exist
+	if (!CreateDirectory(destinationPath.c_str(), NULL)) {
+		LOG("Failed to create the target directory: %s", targetDirectory);
+		return;
+	}
+
+	// Copy the file
+	if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
+		LOG("File copied to: %s", destinationPath.c_str());
+	}
+	else {
+		LOG("Failed to copy the file. Error code: %d", GetLastError());
+	}
+}
 
 // Called before render is available
 bool ModuleRenderer3D_ENGINE::Init()
@@ -126,7 +162,22 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 
 engine_update_status ModuleRenderer3D_ENGINE::Update()
 {
-
+	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+		case SDL_QUIT:
+			// Handle quit event
+			break;
+		case SDL_DROPFILE:
+			LOG("File Dropped");
+			// Handle file drop event
+			HandleFileDrop(event.drop.file);
+			SDL_free(event.drop.file); // Free the dropped file
+			break;
+			// Add other event handling as needed
+		}
+	}
 
 	return ENGINE_UPDATE_CONTINUE;
 }
@@ -149,6 +200,8 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 	glVertex3d(0.25, 0, 0);
 	glVertex3d(0, 0.5, 0);
 	glEnd();*/
+
+
 
 #pragma endregion
 
