@@ -35,7 +35,11 @@ public:
 	}
 
 	void HandleFileDrop(const char* filePath);
-	void CleanUpDirectory(const char* directory);
+	bool RecursiveRemoveDirectory(const char* directory);
+	bool CleanUpAssets();
+	void CreateDirectoryIfNotExists(const char* directory);
+
+	
 
 public:
 
@@ -46,9 +50,15 @@ public:
 	mat4f viewMatrix;
 	mat4f projectionMatrix;
 
+	const char* parentDirectory = "Assets";
+	const char* fbxAssetsDirectory = "Assets\\FBX_Assets";
+	const char* imageAssetsDirectory = "Assets\\Image_Assets";
+
 private:
 
 	SDL_Window* targetWindow;
+
+	
 	
 	bool vsync;
 	int screen_width;

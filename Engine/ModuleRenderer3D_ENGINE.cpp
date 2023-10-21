@@ -21,72 +21,121 @@ ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, 
 ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE()
 {}
 
+void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) {
+	// Create the directory if it doesn't exist
+	if (!CreateDirectoryA(directory, nullptr)) {
+		if (GetLastError() != ERROR_ALREADY_EXISTS) {
+			std::cerr << "Failed to create the directory: " << directory << std::endl;
+		}
+	}
+}
+
 
 void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Log the dropped filename using your custom LOG() function or printf
-	LOG("Dropped file: %s", filePath);
-
-	// Define the target directory within your project
-	const char* targetDirectory = "FBX_Assets";
-
-	// Ensure the target directory exists or create it
-	if (!CreateDirectoryA(targetDirectory, nullptr)) {
-		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			LOG("Failed to create the target directory: %s", targetDirectory);
-			return;
-		}
-	}
+	std::cout << "Dropped file: " << filePath << std::endl;
 
 	// Extract the filename from the file path
 	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
 	std::string filename = (lastBackslash) ? lastBackslash + 1 : filePath;
 
-	// Combine the target directory with the filename to create the destination path
-	std::string destinationPath = targetDirectory;
-	destinationPath += "\\"; // Use backslashes for Windows
-	destinationPath += filename;
+	// Determine the destination subfolder based on the file type
+	const char* subfolder = nullptr;
+	const char* extension = strrchr(filename.c_str(), '.');
+	if (extension) {
+		if (_stricmp(extension, ".fbx") == 0) {
+			subfolder = fbxAssetsDirectory;
+		}
+		else if (_stricmp(extension, ".png") == 0 || _stricmp(extension, ".jpg") == 0 || _stricmp(extension, ".jpeg") == 0) {
+			subfolder = imageAssetsDirectory;
+		}
+	}
 
-	// Copy the file to the destination folder
-	if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
-		LOG("File copied to: %s", destinationPath.c_str());
-		/*static auto mesh_ptrs = Mesh::loadFromFile(destinationPath);
-		for (auto& mesh_ptr : mesh_ptrs) mesh_ptr->draw();*/
+	if (subfolder) {
+		CreateDirectoryIfNotExists(parentDirectory); // Ensure the parent "Assets" directory exists
+		CreateDirectoryIfNotExists(subfolder); // Create the subfolder if it doesn't already exist
+
+		// Combine the target directory with the filename to create the destination path
+		std::string destinationPath = subfolder;
+		destinationPath += "\\";
+		destinationPath += filename;
+
+		// Copy the file to the appropriate subfolder
+		if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
+			std::cout << "File copied to: " << destinationPath << std::endl;
+		}
+		else {
+			std::cerr << "Failed to copy the file. Error code: " << GetLastError() << std::endl;
+		}
 	}
 	else {
-		LOG("Failed to copy the file. Error code: %d", GetLastError());
+		std::cerr << "Unsupported file type: " << filename << std::endl;
 	}
 }
 
-void ModuleRenderer3D_ENGINE::CleanUpDirectory(const char* directory) {
-	// Recursive cleanup of files and subdirectories within the specified directory
-	// Add code to delete files, similar to the previous cleanup examples
+bool ModuleRenderer3D_ENGINE::CleanUpAssets() {
+	// Close any open handles to files or directories, if applicable
+	// CloseHandlesToAssets();
+
+	// Clean up the parent "Assets" directory, including subfolders and files
+	if (RecursiveRemoveDirectory(parentDirectory)) {
+		std::cout << "Assets directory cleaned up." << std::endl;
+		return true;
+	}
+	else {
+		std::cerr << "Failed to clean up assets directory." << std::endl;
+		return false;
+	}
+}
+
+bool ModuleRenderer3D_ENGINE::RecursiveRemoveDirectory(const char* directory) {
 
 	WIN32_FIND_DATA findFileData;
-	HANDLE hFind = FindFirstFile((std::string(directory) + "\\*").c_str(), &findFileData);
+	HANDLE hFind = FindFirstFile(std::string(directory).append("\\*").c_str(), &findFileData);
 
 	if (hFind == INVALID_HANDLE_VALUE) {
-		return; // No files or directories found
+		return true;
 	}
 
-	do {
-		std::string fileName = findFileData.cFileName;
-		std::string filePath = std::string(directory) + "\\" + fileName;
+	bool success = true;
 
-		if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			if (fileName != "." && fileName != "..") {
-				// Recursively clean up subdirectories
-				CleanUpDirectory(filePath.c_str());
+	do {
+		if (findFileData.cFileName[0] != '.') {
+			std::string fullPath = std::string(directory).append("\\").append(findFileData.cFileName);
+			if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				// Recursively remove subdirectories
+				if (!RecursiveRemoveDirectory(fullPath.c_str())) {
+					success = false;
+				}
 			}
-		}
-		else {
-			// Delete files
-			if (!DeleteFile(filePath.c_str())) {
-				LOG("Failed to delete file: %s", filePath.c_str());
+			else {
+				// Remove read-only attribute if set
+				if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
+					SetFileAttributes(fullPath.c_str(), FILE_ATTRIBUTE_NORMAL);
+				}
+				// Delete files
+				if (DeleteFile(fullPath.c_str()) == 0) {
+					std::cerr << "Failed to delete file: " << fullPath << " Error code: " << GetLastError() << std::endl;
+					success = false;
+				}
 			}
 		}
 	} while (FindNextFile(hFind, &findFileData) != 0);
 
 	FindClose(hFind);
+
+	// Remove read-only attribute if set for the directory itself
+	if (GetFileAttributes(directory) & FILE_ATTRIBUTE_READONLY) {
+		SetFileAttributes(directory, FILE_ATTRIBUTE_NORMAL);
+	}
+
+	// Delete the directory
+	if (RemoveDirectory(directory) == 0) {
+		std::cerr << "Failed to delete directory: " << directory << " Error code: " << GetLastError() << std::endl;
+		success = false;
+	}
+
+	return success;
 }
 
 // Called before render is available
@@ -248,21 +297,15 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 // Called before quitting
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
-	const char* targetDirectory = "FBX_Assets";
-
-	// Recursive cleanup of files and subdirectories
-	CleanUpDirectory(targetDirectory);
-
-	// Remove the target directory
-	if (!RemoveDirectory(targetDirectory)) {
-		LOG("Failed to remove the directory: %s", targetDirectory);
-	}
 
 	LOG_("ENGINE: Destroying 3D Renderer");
 
 	SDL_GL_DeleteContext(context);
 	targetWindow = nullptr;
 	delete targetWindow;
+
+	// Call the CleanupAssets function to clean up asset directories
+	CleanUpAssets();
 
 	return true;
 }
