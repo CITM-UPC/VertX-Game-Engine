@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Globals.h"
 
+
 enum main_states
 {
 	MAIN_CREATION,
@@ -20,6 +21,7 @@ int main(int argc, char ** argv)
 
 	while (state != MAIN_EXIT)
 	{
+
 		switch (state)
 		{
 		case MAIN_CREATION:
