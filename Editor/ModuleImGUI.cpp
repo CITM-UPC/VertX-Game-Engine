@@ -7,7 +7,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-#include <iostream>
+#include "ModuleWindow.h"
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -31,6 +31,8 @@ bool ModuleImGUI::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	// Enable docking
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	io.DeltaTime = 16;
 
 	// Setup Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->game_engine->renderer3D_engine->context);
@@ -59,10 +61,6 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui::DockSpaceOverViewport(0, flag);
 
 	
-	
-		
-	
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -229,6 +227,19 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		if (ImGui::CollapsingHeader("Window Settings"))
 		{
+			ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled);
+			ImGui::SameLine();
+			ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled);
+			
+			ImGui::Checkbox("Borderless", &App->window->borderlessEnabled);
+			ImGui::SameLine();
+			ImGui::Checkbox("Resizeable", &App->window->resizableEnabled);
+
+			if (ImGui::SliderFloat("Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
+			{
+				SDL_SetWindowBrightness(App->window->window, App->window->windowBrightness);
+			}
+
 			RenderFPSGraph();
 		}
 		

@@ -74,6 +74,49 @@ bool ModuleWindow::Init()
 	return ret;
 }
 
+update_status ModuleWindow::Update()
+{
+	// Enable/Disable window fullscreen mode
+	if (fullscreenEnabled)
+	{
+		if (fullcreenDesktopEnabled)
+		{
+			SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		}
+		else
+		{
+			SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN);
+		}
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_SHOWN);
+	}
+
+	// Enable/Disable window resizable mode
+	if (borderlessEnabled)
+	{
+		SDL_SetWindowBordered(App->window->window, SDL_FALSE);
+	}
+	else
+	{
+		SDL_SetWindowBordered(App->window->window, SDL_TRUE);
+	}
+
+	// Enable/Disable window resizable mode
+	if (resizableEnabled)
+	{
+		SDL_SetWindowResizable(App->window->window, SDL_TRUE);
+	}
+	else
+	{
+		SDL_SetWindowResizable(App->window->window, SDL_FALSE);
+	}
+
+
+	return UPDATE_CONTINUE;
+}
+
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
