@@ -40,4 +40,5 @@ private:
 public:
 	
 	void OpenWebLink(const char *webLink);
+
 };

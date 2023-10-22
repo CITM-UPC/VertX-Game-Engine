@@ -20,6 +20,8 @@ public:
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
 
+	void RenderFPSGraph();
+
 private:
 	
 	bool aboutWindow = false;

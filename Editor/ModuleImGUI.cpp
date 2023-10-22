@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#include <iostream>
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -147,7 +148,6 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui::End();
 
 
-
 	return UPDATE_CONTINUE;
 }
 
@@ -167,6 +167,17 @@ void ModuleImGUI::RenderImGUI()
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+
+void ModuleImGUI::RenderFPSGraph()
+{
+	static float fps_values[100] = {}; // Store FPS values
+	static int fps_index = 0;
+	fps_values[fps_index] = ImGui::GetIO().Framerate;
+	fps_index = (fps_index + 1) % 100;
+	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 4200.0f, ImVec2(300, 100));
+}
+
 
 void ModuleImGUI::RenderImGUIAboutWindow()
 {
@@ -218,7 +229,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		if (ImGui::CollapsingHeader("Window Settings"))
 		{
-			
+			RenderFPSGraph();
 		}
 		
 		if (ImGui::CollapsingHeader("Hardware"))
