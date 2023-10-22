@@ -39,6 +39,10 @@ bool ModuleImGUI::Init()
 	ImGui::StyleColorsClassic();
 	//ImGui::StyleColorsDark();
 
+	ImGuiStyle& style = ImGui::GetStyle();
+	// Set ImGui windows rounding
+	style.WindowRounding = 5.0f;
+
 	return true;
 }
 
@@ -87,8 +91,9 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Configure Window")) {
-				optionsWindow = !optionsWindow;
+			if (ImGui::MenuItem("Configuration")) 
+			{
+				configWindow = !configWindow;
 			}
 			ImGui::EndMenu();
 		}
@@ -100,7 +105,7 @@ update_status ModuleImGUI::PreUpdate()
 			}
 			if (ImGui::MenuItem("Visit GitHub Page"))
 			{
-				ShellExecute(NULL, "open", "https://github.com/AdriaPm/VertX-Game-Engine", 0, 0, SW_SHOWDEFAULT);
+				App->OpenWebLink("https://github.com/AdriaPm/VertX-Game-Engine");
 			}
 
 			ImGui::EndMenu();
@@ -115,23 +120,11 @@ update_status ModuleImGUI::PreUpdate()
 		ImGui::EndMainMenuBar();
 	}
 
-	
 
-	if (optionsWindow)
-	{
-		ImGui::Begin("Options Window");
+	// Render the Config window from ImGui
+	RenderImGUIConfigWindow();
 
-		ImGui::Text("This window is a placeholder.\nFunctionality is WIP");
-		static bool testBool = false;
-		if (ImGui::Checkbox("VSYNC", &testBool)) { LOG("Checkbox Pressed"); };
-		
-		ImGui::End();
-	}
-	
-	/*if (demoWindow)
-		ImGui::ShowDemoWindow();*/
-
-	
+	// Render the About window from ImGui
 	RenderImGUIAboutWindow();
 
 	// Create Inspector window
@@ -202,6 +195,36 @@ void ModuleImGUI::RenderImGUIAboutWindow()
 		ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the 'Software'), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n");
 		ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.");
 		ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n");
+
+		ImGui::End();
+	}
+}
+
+void ModuleImGUI::RenderImGUIConfigWindow()
+{
+	if (configWindow)
+	{
+		ImGui::Begin("Configuration Window");
+
+		if (ImGui::CollapsingHeader("Application"))
+		{
+			ImGui::BulletText("Application name:");
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "VertX Game Engine\n");
+			
+			ImGui::BulletText("Organization:");
+			ImGui::TextColored(ImVec4(0, 1, 1, 1), "UPC CITM");
+
+		}
+
+		if (ImGui::CollapsingHeader("Window Settings"))
+		{
+			
+		}
+		
+		if (ImGui::CollapsingHeader("Hardware"))
+		{
+
+		}
 
 		ImGui::End();
 	}

@@ -18,10 +18,11 @@ public:
 	void RenderImGUI();
 
 	void RenderImGUIAboutWindow();
+	void RenderImGUIConfigWindow();
 
 private:
 	
-	
 	bool aboutWindow = false;
-	bool optionsWindow = false;
+	bool configWindow = false;
+
 };

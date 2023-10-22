@@ -104,3 +104,11 @@ void Application::AddModule(Module* mod)
 {
 	list_modules.push_back(mod);
 }
+
+void Application::OpenWebLink(const char *webLink)
+{
+	LOG("Opening the following link: %s", webLink);
+	
+	// Open web link using Shell Execute command line
+	ShellExecute(NULL, "open", webLink, 0, 0, SW_SHOWDEFAULT);
+}

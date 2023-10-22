@@ -36,4 +36,8 @@ private:
 	void AddModule(Module* mod);
 	void PrepareUpdate();
 	void FinishUpdate();
+
+public:
+	
+	void OpenWebLink(const char *webLink);
 };
