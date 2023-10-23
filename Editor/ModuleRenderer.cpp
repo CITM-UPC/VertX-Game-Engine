@@ -83,8 +83,8 @@ bool ModuleRenderer::CleanUp()
 
 void ModuleRenderer::FreeCameraMovement()
 {
-	double cameraSpeed = 0.1;	
-	float cameraSpeedMultiplier = 3.0f;
+	/*cameraSpeed = 0.1;	
+	cameraSpeedMultiplier = 3.0f;*/
 
 	// Normalized vector of the substraction of the Camera Focus Vec and the Camera Position Vec, then multiplied by the speed we want
 	vec3 normalizedVec = (cameraSpeed * (glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec)));

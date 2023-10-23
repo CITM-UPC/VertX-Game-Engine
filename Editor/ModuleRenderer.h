@@ -19,5 +19,8 @@ public:
 
 	void FreeCameraMovement();
 
+	double cameraSpeed = 0.1;
+	float cameraSpeedMultiplier = 3.0f;;
+
 	/*glm::quat X, Y, Z;*/
 };

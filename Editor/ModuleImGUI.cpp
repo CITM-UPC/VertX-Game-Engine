@@ -128,11 +128,8 @@ update_status ModuleImGUI::PreUpdate()
 	// Render the About window from ImGui
 	RenderImGUIAboutWindow();
 
-	// Create Inspector window
-	ImGui::Begin("Inspector");
-	
-
-	ImGui::End();
+	// Render the Inspector window from ImGui
+	RenderImGUIInspectorWindow();
 
 	
 	// Create Assets window
@@ -168,6 +165,12 @@ void ModuleImGUI::RenderImGUI()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void ModuleImGUI::ToolTipMessage(const char* tip)
+{
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip(tip);
+	}
+}
 
 void ModuleImGUI::RenderFPSGraph()
 {
@@ -230,6 +233,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		if (ImGui::CollapsingHeader("Window Settings"))
 		{
+			// Window parameters sliders
 			ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled);
 			ImGui::SameLine();
 			ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled);
@@ -238,11 +242,14 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			ImGui::SameLine();
 			ImGui::Checkbox("Resizeable", &App->window->resizableEnabled);
 
+			// Brightness slider
 			if (ImGui::SliderFloat("Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
 			{
 				SDL_SetWindowBrightness(App->window->window, App->window->windowBrightness);
 			}
+			ToolTipMessage("CTRL+Click to input a value");
 
+			// FPS graph
 			RenderFPSGraph();
 		}
 		
@@ -253,4 +260,26 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		ImGui::End();
 	}
+}
+
+void ModuleImGUI::RenderImGUIInspectorWindow()
+{
+	// Create Inspector window
+	ImGui::Begin("Inspector");
+
+	// Camera Speed slider
+	ImGui::Text("Camera Speed: ");
+	float cameraSpeedChanger = App->renderer->cameraSpeed;
+	if (ImGui::SliderFloat("", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
+	{
+		App->renderer->cameraSpeed = cameraSpeedChanger;
+	}
+	ToolTipMessage("CTRL+Click to input a value");
+
+	// Camera Speed Multiplier slider
+	ImGui::Text("Camera Speed Multiplier: ");
+	ImGui::SliderFloat("\n", &App->renderer->cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
+	ToolTipMessage("CTRL+Click to input a value");
+
+	ImGui::End();
 }

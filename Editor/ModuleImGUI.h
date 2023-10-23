@@ -19,9 +19,12 @@ public:
 
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
+	void RenderImGUIInspectorWindow();
 
 	void RenderFPSGraph();
 
+	// Function to display a Tool Tip message for any mouse hovered item. Call it AFTER the item creation.
+	void ToolTipMessage(const char* tip);
 private:
 	
 	bool aboutWindow = false;
