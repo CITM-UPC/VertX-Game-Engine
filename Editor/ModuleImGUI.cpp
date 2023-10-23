@@ -45,6 +45,8 @@ bool ModuleImGUI::Init()
 	ImGuiStyle& style = ImGui::GetStyle();
 	// Set ImGui windows rounding
 	style.WindowRounding = 5.0f;
+	// Swt ImGui custom font
+	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
 	return true;
 }
@@ -173,7 +175,8 @@ void ModuleImGUI::RenderFPSGraph()
 	static int fps_index = 0;
 	fps_values[fps_index] = ImGui::GetIO().Framerate;
 	fps_index = (fps_index + 1) % 100;
-	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 4200.0f, ImVec2(300, 100));
+	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 100.0f, ImVec2(300, 100));
+	//ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 4200.0f, ImVec2(300, 100));
 }
 
 

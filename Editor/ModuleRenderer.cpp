@@ -83,7 +83,7 @@ bool ModuleRenderer::CleanUp()
 
 void ModuleRenderer::FreeCameraMovement()
 {
-	double cameraSpeed = 0.002;	
+	double cameraSpeed = 0.1;	
 	float cameraSpeedMultiplier = 3.0f;
 
 	// Normalized vector of the substraction of the Camera Focus Vec and the Camera Position Vec, then multiplied by the speed we want
