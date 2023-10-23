@@ -8,6 +8,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "ModuleWindow.h"
+#include "SDL2/SDL_cpuinfo.h"
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -186,7 +187,7 @@ void ModuleImGUI::RenderFPSGraph()
 void ModuleImGUI::RenderImGUIAboutWindow()
 {
 	if (aboutWindow) {
-		ImGui::SetNextWindowSize(ImVec2(600, 525));
+		ImGui::SetNextWindowSize(ImVec2(600, 545));
 		ImGui::Begin("About");
 
 		ImGui::Text("VertX Game Engine v0.1\n");
@@ -255,7 +256,10 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-
+			ImGui::Text("System RAM: ");
+			ImGui::SameLine();
+			float systemRAM = (SDL_GetSystemRAM() / 1000);	// Get system RAM (in gb)
+			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%.2f GB", systemRAM);
 		}
 
 		ImGui::End();
