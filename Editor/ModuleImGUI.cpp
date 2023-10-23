@@ -256,10 +256,25 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
+			// Display System's CPU cores
+			ImGui::Text("CPUs: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%d cores", SDL_GetCPUCount());
+
+			ImGui::Text("CPU Cache Line Size: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%d bytes", SDL_GetCPUCacheLineSize());
+
+			// Display System's RAM
 			ImGui::Text("System RAM: ");
 			ImGui::SameLine();
 			float systemRAM = (SDL_GetSystemRAM() / 1000);	// Get system RAM (in gb)
 			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%.2f GB", systemRAM);
+			
+			ImGui::Separator();
+
+			
+
 		}
 
 		ImGui::End();
