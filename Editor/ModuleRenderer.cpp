@@ -101,7 +101,7 @@ void ModuleRenderer::FreeCameraMovement()
 
 	/* KEYBOARD CAMERA MOVEMENT */
 	// Compute camera movement if 'MOUSE RIGHT CLICK' is pressed
-	if (App->input->GetMouseButton(3))
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		// Check if 'LEFT SHIFT' is pressed, then camera speed is higher (x3) times
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -147,12 +147,14 @@ void ModuleRenderer::FreeCameraMovement()
 
 
 
-	/* MOUSE CAMERA MOVEMENT */
 	
-	/*if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
+		int deltaX = -App->input->GetMouseXMotion();
+		int deltaY = -App->input->GetMouseYMotion();
+
+
 
 		float Sensitivity = 0.25f;
 
@@ -185,7 +187,7 @@ void ModuleRenderer::FreeCameraMovement()
 
 		App->game_engine->camera.camCenterPos = App->game_engine->camera.lookAtPos + Z * length(App->game_engine->camera.camCenterPos);
 	}
-	*/
+	
 
 	
 }
