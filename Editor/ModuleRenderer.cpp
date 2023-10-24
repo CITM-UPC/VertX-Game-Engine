@@ -149,7 +149,7 @@ void ModuleRenderer::FreeCameraMovement()
 
 	
 	
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	/*if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
 		int deltaX = -App->input->GetMouseXMotion();
 		int deltaY = -App->input->GetMouseYMotion();
@@ -186,7 +186,7 @@ void ModuleRenderer::FreeCameraMovement()
 		}
 
 		App->game_engine->camera.camCenterPos = App->game_engine->camera.lookAtPos + Z * length(App->game_engine->camera.camCenterPos);
-	}
+	}*/
 	
 
 	

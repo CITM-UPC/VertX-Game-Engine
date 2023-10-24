@@ -27,6 +27,7 @@
 *.lib
 
 # Executables
+!.vcxproj
 .vs/Game_Engine/v16/
 .vs/VertX_GameEngine/v16/
 Editor/x64/

@@ -139,7 +139,7 @@
     </Lib>
     <PreBuildEvent>
       <Command>call ..\vcpkg\bootstrap-vcpkg.bat
-..\vcpkg\vcpkg.exe install opengl glew glm sdl2 jsoncpp devil[libjpeg,libpng] assimp --recurse --triplet x64-windows
+..\vcpkg\vcpkg.exe install opengl glew glm sdl2 jsoncpp devil[libjpeg,libpng] assimp --recurse --overlay-triplets=custom-triplets
 copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
