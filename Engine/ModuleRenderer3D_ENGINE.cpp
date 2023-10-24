@@ -34,6 +34,8 @@ void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) 
 void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Log the dropped filename using your custom LOG() function or printf
 	std::cout << "Dropped file: " << filePath << std::endl;
+	const std::string& stringPath(filePath);
+	LOG("Dropped file: %s", stringPath.c_str());
 
 	// Extract the filename from the file path
 	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
@@ -44,6 +46,12 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	const char* extension = strrchr(filename.c_str(), '.');
 	if (extension) {
 		if (_stricmp(extension, ".fbx") == 0) {
+			// Load the FBX file and store the Mesh objects
+			/*std::vector<std::shared_ptr<Mesh>> mesh_ptrs = Mesh::loadFromFile(stringPath);
+
+			for (auto& mesh_ptr : mesh_ptrs) {
+				mesh_ptr->draw();
+			}*/
 			subfolder = fbxAssetsDirectory;
 		}
 		else if (_stricmp(extension, ".png") == 0 || _stricmp(extension, ".jpg") == 0 || _stricmp(extension, ".jpeg") == 0) {
