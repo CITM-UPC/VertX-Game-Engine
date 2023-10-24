@@ -87,7 +87,7 @@ void ModuleRenderer::FreeCameraMovement()
 	cameraSpeedMultiplier = 3.0f;*/
 
 	// Normalized vector of the substraction of the Camera Focus Vec and the Camera Position Vec, then multiplied by the speed we want
-	vec3 normalizedVec = (cameraSpeed * (glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec)));
+	vec3 normalizedVec = (App->game_engine->camera.cameraSpeed * (glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec)));
 
 
 	// Rotation matrix definition
@@ -106,8 +106,8 @@ void ModuleRenderer::FreeCameraMovement()
 		// Check if 'LEFT SHIFT' is pressed, then camera speed is higher (x3) times
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
-			normalizedVec *= cameraSpeedMultiplier;
-			normalVec *= cameraSpeedMultiplier;
+			normalizedVec *= App->game_engine->camera.cameraSpeedMultiplier;
+			normalVec *= App->game_engine->camera.cameraSpeedMultiplier;
 		}
 
 		// Check if 'W' key is pressed

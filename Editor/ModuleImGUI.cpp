@@ -288,16 +288,16 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 	// Camera Speed slider
 	ImGui::Text("Camera Speed: ");
-	float cameraSpeedChanger = App->renderer->cameraSpeed;
+	float cameraSpeedChanger = App->game_engine->camera.cameraSpeed;
 	if (ImGui::SliderFloat("", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
 	{
-		App->renderer->cameraSpeed = cameraSpeedChanger;
+		App->game_engine->camera.cameraSpeed = cameraSpeedChanger;
 	}
 	ToolTipMessage("CTRL+Click to input a value");
 
 	// Camera Speed Multiplier slider
 	ImGui::Text("Camera Speed Multiplier: ");
-	ImGui::SliderFloat("\n", &App->renderer->cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
+	ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
 	ToolTipMessage("CTRL+Click to input a value");
 
 	ImGui::End();
