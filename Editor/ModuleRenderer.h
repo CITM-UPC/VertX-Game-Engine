@@ -19,5 +19,8 @@ public:
 
 	void FreeCameraMovement();
 
+	void CameraZoomIn();
+	void CameraZoomOut();
+
 	/*glm::quat X, Y, Z;*/
 };

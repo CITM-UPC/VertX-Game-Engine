@@ -12,7 +12,7 @@ Camera::Camera() : fov(70),
 	cameraYaw(-90.0f), 
 	cameraPitch(0.0f), 
 	mouseSensitivity(0.25f), 
-	zoomSpeed(0.1f) {}
+	zoomSpeed(0.5f) {}
 
 void Camera::ResetCameraParameters() 
 {

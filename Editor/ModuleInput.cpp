@@ -92,6 +92,18 @@ update_status ModuleInput::PreUpdate()
 		{
 			case SDL_MOUSEWHEEL:
 			mouse_z = e.wheel.y;
+
+			if (e.wheel.y > 0)		// scroll up
+			{
+				// Call CameraZoomIn() method when mouse input is scrolling up
+				App->renderer->CameraZoomIn();
+			}
+			else if (e.wheel.y < 0)	// scroll down
+			{
+				// Call CameraZoomOut() method when mouse input is scrolling down
+				App->renderer->CameraZoomOut();
+			}
+
 			break;
 
 			case SDL_MOUSEMOTION:
