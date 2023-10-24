@@ -149,44 +149,30 @@ void ModuleRenderer::FreeCameraMovement()
 
 	
 	
-	/*if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
-		int deltaX = -App->input->GetMouseXMotion();
+		// Compute mouse input displacement
+		int deltaX = App->input->GetMouseXMotion();
 		int deltaY = -App->input->GetMouseYMotion();
 
+		App->game_engine->camera.cameraYaw += deltaX * App->game_engine->camera.mouseSensitivity;
+		App->game_engine->camera.cameraPitch += deltaY * App->game_engine->camera.mouseSensitivity;
 
+		// Limiting Camera Piitch to prevent flipping
+		if (App->game_engine->camera.cameraPitch > 89.0f) 
+			App->game_engine->camera.cameraPitch = 89.0f;
+		if (App->game_engine->camera.cameraPitch < -89.0f) 
+			App->game_engine->camera.cameraPitch = -89.0f;
 
-		float Sensitivity = 0.25f;
+		glm::dvec3 directionVec;
+		directionVec.x = cos(glm::radians(App->game_engine->camera.cameraYaw)) * cos(glm::radians(App->game_engine->camera.cameraPitch));
+		directionVec.y = sin(glm::radians(App->game_engine->camera.cameraPitch));
+		directionVec.z = sin(glm::radians(App->game_engine->camera.cameraYaw)) * cos(glm::radians(App->game_engine->camera.cameraPitch));
 
-		App->game_engine->camera.camCenterPos -= App->game_engine->camera.lookAtPos;
+		// Update Camera's Focus view point vector to be recomputed in the renderer with gluLookAt()
+		App->game_engine->camera.focusPosVec = App->game_engine->camera.worldPosVec + directionVec;
 
-		if (dx != 0)
-		{
-			float DeltaX = (float)dx * Sensitivity;
-
-			X = glm::rotate(X)
-
-			X = glm::rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = glm::rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = glm::rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-		}
-
-		if (dy != 0)
-		{
-			float DeltaY = (float)dy * Sensitivity;
-
-			Y = glm::rotate(Y, DeltaY, X);
-			Z = glm::rotate(Z, DeltaY, X);
-
-			if (Y.y < 0.0f)
-			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = glm::cross(Z, X);
-			}
-		}
-
-		App->game_engine->camera.camCenterPos = App->game_engine->camera.lookAtPos + Z * length(App->game_engine->camera.camCenterPos);
-	}*/
+	}
 	
 
 	
