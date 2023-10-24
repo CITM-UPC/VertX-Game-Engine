@@ -84,10 +84,12 @@ void ModuleRenderer::CameraZoomIn()
 {
 	vec3 normalizedVec = glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec);
 
+	// Update worldPosVec from gluLookAt(), which represents the position of the camera viewport
 	App->game_engine->camera.worldPosVec.x += App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.worldPosVec.y += App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.worldPosVec.z += App->game_engine->camera.zoomSpeed * normalizedVec.z;
 
+	// Update focusPosVec from gluLookAt(), which represents the focus point where the camera is looking at
 	App->game_engine->camera.focusPosVec.x += App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.focusPosVec.y += App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.focusPosVec.z += App->game_engine->camera.zoomSpeed * normalizedVec.z;
@@ -98,10 +100,12 @@ void ModuleRenderer::CameraZoomOut()
 {
 	vec3 normalizedVec = glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec);
 
+	// Update worldPosVec from gluLookAt(), which represents the position of the camera viewport
 	App->game_engine->camera.worldPosVec.x -= App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.worldPosVec.y -= App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.worldPosVec.z -= App->game_engine->camera.zoomSpeed * normalizedVec.z;
 
+	// Update focusPosVec from gluLookAt(), which represents the focus point where the camera is looking at
 	App->game_engine->camera.focusPosVec.x -= App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.focusPosVec.y -= App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.focusPosVec.z -= App->game_engine->camera.zoomSpeed * normalizedVec.z;
