@@ -8,6 +8,9 @@
 #include <iostream>
 #include <fstream>
 #include "Mesh.h"
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
 
 
 ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
@@ -31,53 +34,68 @@ void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) 
 }
 
 
-void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
-	// Log the dropped filename using your custom LOG() function or printf
-	std::cout << "Dropped file: " << filePath << std::endl;
-	const std::string& stringPath(filePath);
-	LOG("Dropped file: %s", stringPath.c_str());
+void ModuleRenderer3D_ENGINE::HandleFileDrop(const std::string& filePath, Folder& rootFolder) {
+	// Extract the file name and extension
+	size_t lastSlashPos = filePath.find_last_of("/\\");
+	std::string fileName = (lastSlashPos != std::string::npos) ? filePath.substr(lastSlashPos + 1) : filePath;
+	size_t lastDotPos = fileName.find_last_of(".");
+	std::string fileExtension = (lastDotPos != std::string::npos) ? fileName.substr(lastDotPos) : "";
 
-	// Extract the filename from the file path
-	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
-	std::string filename = (lastBackslash) ? lastBackslash + 1 : filePath;
+	// Determine the target folder based on the file extension
+	std::string targetFolderName = "Other"; // Default folder
+	if (fileExtension == ".fbx") {
+		targetFolderName = "FBX_Assets";
+	}
+	else if (fileExtension == ".png" || fileExtension == ".jpg" || fileExtension == ".jpeg") {
+		targetFolderName = "Image_Assets";
+	}
 
-	// Determine the destination subfolder based on the file type
-	const char* subfolder = nullptr;
-	const char* extension = strrchr(filename.c_str(), '.');
-	if (extension) {
-		if (_stricmp(extension, ".fbx") == 0) {
-			// Load the FBX file and store the Mesh objects
-			/*std::vector<std::shared_ptr<Mesh>> mesh_ptrs = Mesh::loadFromFile(stringPath);
-
-			for (auto& mesh_ptr : mesh_ptrs) {
-				mesh_ptr->draw();
-			}*/
-			subfolder = fbxAssetsDirectory;
-		}
-		else if (_stricmp(extension, ".png") == 0 || _stricmp(extension, ".jpg") == 0 || _stricmp(extension, ".jpeg") == 0) {
-			subfolder = imageAssetsDirectory;
+	// Find or create the target folder
+	Folder* targetFolder = nullptr;
+	for (auto& folder : rootFolder.subfolders) {
+		if (folder.name == targetFolderName) {
+			targetFolder = &folder;
+			break;
 		}
 	}
 
-	if (subfolder) {
-		CreateDirectoryIfNotExists(parentDirectory); // Ensure the parent "Assets" directory exists
-		CreateDirectoryIfNotExists(subfolder); // Create the subfolder if it doesn't already exist
-
-		// Combine the target directory with the filename to create the destination path
-		std::string destinationPath = subfolder;
-		destinationPath += "\\";
-		destinationPath += filename;
-
-		// Copy the file to the appropriate subfolder
-		if (CopyFileA(filePath, destinationPath.c_str(), FALSE)) {
-			std::cout << "File copied to: " << destinationPath << std::endl;
-		}
-		else {
-			std::cerr << "Failed to copy the file. Error code: " << GetLastError() << std::endl;
-		}
+	if (!targetFolder) {
+		Folder newFolder;
+		newFolder.name = targetFolderName;
+		rootFolder.subfolders.push_back(newFolder);
+		targetFolder = &rootFolder.subfolders.back();
 	}
-	else {
-		std::cerr << "Unsupported file type: " << filename << std::endl;
+
+	// Add the file to the target folder
+	targetFolder->files[fileExtension].push_back(fileName);
+}
+
+// Function to add a dynamically created folder
+void ModuleRenderer3D_ENGINE::AddDynamicFolder(Folder& parentFolder, const std::string& folderName) {
+	Folder newFolder;
+	newFolder.name = folderName;
+	parentFolder.subfolders.push_back(newFolder);
+}
+
+// Function to render folders and files in ImGui
+void ModuleRenderer3D_ENGINE::RenderFoldersAndFiles(const Folder& folder) {
+	if (ImGui::TreeNode(folder.name.c_str())) {
+		for (const auto& subfolder : folder.subfolders) {
+			RenderFoldersAndFiles(subfolder);
+		}
+
+		for (const auto& file : folder.files) {
+			if (!file.second.empty()) {
+				ImGui::Text("Files with %s extension:", file.first.c_str());
+				ImGui::Indent();
+				for (const auto& fileName : file.second) {
+					ImGui::Text("%s", fileName.c_str());
+				}
+				ImGui::Unindent();
+			}
+		}
+
+		ImGui::TreePop();
 	}
 }
 
@@ -256,6 +274,8 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 
 engine_update_status ModuleRenderer3D_ENGINE::Update()
 {
+	Folder rootFolder;
+	rootFolder.name = "Assets";
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -266,12 +286,14 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 		case SDL_DROPFILE:
 			LOG("File Dropped");
 			// Handle file drop event
-			HandleFileDrop(event.drop.file);
+			HandleFileDrop(event.drop.file, rootFolder);
 			SDL_free(event.drop.file); // Free the dropped file
 			break;
 			// Add other event handling as needed
 		}
 	}
+
+	RenderFoldersAndFiles(rootFolder);
 
 	return ENGINE_UPDATE_CONTINUE;
 }

@@ -4,6 +4,16 @@
 #include "SDL2/SDL.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "GL/glew.h"
+#include <map>
+#include <string>
+#include <iostream>
+#include <vector>
+
+struct Folder {
+	std::string name;
+	std::vector<Folder> subfolders;
+	std::map<std::string, std::vector<std::string>> files;
+};
 
 class ModuleRenderer3D_ENGINE : public Engine_Module
 {
@@ -34,10 +44,12 @@ public:
 		vsync = active; 
 	}
 
-	void HandleFileDrop(const char* filePath);
+	void HandleFileDrop(const std::string& filePath, Folder& rootFolder);
 	bool RecursiveRemoveDirectory(const char* directory);
 	bool CleanUpAssets();
 	void CreateDirectoryIfNotExists(const char* directory);
+	void AddDynamicFolder(Folder& parentFolder, const std::string& folderName);
+	void RenderFoldersAndFiles(const Folder& folder);
 
 	
 
