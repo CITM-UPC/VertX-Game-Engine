@@ -58,13 +58,12 @@ public:
 	const char* fbxAssetsDirectory = "Assets\\FBX_Assets";
 	const char* imageAssetsDirectory = "Assets\\Image_Assets";
 
+	bool vsync;
+
 private:
 
 	SDL_Window* targetWindow;
 
-	
-	
-	bool vsync;
 	int screen_width;
 	int screen_height;
 

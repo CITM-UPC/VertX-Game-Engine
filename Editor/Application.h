@@ -41,4 +41,8 @@ public:
 	
 	void OpenWebLink(const char *webLink);
 
+	int fps = FPS;
+	double deltaTime;
+	double frameDuration;
+
 };

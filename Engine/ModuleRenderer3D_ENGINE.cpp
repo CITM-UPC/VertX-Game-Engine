@@ -16,7 +16,7 @@
 
 ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
 {
-	vsync = false;
+	vsync = VSYNC;
 	screen_width = SCREEN_WIDTH;
 	screen_height = SCREEN_HEIGHT;
 }
@@ -243,6 +243,16 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 							game_engine->camera.upVec);
 
 	glLoadMatrixf(glm::value_ptr(viewMatrix));
+
+	// Vsync toggle
+	if (vsync)
+	{	
+		SDL_GL_SetSwapInterval(1);
+	}
+	else
+	{
+		SDL_GL_SetSwapInterval(0);
+	}
 
 
 	return ENGINE_UPDATE_CONTINUE;

@@ -113,7 +113,7 @@ update_status ModuleImGUI::PreUpdate()
 			}
 			if (ImGui::MenuItem("Visit GitHub Page"))
 			{
-				App->OpenWebLink("https://github.com/AdriaPm/VertX-Game-Engine");
+				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine");
 			}
 
 			ImGui::EndMenu();
@@ -203,10 +203,26 @@ void ModuleImGUI::RenderFPSGraph()
 {
 	static float fps_values[100] = {}; // Store FPS values
 	static int fps_index = 0;
-	fps_values[fps_index] = ImGui::GetIO().Framerate;
+	if(App->game_engine->renderer3D_engine->vsync)
+		fps_values[fps_index] = ImGui::GetIO().Framerate; 
+	else
+		fps_values[fps_index] = (ImGui::GetIO().Framerate / 2);	 // Idk why but this function detects the frame rate x2, while the delta time is correct 
+	
 	fps_index = (fps_index + 1) % 100;
-	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 100.0f, ImVec2(300, 100));
-	//ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 4200.0f, ImVec2(300, 100));
+	// Plot FPS graph
+	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 175.0f, ImVec2(300, 100));
+	
+	
+	static float dt_values[100] = {}; // Store dt values
+	static int dt_index = 0;
+	if(App->game_engine->renderer3D_engine->vsync)
+		dt_values[dt_index] = (1000/ ImGui::GetIO().Framerate);
+	else
+		dt_values[dt_index] = App->frameDuration;
+
+	dt_index = (dt_index + 1) % 100;
+	// Plot Delta Time graph
+	ImGui::PlotHistogram("", dt_values, 100, dt_index, "Delta Time (ms)", 0.0f, 100.0f, ImVec2(300, 100));
 }
 
 
@@ -250,15 +266,18 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
-			ImGui::BulletText("Application name:");
+			ImGui::SeparatorText("Application name:");
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "VertX Game Engine\n");
 			
-			ImGui::BulletText("Organization:");
+			ImGui::SeparatorText("Organization:");
 			ImGui::TextColored(ImVec4(0, 1, 1, 1), "UPC CITM");
+
+			ImGui::SeparatorText("Developers:");
+			ImGui::TextColored(ImVec4(1, 0, 1, 1), "Adria Pons & Rylan Graham");
 
 		}
 
-		if (ImGui::CollapsingHeader("Window Settings"))
+		if (ImGui::CollapsingHeader("Settings"))
 		{
 			// Window parameters sliders
 			ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled);
@@ -269,12 +288,23 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			ImGui::SameLine();
 			ImGui::Checkbox("Resizeable", &App->window->resizableEnabled);
 
+			// Vsync toggle checkbox
+			if (ImGui::Checkbox("Vertical Sincronization", &App->game_engine->renderer3D_engine->vsync))
+				LOG("VSYNC Toggled");
+
 			// Brightness slider
 			if (ImGui::SliderFloat("Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
 			{
 				SDL_SetWindowBrightness(App->window->window, App->window->windowBrightness);
 			}
 			ToolTipMessage("CTRL+Click to input a value");
+
+			// FPS slider
+			if (!App->game_engine->renderer3D_engine->vsync)
+			{
+				ImGui::SliderInt("Frame rate limit", &App->fps, 1, 144);
+				ToolTipMessage("CTRL+Click to input a value");
+			}
 
 			// FPS graph
 			RenderFPSGraph();
