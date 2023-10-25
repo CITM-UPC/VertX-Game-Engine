@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "Component.h"
 #include <glm/glm.hpp>
+#include "GameObject.h"
+#include <string>
 
 struct OBB {
 	glm::mat4 transform;
@@ -14,8 +16,6 @@ struct AABB {
 	glm::vec3 maxCorner;
 };
 
-
-#include <string>
 using namespace std;
 
 class GameObject;

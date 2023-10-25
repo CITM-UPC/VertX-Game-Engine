@@ -10,8 +10,6 @@
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 
-#pragma comment (lib, "Assimp/libx86/assimp.lib")
-
 ModuleLoadFBX::ModuleLoadFBX(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -84,7 +82,7 @@ GameObject* ModuleLoadFBX::LoadFile(string file_path, string nameGO)
 	const aiScene* scene = aiImportFile(file_path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene != nullptr && scene->HasMeshes())
 	{
-		GameObject* meshGO;
+		GameObject* meshGO = nullptr;
 		if (App->imgui->Selected == nullptr)
 		{
 			meshGO = new GameObject(App->imgui->RootGO);
@@ -132,7 +130,7 @@ GameObject* ModuleLoadFBX::LoadFile(string file_path, string nameGO)
 				}
 				LoadMesh(mesh);
 				Meshes* component = new Meshes(meshGO);
-
+				
 				mesh->OBmesh = meshGO;
 				component->mesh = mesh;
 				if (meshGO->Comp.size() > 1) {
@@ -213,11 +211,11 @@ update_status ModuleLoadFBX::PostUpdate(float dt)
 {
 
 	for (int i = 0; i < meshes.size(); i++) {
-		if (App->imgui->Wireframe == true) {
-			//Wireframe Mode
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glLineWidth(2);
-		}
+		//if (App->imgui->Wireframe == true) {
+		//	//Wireframe Mode
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//	glLineWidth(2);
+		//}
 		if (meshes[i]->IsVisible == false)
 		{
 			meshes[i]->Render();
