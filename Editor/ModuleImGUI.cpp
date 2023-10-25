@@ -240,14 +240,14 @@ void ModuleImGUI::RenderImGUIAboutWindow()
 		ImGui::Text("Made by Rylan Graham & Adria Pons\n");
 
 		ImGui::Text("\nThese are the 3rd party libraries used to make this project:");
-		ImGui::BulletText("SDL 2.x");
-		ImGui::BulletText("OpenGL 3.x");
-		ImGui::BulletText("Glew X.x");
-		ImGui::BulletText("GLM X.x");
-		ImGui::BulletText("Dear ImGui X.x");
-		ImGui::BulletText("Assimp X.x");
-		ImGui::BulletText("DevIL X.x");
-		ImGui::BulletText("JsonCPP X.x");
+		ImGui::BulletText("SDL 2.28.4");
+		ImGui::BulletText("OpenGL 3.3.0");
+		ImGui::BulletText("Glew 2.2.0");
+		ImGui::BulletText("GLM 0.9.8");
+		ImGui::BulletText("Dear ImGui 1.89.9");
+		ImGui::BulletText("Assimp 5.3.1");
+		ImGui::BulletText("DevIL 1.8.0");
+		ImGui::BulletText("JsonCPP 1.9.5");
 
 		ImGui::Text("\nLICENCE:\n");
 
