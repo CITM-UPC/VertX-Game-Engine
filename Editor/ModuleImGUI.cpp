@@ -49,6 +49,8 @@ bool ModuleImGUI::Init()
 	// Swt ImGui custom font
 	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
+	RootGO = new GameObject();
+
 	return true;
 }
 
@@ -152,6 +154,22 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui::Begin("Hierarchy");
 
 	ImGui::End();
+
+	//GameObjects hieracy
+	if (ImGui::Begin("GameObjects")) {
+		Hierarchy(RootGO);
+	}
+	ImGui::End();
+
+	if (!App->input->GetMouseButton(SDL_BUTTON_LEFT))
+	{
+		CreatedOnce = true;
+	}
+
+	if (Selected != nullptr)
+	{
+		Selected->CreateInspector();
+	}
 
 
 	return UPDATE_CONTINUE;
@@ -315,4 +333,134 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 {
 	if (showDebugLogWindow)
 		ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+}
+
+void ModuleImGUI::GeneratePrimitives()
+{
+	int primitive;
+
+	if (ImGui::BeginMenu("GameObject"))
+	{
+		if (ImGui::Button("Generate Empty GameObject")) {
+			primitive = 1;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+
+		if (ImGui::Button("Generate Cube")) {
+			primitive = 2;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+
+		if (ImGui::Button("Generate Plane")) {
+			primitive = 3;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+
+		if (ImGui::Button("Generate Pyramid")) {
+			primitive = 4;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+
+		if (ImGui::Button("Generate Sphere")) {
+			primitive = 5;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+		if (ImGui::Button("Generate Cylinder")) {
+			primitive = 6;
+			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+		}
+
+		if (ImGui::Button("Delete GameObject")) {
+			Selected->~GameObject();
+		}
+
+		ImGui::EndMenu();
+	}
+
+}
+
+void ModuleImGUI::Hierarchy(GameObject* parent) {
+	ImGuiTreeNodeFlags treeF = ImGuiTreeNodeFlags_DefaultOpen;
+
+
+	if (parent->child.size() == 0) {
+		treeF |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+	}
+
+	if (parent == Selected)
+	{
+		treeF |= ImGuiTreeNodeFlags_Selected;
+	}
+	bool openTree = ImGui::TreeNodeEx(parent, treeF, parent->name.c_str());
+
+
+	if (openTree)
+	{
+		if (!parent->child.empty())
+		{
+			for (int i = 0; i < parent->child.size(); i++)
+			{
+				Hierarchy(parent->child[i]);
+			}
+			ImGui::TreePop();
+		}
+
+		else
+		{
+			treeF |= ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
+		}
+
+	}
+
+	//if (parent != RootGO)
+	//{
+	//	if (ImGui::BeginDragDropSource())
+	//	{
+	//		ImGui::SetDragDropPayload("GameObject", parent, sizeof(GameObject*));
+
+	//		Selected = parent;
+
+	//		ImGui::Text("Moving Object");
+	//		ImGui::EndDragDropSource();
+	//	}
+	//	/*if (ImGui::IsItemHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) && CreatedOnce == true)
+	//	{
+	//		CreatedOnce = false;
+	//		Selected = parent;
+
+	//	}*/
+
+	//}
+
+	if (ImGui::BeginDragDropTarget() && Selected != nullptr)
+	{
+		int SGo;
+		if (ImGui::AcceptDragDropPayload("GameObject"))
+		{
+			for (int i = 0; i < Selected->Parent->child.size(); i++) {
+				if (Selected == Selected->Parent->child[i]) {
+					SGo = i;
+				}
+			}
+
+			parent->child.push_back(Selected);
+
+			for (int i = SGo; i < Selected->Parent->child.size() - 1; i++)
+			{
+				Selected->Parent->child[i] = Selected->Parent->child[i + 1];
+			}
+			Selected->Parent = parent;
+
+			parent->Parent->child.pop_back();
+
+
+			Selected = nullptr;
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT))
+	{
+		Selected = nullptr;
+	}
 }
