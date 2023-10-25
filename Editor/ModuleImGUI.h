@@ -21,6 +21,7 @@ public:
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
 	void RenderImGUIInspectorWindow();
+	void RenderImGUICameraInspectorWindow();
 	void RenderImGUIDebugLogWindow();
 
 	void RenderFPSGraph();

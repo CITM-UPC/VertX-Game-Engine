@@ -140,6 +140,8 @@ update_status ModuleImGUI::PreUpdate()
 	// Render the Inspector window
 	RenderImGUIInspectorWindow();
 
+	RenderImGUICameraInspectorWindow();
+
 	// Render the ImGui Debug Log window
 	RenderImGUIDebugLogWindow();
 	
@@ -201,18 +203,20 @@ void ModuleImGUI::ToolTipMessage(const char* tip)
 
 void ModuleImGUI::RenderFPSGraph()
 {
+	/* FPS GRAPH */
 	static float fps_values[100] = {}; // Store FPS values
 	static int fps_index = 0;
+	
 	if(App->game_engine->renderer3D_engine->vsync)
 		fps_values[fps_index] = ImGui::GetIO().Framerate; 
 	else
 		fps_values[fps_index] = (ImGui::GetIO().Framerate / 2);	 // Idk why but this function detects the frame rate x2, while the delta time is correct 
-	
+
 	fps_index = (fps_index + 1) % 100;
 	// Plot FPS graph
 	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 175.0f, ImVec2(300, 100));
 	
-	
+	/* DT GRAPH */
 	static float dt_values[100] = {}; // Store dt values
 	static int dt_index = 0;
 	if(App->game_engine->renderer3D_engine->vsync)
@@ -302,7 +306,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			// FPS slider
 			if (!App->game_engine->renderer3D_engine->vsync)
 			{
-				ImGui::SliderInt("Frame rate limit", &App->fps, 1, 144);
+				ImGui::SliderInt("Frame Rate cap", &App->fps, 1, 144);
 				ToolTipMessage("CTRL+Click to input a value");
 			}
 
@@ -337,10 +341,10 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 	}
 }
 
-void ModuleImGUI::RenderImGUIInspectorWindow()
+void ModuleImGUI::RenderImGUICameraInspectorWindow()
 {
-	// Create Inspector window
-	ImGui::Begin("Inspector");
+	// Create Camera Inspector window
+	ImGui::Begin("Camera Inspector");
 
 	// Camera Speed slider
 	ImGui::Text("Camera Speed: ");
@@ -355,6 +359,89 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 	ImGui::Text("Camera Speed Multiplier: ");
 	ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
 	ToolTipMessage("CTRL+Click to input a value");
+
+	//--------------------------------------------
+
+	ImGui::Separator();
+	ImGui::SeparatorText("Camera Parameters");
+	ImGui::PushItemWidth(60.0f);	// Make components text width shorter
+
+	// Camera World Position X 
+	ImGui::BulletText("Position vector:");
+	float p1 = App->game_engine->camera.worldPosVec.x;
+	ImGui::InputFloat("x1", &p1);
+	App->game_engine->camera.worldPosVec.x = p1;
+
+	ImGui::SameLine();
+
+	// Camera World Position Y
+	float p2 = App->game_engine->camera.worldPosVec.y;
+	ImGui::InputFloat("y1", &p2);
+	App->game_engine->camera.worldPosVec.y = p2;
+
+	ImGui::SameLine();
+	
+	// Camera World Position Z
+	float p3 = App->game_engine->camera.worldPosVec.z;
+	ImGui::InputFloat("z1", &p3);
+	App->game_engine->camera.worldPosVec.z = p3;
+
+	//--------------------------------------------
+
+	// Camera Focus Point X 
+	ImGui::BulletText("Reference vector:");
+	float r1 = App->game_engine->camera.focusPosVec.x;
+	ImGui::InputFloat("x2", &r1);
+	App->game_engine->camera.focusPosVec.x = r1;
+
+	ImGui::SameLine();
+
+	// Camera Focus Point Y 
+	float r2 = App->game_engine->camera.focusPosVec.y;
+	ImGui::InputFloat("y2", &r2);
+	App->game_engine->camera.focusPosVec.y = r2;
+
+	ImGui::SameLine();
+
+	// Camera Focus Point Z
+	float r3 = App->game_engine->camera.focusPosVec.z;
+	ImGui::InputFloat("z2", &r3);
+	App->game_engine->camera.focusPosVec.z = r3;
+
+	//--------------------------------------------
+
+	// Camera Up Vector X
+	ImGui::BulletText("Up vector :");
+	float u1 = App->game_engine->camera.upVec.x;
+	ImGui::InputFloat("x3", &u1);
+	App->game_engine->camera.upVec.x = u1;
+
+	ImGui::SameLine();
+
+	// Camera Focus Point Y 
+	float u2 = App->game_engine->camera.upVec.y;
+	ImGui::InputFloat("y3", &u2);
+	App->game_engine->camera.upVec.y = u2;
+
+	ImGui::SameLine();
+
+	// Camera Focus Point Z
+	float u3 = App->game_engine->camera.upVec.z;
+	ImGui::InputFloat("z3", &u3);
+	App->game_engine->camera.upVec.z = u3;
+	
+	//--------------------------------------------
+
+	ImGui::PopItemWidth();
+
+	// Button to reset camera to initial position
+	if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
+		App->game_engine->camera.ResetCameraParameters();
+}
+
+void ModuleImGUI::RenderImGUIInspectorWindow()
+{
+	
 
 	if (ImGui::Begin("Inspector")) {
 		//Configuration options
