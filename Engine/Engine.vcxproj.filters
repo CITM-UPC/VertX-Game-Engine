@@ -45,6 +45,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="MeshComp.cpp">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JSONParser.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Texture2D.h">
       <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComp.h">
+      <Filter>Source Files\Engine Modules</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

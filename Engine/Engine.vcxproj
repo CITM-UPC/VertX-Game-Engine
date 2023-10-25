@@ -175,6 +175,7 @@ copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MeshComp.cpp" />
     <ClCompile Include="ModuleGameEngine.cpp" />
     <ClCompile Include="ModuleRenderer3D_ENGINE.cpp" />
     <ClCompile Include="log.cpp" />
@@ -184,6 +185,7 @@ copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
     <ClCompile Include="Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MeshComp.h" />
     <ClInclude Include="ModuleGameEngine.h" />
     <ClInclude Include="Globals_ENGINE.h" />
     <ClInclude Include="Engine_Module.h" />
