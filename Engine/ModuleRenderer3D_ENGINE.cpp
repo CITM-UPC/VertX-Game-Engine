@@ -11,6 +11,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#include <IL/il.h>
 
 
 ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, bool start_enabled) : Engine_Module(game_engine, start_enabled)
@@ -242,6 +243,8 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
+	ilInit();
+
 	return ret;
 }
 
@@ -301,7 +304,7 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 // PostUpdate present buffer to screen
 engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
-#pragma region TriangleTest
+#pragma region Baked House
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -309,15 +312,8 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	// Triangle for testing
-	/*glColor4ub(255, 0, 0, 255);
-	glBegin(GL_TRIANGLES);
-	glVertex3d(-0.25, 0, 0);
-	glVertex3d(0.25, 0, 0);
-	glVertex3d(0, 0.5, 0);
-	glEnd();*/
-
-
+	/*static auto mesh_ptrs = Mesh::loadFromFile("BakerHouse.fbx");
+	for (auto& mesh_ptr : mesh_ptrs) mesh_ptr->draw();*/
 
 #pragma endregion
 

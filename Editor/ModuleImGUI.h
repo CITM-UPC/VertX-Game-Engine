@@ -20,6 +20,7 @@ public:
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
 	void RenderImGUIInspectorWindow();
+	void RenderImGUIDebugLogWindow();
 
 	void RenderFPSGraph();
 
@@ -29,5 +30,7 @@ private:
 	
 	bool aboutWindow = false;
 	bool configWindow = false;
+
+	bool showDebugLogWindow = true;
 
 };

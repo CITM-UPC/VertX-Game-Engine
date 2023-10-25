@@ -93,9 +93,13 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Configuration")) 
+			if (ImGui::MenuItem("Configuration Window")) 
 			{
 				configWindow = !configWindow;
+			}
+			if (ImGui::MenuItem("ImGui Debug Log Window"))
+			{
+				showDebugLogWindow = !showDebugLogWindow;
 			}
 			ImGui::EndMenu();
 		}
@@ -122,16 +126,20 @@ update_status ModuleImGUI::PreUpdate()
 		ImGui::EndMainMenuBar();
 	}
 
+	
 
-	// Render the Config window from ImGui
+
+	// Render the Config window
 	RenderImGUIConfigWindow();
 
-	// Render the About window from ImGui
+	// Render the About window
 	RenderImGUIAboutWindow();
 
-	// Render the Inspector window from ImGui
+	// Render the Inspector window
 	RenderImGUIInspectorWindow();
 
+	// Render the ImGui Debug Log window
+	RenderImGUIDebugLogWindow();
 	
 	// Create Assets window
 	ImGui::Begin("Assets");
@@ -301,4 +309,10 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 	ToolTipMessage("CTRL+Click to input a value");
 
 	ImGui::End();
+}
+
+void ModuleImGUI::RenderImGUIDebugLogWindow()
+{
+	if (showDebugLogWindow)
+		ImGui::ShowDebugLogWindow(&showDebugLogWindow);
 }

@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include <GL/glew.h>
-#include "Globals_ENGINE.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
@@ -15,7 +14,7 @@ std::vector<Mesh::Ptr> Mesh::loadFromFile(const std::string& path) {
 
     vector<Mesh::Ptr> mesh_ptrs;
 
-    auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate |aiProcess_FlipUVs);
+    auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
     for (size_t m = 0; m < scene->mNumMeshes; ++m) {
         auto mesh = scene->mMeshes[m];
         auto faces = mesh->mFaces;
@@ -39,8 +38,13 @@ std::vector<Mesh::Ptr> Mesh::loadFromFile(const std::string& path) {
         auto material = scene->mMaterials[mesh->mMaterialIndex];
         aiString aiPath;
         material->GetTexture(aiTextureType_DIFFUSE, 0, &aiPath);
+        
+       /* size_t slash_pos = path.rfind('/');
+        if (slash_pos == string::npos) slash_pos = path.rfind('\\');
+        string folder_path = (slash_pos != string::npos) ? path.substr(0, slash_pos) : */
+        
         string texPath = aiScene::GetShortFilename(aiPath.C_Str());
-
+        
         auto mesh_ptr = make_shared<Mesh>(Formats::F_V3T2, vertex_data.data(), vertex_data.size(), index_data.data(), index_data.size());
         mesh_ptr->texture = make_shared<Texture2D>(texPath);
 
@@ -48,11 +52,11 @@ std::vector<Mesh::Ptr> Mesh::loadFromFile(const std::string& path) {
     }
 
     aiReleaseImport(scene);
-    
+
     return mesh_ptrs;
 }
 
-Mesh::Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* index_data, unsigned int numIndexs) : 
+Mesh::Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* index_data, unsigned int numIndexs) :
     _format(format),
     _numVerts(numVerts),
     _numIndexs(numIndexs)
@@ -100,7 +104,6 @@ Mesh::Mesh(Mesh&& b) noexcept :
 
 void Mesh::draw() {
 
-    // Draw/Render the mesh as white by default in case we don't have a texture applied to it
     glColor4ub(255, 255, 255, 255);
 
     glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
@@ -142,6 +145,6 @@ void Mesh::draw() {
 }
 
 Mesh::~Mesh() {
-    if(_vertex_buffer_id) glDeleteBuffers(1, &_vertex_buffer_id);
-    if(_indexs_buffer_id) glDeleteBuffers(1, &_indexs_buffer_id);
+    if (_vertex_buffer_id) glDeleteBuffers(1, &_vertex_buffer_id);
+    if (_indexs_buffer_id) glDeleteBuffers(1, &_indexs_buffer_id);
 }
