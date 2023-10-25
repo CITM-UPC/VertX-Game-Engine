@@ -8,6 +8,7 @@
 #include "ModuleRenderer.h"
 #include "ModuleImGUI.h"
 #include "..\Engine\ModuleGameEngine.h"
+#include "..\Engine\Mesh.h"
 
 class Application
 {
@@ -17,6 +18,7 @@ public:
 	ModuleRenderer* renderer;
 	ModuleImGUI* imgui;
 	ModuleGameEngine* game_engine;
+	ModuleLoadFBX* LoadFbx;
 
 private:
 

@@ -7,6 +7,8 @@ Application::Application()
 	input = new ModuleInput(this);
 	renderer = new ModuleRenderer(this);
 	imgui = new ModuleImGUI(this);
+	LoadFbx = new ModuleLoadFBX(this);
+	
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -17,6 +19,7 @@ Application::Application()
 	AddModule(input);
 	AddModule(renderer);
 	AddModule(imgui);
+	AddModule(LoadFbx);
 }
 
 Application::~Application()
