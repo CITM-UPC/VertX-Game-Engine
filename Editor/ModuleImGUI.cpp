@@ -326,6 +326,21 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 	ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
 	ToolTipMessage("CTRL+Click to input a value");
 
+	if (ImGui::Begin("Inspector")) {
+		//Configuration options
+		if (ImGui::CollapsingHeader("Configuration"))
+		{
+			GeneratePrimitives();
+
+			/*ImGui::Checkbox("WireFrame", &Wireframe);
+			ImGui::Checkbox("Depth Test", &DepthTest);
+			ImGui::Checkbox("Cull Face", &CullFace);
+			ImGui::Checkbox("Lighting", &Lighting);*/
+			/*ImGui::Checkbox("Color Material", &ColorMaterial);*/
+
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -412,25 +427,25 @@ void ModuleImGUI::Hierarchy(GameObject* parent) {
 
 	}
 
-	//if (parent != RootGO)
-	//{
-	//	if (ImGui::BeginDragDropSource())
-	//	{
-	//		ImGui::SetDragDropPayload("GameObject", parent, sizeof(GameObject*));
+	if (parent != RootGO)
+	{
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("GameObject", parent, sizeof(GameObject*));
 
-	//		Selected = parent;
+			Selected = parent;
 
-	//		ImGui::Text("Moving Object");
-	//		ImGui::EndDragDropSource();
-	//	}
-	//	/*if (ImGui::IsItemHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) && CreatedOnce == true)
-	//	{
-	//		CreatedOnce = false;
-	//		Selected = parent;
+			ImGui::Text("Moving Object");
+			ImGui::EndDragDropSource();
+		}
+		if (ImGui::IsItemHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) && CreatedOnce == true)
+		{
+			CreatedOnce = false;
+			Selected = parent;
 
-	//	}*/
+		}
 
-	//}
+	}
 
 	if (ImGui::BeginDragDropTarget() && Selected != nullptr)
 	{
