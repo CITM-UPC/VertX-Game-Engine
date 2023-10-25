@@ -234,7 +234,7 @@ void ModuleImGUI::RenderImGUIAboutWindow()
 {
 	if (aboutWindow) {
 		ImGui::SetNextWindowSize(ImVec2(600, 545));
-		ImGui::Begin("About");
+		ImGui::Begin("About", &aboutWindow);
 
 		ImGui::Text("VertX Game Engine v0.1\n");
 		ImGui::Text("Made by Rylan Graham & Adria Pons\n");
@@ -266,7 +266,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 {
 	if (configWindow)
 	{
-		ImGui::Begin("Configuration Window");
+		ImGui::Begin("Configuration Window", &configWindow);
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
@@ -316,6 +316,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
+			/* CPU */
 			// Display System's CPU cores
 			ImGui::Text("CPUs: ");
 			ImGui::SameLine();
@@ -333,7 +334,16 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			
 			ImGui::Separator();
 
+			/* GPU Info */
+			const GLubyte* gpuName = glGetString(GL_RENDERER);
+			ImGui::Text("GPU Name: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", gpuName);
 			
+			const GLubyte* gpuVendor = glGetString(GL_VENDOR);
+			ImGui::Text("GPU Vendor: ");
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", gpuVendor);
 
 		}
 
