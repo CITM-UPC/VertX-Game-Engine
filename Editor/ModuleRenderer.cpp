@@ -42,7 +42,6 @@ update_status ModuleRenderer::Update()
 		App->game_engine->camera.ResetCameraParameters();
 
 
-
 	App->game_engine->renderer3D_engine->Update();
 
 	return UPDATE_CONTINUE;
@@ -93,7 +92,6 @@ void ModuleRenderer::CameraZoomIn()
 	App->game_engine->camera.focusPosVec.x += App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.focusPosVec.y += App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.focusPosVec.z += App->game_engine->camera.zoomSpeed * normalizedVec.z;
-
 }
 
 void ModuleRenderer::CameraZoomOut()
@@ -109,7 +107,6 @@ void ModuleRenderer::CameraZoomOut()
 	App->game_engine->camera.focusPosVec.x -= App->game_engine->camera.zoomSpeed * normalizedVec.x;
 	App->game_engine->camera.focusPosVec.y -= App->game_engine->camera.zoomSpeed * normalizedVec.y;
 	App->game_engine->camera.focusPosVec.z -= App->game_engine->camera.zoomSpeed * normalizedVec.z;
-
 }
 
 
@@ -175,14 +172,8 @@ void ModuleRenderer::FreeCameraMovement()
 			App->game_engine->camera.focusPosVec += normalVec;
 		}
 		
-	}
 
-
-
-	
-	
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
-	{
+		/* MOUSE CAMERA MOVEMENT */
 		// Compute mouse input displacement
 		int deltaX = App->input->GetMouseXMotion();
 		int deltaY = -App->input->GetMouseYMotion();
@@ -191,9 +182,9 @@ void ModuleRenderer::FreeCameraMovement()
 		App->game_engine->camera.cameraPitch += deltaY * App->game_engine->camera.mouseSensitivity;
 
 		// Limiting Camera Piitch to prevent flipping
-		if (App->game_engine->camera.cameraPitch > 89.0f) 
+		if (App->game_engine->camera.cameraPitch > 89.0f)
 			App->game_engine->camera.cameraPitch = 89.0f;
-		if (App->game_engine->camera.cameraPitch < -89.0f) 
+		if (App->game_engine->camera.cameraPitch < -89.0f)
 			App->game_engine->camera.cameraPitch = -89.0f;
 
 		glm::dvec3 directionVec;
@@ -203,9 +194,5 @@ void ModuleRenderer::FreeCameraMovement()
 
 		// Update Camera's Focus view point vector to be recomputed in the renderer with gluLookAt()
 		App->game_engine->camera.focusPosVec = App->game_engine->camera.worldPosVec + directionVec;
-
 	}
-	
-
-	
 }

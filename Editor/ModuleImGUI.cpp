@@ -371,6 +371,14 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	ToolTipMessage("CTRL+Click to input a value");
 
 	//--------------------------------------------
+	
+	// Camera Mouse Sensitivity slider
+	ImGui::Separator();
+	ImGui::Text("Camera Mouse Sensitivy: ");
+	ImGui::SliderFloat(" \n", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
+	ToolTipMessage("CTRL+Click to input a value");
+
+	//--------------------------------------------
 
 	ImGui::Separator();
 	ImGui::SeparatorText("Camera Parameters");
@@ -381,6 +389,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float p1 = App->game_engine->camera.worldPosVec.x;
 	ImGui::InputFloat("x1", &p1);
 	App->game_engine->camera.worldPosVec.x = p1;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 
@@ -388,6 +397,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float p2 = App->game_engine->camera.worldPosVec.y;
 	ImGui::InputFloat("y1", &p2);
 	App->game_engine->camera.worldPosVec.y = p2;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 	
@@ -395,6 +405,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float p3 = App->game_engine->camera.worldPosVec.z;
 	ImGui::InputFloat("z1", &p3);
 	App->game_engine->camera.worldPosVec.z = p3;
+	ToolTipMessage("Click to input a value");
 
 	//--------------------------------------------
 
@@ -403,6 +414,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float r1 = App->game_engine->camera.focusPosVec.x;
 	ImGui::InputFloat("x2", &r1);
 	App->game_engine->camera.focusPosVec.x = r1;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 
@@ -410,6 +422,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float r2 = App->game_engine->camera.focusPosVec.y;
 	ImGui::InputFloat("y2", &r2);
 	App->game_engine->camera.focusPosVec.y = r2;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 
@@ -417,6 +430,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float r3 = App->game_engine->camera.focusPosVec.z;
 	ImGui::InputFloat("z2", &r3);
 	App->game_engine->camera.focusPosVec.z = r3;
+	ToolTipMessage("Click to input a value");
 
 	//--------------------------------------------
 
@@ -425,6 +439,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float u1 = App->game_engine->camera.upVec.x;
 	ImGui::InputFloat("x3", &u1);
 	App->game_engine->camera.upVec.x = u1;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 
@@ -432,6 +447,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float u2 = App->game_engine->camera.upVec.y;
 	ImGui::InputFloat("y3", &u2);
 	App->game_engine->camera.upVec.y = u2;
+	ToolTipMessage("Click to input a value");
 
 	ImGui::SameLine();
 
@@ -439,6 +455,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	float u3 = App->game_engine->camera.upVec.z;
 	ImGui::InputFloat("z3", &u3);
 	App->game_engine->camera.upVec.z = u3;
+	ToolTipMessage("Click to input a value");
 	
 	//--------------------------------------------
 

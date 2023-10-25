@@ -35,4 +35,9 @@ void Camera::ResetCameraParameters()
 
 	cameraYaw = -90.0f;
 	cameraPitch = 0.0f;
+
+	cameraSpeed = 0.1;
+	cameraSpeedMultiplier = 3.0f;
+
+	mouseSensitivity = 0.25f;
 }
