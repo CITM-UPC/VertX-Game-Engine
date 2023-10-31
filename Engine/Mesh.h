@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <memory>
 #include <string>
@@ -18,6 +17,7 @@ public:
 	struct V3T2 { vec3f v; vec2f t; };
 
 private:
+	std::string meshName;
 	const enum Formats _format;
 
 	unsigned int _vertex_buffer_id;
@@ -37,6 +37,13 @@ public:
 	Mesh(Mesh&& b) noexcept;
 	void draw();
 	~Mesh();
+
+	std::string getName();
+	void setName(std::string name);
+
+	const unsigned int getNumVerts();
+
+	const unsigned int getNumIndexs();
 
 private:
 	Mesh(const Mesh& cpy);

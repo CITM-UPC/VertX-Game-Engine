@@ -4,11 +4,7 @@
 #include "ModuleRenderer3D_ENGINE.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
-#include <string>
 #include <iostream>
-#include <fstream>
-#include "Mesh.h"
-#include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include <IL/il.h>
@@ -214,9 +210,12 @@ bool ModuleRenderer3D_ENGINE::Init()
 		//glEnable(GL_LIGHTING);
 	}
 
+	ilInit();
+
 	OnResize(screen_width, screen_height);
 
-	ilInit();
+	/*addFbx("Assets/BakerHouse.fbx");*/
+
 
 	return ret;
 }
@@ -282,7 +281,6 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 // PostUpdate present buffer to screen
 engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
-#pragma region Baked House
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -290,10 +288,11 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	/*static auto mesh_ptrs = Mesh::loadFromFile("BakerHouse.fbx");
-	for (auto& mesh_ptr : mesh_ptrs) mesh_ptr->draw();*/
-
-#pragma endregion
+	for (const auto& vector : meshList) {
+		for (const auto& mesh_ptr : vector) {
+			mesh_ptr->draw();
+		}
+	}
 
 	return ENGINE_UPDATE_CONTINUE;
 }

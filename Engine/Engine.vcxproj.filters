@@ -45,6 +45,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JSONParser.h">
@@ -69,6 +72,9 @@
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
