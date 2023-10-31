@@ -70,26 +70,26 @@ update_status ModuleImGUI::PreUpdate()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("New (Ctrl + N)", "Not implemented")) {}
-			if (ImGui::MenuItem("Open (Ctrl + O)", "Not implemented")) {}
+			if (ImGui::MenuItem("New", "(Ctrl + N)", false, false)) {}
+			if (ImGui::MenuItem("Open", "(Ctrl + O)", false, false)) {}
 
 			ImGui::Separator();
 			
-			if (ImGui::MenuItem("Save (Ctrl + S)", "Not implemented")) {}
-			if (ImGui::MenuItem("Save As (Ctrl + Alt + S)", "Not implemented")) {}
+			if (ImGui::MenuItem("Save", "(Ctrl + S)", false, false)) {}
+			if (ImGui::MenuItem("Save As", "(Ctrl + LShift + S)", false, false)) {}
 
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Edit"))
 		{
-			if (ImGui::MenuItem("Undo (Ctrl + Z)", "Not implemented")) {}
-			if (ImGui::MenuItem("Redo (Ctrl + Y)", "Not implemented")) {}
+			if (ImGui::MenuItem("Undo", "(Ctrl + Z)", false, false)) {}
+			if (ImGui::MenuItem("Redo", "(Ctrl + Y)", false, false)) {}
 
 			ImGui::Separator();
 			
-			if (ImGui::MenuItem("Copy (Ctrl + C)", "Not implemented")) {}
-			if (ImGui::MenuItem("Paste (Ctrl + V)", "Not implemented")) {}
-			if (ImGui::MenuItem("Cut (Ctrl + X)", "Not implemented")) {}
+			if (ImGui::MenuItem("Copy", "(Ctrl + C)", false, false)) {}
+			if (ImGui::MenuItem("Paste", "(Ctrl + V)", false, false)) {}
+			if (ImGui::MenuItem("Cut", "(Ctrl + X)", false, false)) {}
 			
 			ImGui::EndMenu();
 		}
@@ -128,7 +128,7 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Quit"))
 		{
-			if (ImGui::MenuItem("Close the VertX Game Engine"))
+			if (ImGui::MenuItem("Exit", "(Alt + F4)"))
 				return UPDATE_STOP;
 
 			ImGui::EndMenu();
