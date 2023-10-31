@@ -296,12 +296,30 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			if (ImGui::Checkbox("Vertical Sincronization", &App->game_engine->renderer3D_engine->vsync))
 				LOG("VSYNC Toggled");
 
+			ImGui::Separator();
+
+			// Window Size Sliders (width)
+			if (ImGui::SliderInt("Window width", &App->game_engine->renderer3D_engine->screen_width, 1, 1600))
+			{
+				SDL_SetWindowSize(App->window->window, App->game_engine->renderer3D_engine->screen_width, App->game_engine->renderer3D_engine->screen_height);
+			}
+			ToolTipMessage("CTRL+Click to input a value");
+
+			// Window Size Sliders (height)
+			if (ImGui::SliderInt("Window height", &App->game_engine->renderer3D_engine->screen_height, 1, 900))
+			{
+				SDL_SetWindowSize(App->window->window, App->game_engine->renderer3D_engine->screen_width, App->game_engine->renderer3D_engine->screen_height);
+			}
+			ToolTipMessage("CTRL+Click to input a value");
+
 			// Brightness slider
-			if (ImGui::SliderFloat("Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
+			if (ImGui::SliderFloat("Window Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
 			{
 				SDL_SetWindowBrightness(App->window->window, App->window->windowBrightness);
 			}
 			ToolTipMessage("CTRL+Click to input a value");
+
+			ImGui::Separator();
 
 			// FPS slider
 			if (!App->game_engine->renderer3D_engine->vsync)

@@ -60,11 +60,13 @@ public:
 
 	bool vsync;
 
+	int screen_width;
+	int screen_height;
+
 private:
 
 	SDL_Window* targetWindow;
 
-	int screen_width;
-	int screen_height;
+	
 
 };
