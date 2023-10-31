@@ -4,9 +4,7 @@
 
 ModuleRenderer::ModuleRenderer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	/*X = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-	Y = glm::quat(0.0f, 1.0f, 0.0f, 0.0f);
-	Z = glm::quat(0.0f, 0.0f, 1.0f, 0.0f);*/
+	
 }
 
 // Destructor
@@ -36,6 +34,10 @@ update_status ModuleRenderer::Update()
 {
 	// Compute camera movement based on player's input so it can be later updated by the renderer
 	FreeCameraMovement();
+
+	// Compute camera orbitation around an specific world point (LALT + Left Click)
+	CameraOrbitation();
+
 
 	// Function to reset camera parameters to the initial ones
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
@@ -109,12 +111,39 @@ void ModuleRenderer::CameraZoomOut()
 	App->game_engine->camera.focusPosVec.z -= App->game_engine->camera.zoomSpeed * normalizedVec.z;
 }
 
+void ModuleRenderer::CameraOrbitation()
+{
+	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		// Setting the Camera Focus Point to the desired
+		App->game_engine->camera.focusPosVec.x = 0;
+		App->game_engine->camera.focusPosVec.y = 0;
+		App->game_engine->camera.focusPosVec.z = 0;
+
+		double radius = glm::length(App->game_engine->camera.worldPosVec - App->game_engine->camera.focusPosVec);
+
+		// Get mouse motion input from user
+		float deltaX = (App->input->GetMouseXMotion() / 2);
+
+		float angleChange = glm::radians(deltaX);
+
+		// Calculate new camera position
+		glm::dvec3 relativePos = App->game_engine->camera.worldPosVec - App->game_engine->camera.focusPosVec;
+
+		mat3 rotationMat = mat3(cos(angleChange), 0, sin(angleChange),
+										0,		  1,		0,
+							   -sin(angleChange), 0, cos(angleChange));
+
+		vec3 rotatedRelativePos = rotationMat * relativePos;
+		App->game_engine->camera.worldPosVec = App->game_engine->camera.focusPosVec + rotatedRelativePos;
+
+		// Maintain the distance (radius) from the origin
+		App->game_engine->camera.worldPosVec = App->game_engine->camera.focusPosVec + (glm::normalize(App->game_engine->camera.worldPosVec - App->game_engine->camera.focusPosVec) * radius);
+	}
+}
 
 void ModuleRenderer::FreeCameraMovement()
 {
-	/*cameraSpeed = 0.1;	
-	cameraSpeedMultiplier = 3.0f;*/
-
 	// Normalized vector of the substraction of the Camera Focus Vec and the Camera Position Vec, then multiplied by the speed we want
 	vec3 normalizedVec = (App->game_engine->camera.cameraSpeed * (glm::normalize(App->game_engine->camera.focusPosVec - App->game_engine->camera.worldPosVec)));
 
