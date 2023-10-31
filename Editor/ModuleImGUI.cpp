@@ -111,9 +111,17 @@ update_status ModuleImGUI::PreUpdate()
 			{
 				aboutWindow = !aboutWindow;
 			}
-			if (ImGui::MenuItem("Visit GitHub Page"))
+			if (ImGui::MenuItem("Visit our GitHub Page!"))
 			{
 				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine");
+			}
+			if (ImGui::MenuItem("Report Bug / Suggestion"))
+			{
+				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine/issues");
+			}
+			if (ImGui::MenuItem("Download Latest Version"))
+			{
+				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine/releases");
 			}
 
 			ImGui::EndMenu();
