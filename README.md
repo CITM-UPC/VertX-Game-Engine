@@ -9,7 +9,7 @@ This game engine has been made in **C/C++** programming language, and also using
 - [OpenGL](https://www.opengl.org/)
 - [SDL 2](https://www.libsdl.org/)
 - [GLEW](https://glew.sourceforge.net/)
-- [GLM] (https://glm.g-truc.net/0.9.9/)
+- [GLM](https://glm.g-truc.net/0.9.9/)
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [Assimp](https://assimp.org/)
 - [DevIL](https://openil.sourceforge.net/)
