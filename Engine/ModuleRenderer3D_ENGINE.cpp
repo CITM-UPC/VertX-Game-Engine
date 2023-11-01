@@ -155,7 +155,13 @@ bool ModuleRenderer3D_ENGINE::Init()
 	}
 
 	// Initialize Glew
-	glewInit();
+	GLenum error = glewInit();
+	if (GLEW_OK != error)
+	{
+		LOG("ENGINE: Error initializing Glew! %s\n", glewGetErrorString(error));
+	}
+	LOG("ENGINE Status: Using Glew version %s\n", glewGetString(GLEW_VERSION))
+
 
 	if (ret == true)
 	{
@@ -213,6 +219,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		//glEnable(GL_LIGHTING);
 	}
 
+	// Initialize DevIL
 	ilInit();
 
 	OnResize(screen_width, screen_height);
