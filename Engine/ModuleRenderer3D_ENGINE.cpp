@@ -154,6 +154,9 @@ bool ModuleRenderer3D_ENGINE::Init()
 		ret = false;
 	}
 
+	// Initialize Glew
+	glewInit();
+
 	if (ret == true)
 	{
 		//Use Vsync
@@ -214,7 +217,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
-	/*addFbx("Assets/BakerHouse.fbx");*/
+	addFbx("Assets/BakerHouse.fbx");
 
 
 	return ret;
