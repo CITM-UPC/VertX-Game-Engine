@@ -226,7 +226,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
-	/*addFbx("Assets/BakerHouse.fbx", "BakerHouse");*/
+	addFbx("Assets/BakerHouse.fbx");
 
 	return ret;
 }
