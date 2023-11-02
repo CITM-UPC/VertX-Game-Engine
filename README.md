@@ -29,10 +29,11 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 ## Controls
 
 **Camera**:
-- {LEFT Click + WASD} - Camera free movement
-- {LEFT Click + WASD + LSHIFT} - Speeded camera free movement
-- {LEFT Click + Mouse Input} - Camera free look around
+- {RIGHT Click + WASD} - Camera free movement
+- {RIGHT Click + WASD + LSHIFT} - Speeded camera free movement
+- {RIGHT Click + Mouse Input} - Camera free look around
 - {Mouse WHEEL} - Camera perspective zoom in & out
+- {LALT + LEFT Click} - Camera orbitation
 - {F} - Reset camera parameters to initial values
 
 
