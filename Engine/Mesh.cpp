@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <GL/glew.h>
+#include "../Editor/GameObject.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
@@ -13,6 +14,7 @@ using namespace std;
 std::vector<Mesh::Ptr> Mesh::loadFromFile(const std::string& path) {
 
     vector<Mesh::Ptr> mesh_ptrs;
+
 
     auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
     for (size_t m = 0; m < scene->mNumMeshes; ++m) {

@@ -32,6 +32,8 @@ public:
 	void GeneratePrimitives();
 	void Hierarchy(GameObject* parent);
 
+	bool hierarchy = true;
+
 	GameObject* RootGO = nullptr;
 	GameObject* Selected = nullptr;
 	bool CreatedOnce = true;

@@ -74,14 +74,15 @@ bool ModuleRenderer3D_ENGINE::CleanUpAssets() {
 	// CloseHandlesToAssets();
 
 	// Clean up the parent "Assets" directory, including subfolders and files
-	if (RecursiveRemoveDirectory(parentDirectory)) {
+	/*if (RecursiveRemoveDirectory(parentDirectory)) {
 		std::cout << "Assets directory cleaned up." << std::endl;
 		return true;
 	}
 	else {
 		std::cerr << "Failed to clean up assets directory." << std::endl;
 		return false;
-	}
+	}*/
+	return true;
 }
 
 bool ModuleRenderer3D_ENGINE::RecursiveRemoveDirectory(const char* directory) {
@@ -165,6 +166,10 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	if (ret == true)
 	{
+		ilInit();
+
+		glewInit();
+
 		//Use Vsync
 		if (vsync && SDL_GL_SetSwapInterval(1) < 0)
 			LOG_("ENGINE: Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
@@ -219,13 +224,9 @@ bool ModuleRenderer3D_ENGINE::Init()
 		//glEnable(GL_LIGHTING);
 	}
 
-	// Initialize DevIL
-	ilInit();
-
 	OnResize(screen_width, screen_height);
 
-	addFbx("Assets/BakerHouse.fbx");
-
+	/*addFbx("Assets/BakerHouse.fbx", "BakerHouse");*/
 
 	return ret;
 }
@@ -292,17 +293,14 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
 	for (const auto& vector : meshList) {
 		for (const auto& mesh_ptr : vector) {
 			mesh_ptr->draw();
 		}
 	}
+
+	GLenum error = glGetError();
+	assert(error == GL_NO_ERROR);
 
 	return ENGINE_UPDATE_CONTINUE;
 }

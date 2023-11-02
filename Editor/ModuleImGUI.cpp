@@ -529,30 +529,88 @@ void ModuleImGUI::GeneratePrimitives()
 		if (ImGui::Button("Generate Empty GameObject")) {
 			primitive = 1;
 			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+			/*App->game_engine->renderer3D_engine->addFbx("Assets/BakerHouse.fbx");*/
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "GameObject";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "GameObject";
+			}
 		}
 
 		if (ImGui::Button("Generate Cube")) {
 			primitive = 2;
+			App->game_engine->renderer3D_engine->addFbx("Assets/Cube.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "Cube";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "Cube";
+			}
 			/*App->LoadFbx->PrimitivesObjects(primitive);*/
 		}
 
 		if (ImGui::Button("Generate Plane")) {
 			primitive = 3;
-			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+			App->game_engine->renderer3D_engine->addFbx("Assets/Plane.fbx");
 		}
 
 		if (ImGui::Button("Generate Pyramid")) {
 			primitive = 4;
-			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+			App->game_engine->renderer3D_engine->addFbx("Assets/Pyramid.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "Pyramid";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "Pyramid";
+			}
 		}
 
 		if (ImGui::Button("Generate Sphere")) {
 			primitive = 5;
-			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+			App->game_engine->renderer3D_engine->addFbx("Assets/Sphere.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "Sphere";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "Sphere";
+			}
 		}
+
 		if (ImGui::Button("Generate Cylinder")) {
 			primitive = 6;
-			/*App->LoadFbx->PrimitivesObjects(primitive);*/
+			App->game_engine->renderer3D_engine->addFbx("Assets/Cylinder.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "Cylinder";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "Cylinder";
+			}
 		}
 
 		if (ImGui::Button("Delete GameObject")) {
@@ -565,87 +623,89 @@ void ModuleImGUI::GeneratePrimitives()
 }
 
 void ModuleImGUI::Hierarchy(GameObject* parent) {
-	ImGuiTreeNodeFlags treeF = ImGuiTreeNodeFlags_DefaultOpen;
-
-
-	if (parent->child.size() == 0) {
-		treeF |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-	}
-
-	if (parent == Selected)
-	{
-		treeF |= ImGuiTreeNodeFlags_Selected;
-	}
-	bool openTree = ImGui::TreeNodeEx(parent, treeF, parent->name.c_str());
-
-
-	if (openTree)
-	{
-		if (!parent->child.empty())
+		ImGuiTreeNodeFlags treeF = ImGuiTreeNodeFlags_DefaultOpen;
+	
+	
+		if (parent->child.size() == 0) {
+			treeF |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		}
+	
+		if (parent == Selected)
 		{
-			for (int i = 0; i < parent->child.size(); i++)
+			treeF |= ImGuiTreeNodeFlags_Selected;
+		}
+		bool openTree = ImGui::TreeNodeEx(parent, treeF, parent->name.c_str());
+	
+	
+		if (openTree)
+		{
+			if (!parent->child.empty())
 			{
-				Hierarchy(parent->child[i]);
-			}
-			ImGui::TreePop();
-		}
-
-		else
-		{
-			treeF |= ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
-		}
-
-	}
-
-	if (parent != RootGO)
-	{
-		if (ImGui::BeginDragDropSource())
-		{
-			ImGui::SetDragDropPayload("GameObject", parent, sizeof(GameObject*));
-
-			Selected = parent;
-
-			ImGui::Text("Moving Object");
-			ImGui::EndDragDropSource();
-		}
-		if (ImGui::IsItemHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) && CreatedOnce == true)
-		{
-			CreatedOnce = false;
-			Selected = parent;
-
-		}
-
-	}
-
-	if (ImGui::BeginDragDropTarget() && Selected != nullptr)
-	{
-		int SGo;
-		if (ImGui::AcceptDragDropPayload("GameObject"))
-		{
-			for (int i = 0; i < Selected->Parent->child.size(); i++) {
-				if (Selected == Selected->Parent->child[i]) {
-					SGo = i;
+				for (int i = 0; i < parent->child.size(); i++)
+				{
+					Hierarchy(parent->child[i]);
 				}
+				ImGui::TreePop();
 			}
-
-			parent->child.push_back(Selected);
-
-			for (int i = SGo; i < Selected->Parent->child.size() - 1; i++)
+	
+			else
 			{
-				Selected->Parent->child[i] = Selected->Parent->child[i + 1];
+				treeF |= ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
 			}
-			Selected->Parent = parent;
-
-			parent->Parent->child.pop_back();
-
-
+	
+		}
+	
+		if (parent != RootGO)
+		{
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload("GameObject", parent, sizeof(GameObject*));
+	
+				Selected = parent;
+	
+				ImGui::Text("Moving Object");
+				ImGui::EndDragDropSource();
+			}
+			if (ImGui::IsItemHovered() && App->input->GetMouseButton(SDL_BUTTON_LEFT) && CreatedOnce == true)
+			{
+				CreatedOnce = false;
+				Selected = parent;
+	
+			}
+	
+		}
+	
+		if (ImGui::BeginDragDropTarget() && Selected != nullptr)
+		{
+			int SGo;
+			if (ImGui::AcceptDragDropPayload("GameObject"))
+			{
+				for (int i = 0; i < Selected->Parent->child.size(); i++) {
+					if (Selected == Selected->Parent->child[i]) {
+						SGo = i;
+					}
+				}
+	
+				parent->child.push_back(Selected);
+	
+				for (int i = SGo; i < Selected->Parent->child.size() - 1; i++)
+				{
+					Selected->Parent->child[i] = Selected->Parent->child[i + 1];
+				}
+				Selected->Parent = parent;
+	
+				parent->Parent->child.pop_back();
+	
+	
+				Selected = nullptr;
+			}
+			ImGui::EndDragDropTarget();
+		}
+	
+		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT))
+		{
 			Selected = nullptr;
 		}
-		ImGui::EndDragDropTarget();
-	}
 
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT))
-	{
-		Selected = nullptr;
-	}
+	ImGui::EndMenu();
 }

@@ -12,6 +12,7 @@
 #include <vector>
 #include <list>
 #include "Mesh.h"
+#include <string>
 
 class ModuleRenderer3D_ENGINE : public Engine_Module
 {
