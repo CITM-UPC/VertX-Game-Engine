@@ -628,6 +628,22 @@ void ModuleImGUI::GeneratePrimitives()
 			}
 		}
 
+		if (ImGui::Button("F1 Ferrari")) {
+			primitive = 7;
+			App->game_engine->renderer3D_engine->addFbx("Assets/RaceCar.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "Formula1";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "Formula1";
+			}
+		}
+
 		if (ImGui::Button("Delete GameObject")) {
 			Selected->~GameObject();
 		}
