@@ -495,7 +495,6 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
 	
-
 	if (ImGui::Begin("Inspector")) {
 		//Configuration options
 		if (ImGui::CollapsingHeader("Configuration"))
@@ -610,6 +609,22 @@ void ModuleImGUI::GeneratePrimitives()
 			{
 				meshGO = new GameObject(App->imgui->Selected);
 				meshGO->name = "Cylinder";
+			}
+		}
+
+		if (ImGui::Button("Baker House")) {
+			primitive = 7;
+			App->game_engine->renderer3D_engine->addFbx("Assets/BakerHouse.fbx");
+			GameObject* meshGO;
+			if (App->imgui->Selected == nullptr)
+			{
+				meshGO = new GameObject(App->imgui->RootGO);
+				meshGO->name = "BakerHouse";
+			}
+			else if (App->imgui->Selected != nullptr)
+			{
+				meshGO = new GameObject(App->imgui->Selected);
+				meshGO->name = "BakerHouse";
 			}
 		}
 

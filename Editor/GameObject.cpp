@@ -8,8 +8,8 @@ GameObject::GameObject()
 {
 	name = "root";
 	Parent = nullptr;
-	transform = new Transform(this);
-	Comp.push_back(transform);
+	/*transform = new Transform(this);
+	Comp.push_back(transform);*/
 }
 
 GameObject::GameObject(GameObject* parent)
@@ -19,8 +19,8 @@ GameObject::GameObject(GameObject* parent)
 
 	//CamGOGame = new CObject(this);
 
-	transform = new Transform(this);
-	Comp.push_back(transform);
+	/*transform = new Transform(this);
+	Comp.push_back(transform);*/
 
 	//GOMesh = new Meshes(this);
 	if (parent != nullptr)
