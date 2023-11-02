@@ -18,8 +18,10 @@ public:
 
 	void RenderImGUI();
 
+	void RenderImGUIAssetsWindow();
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
+	void RenderImGUIHierarchyWindow();
 	void RenderImGUIInspectorWindow();
 	void RenderImGUICameraInspectorWindow();
 	void RenderImGUIDebugLogWindow();
@@ -43,6 +45,10 @@ private:
 	bool aboutWindow = false;
 	bool configWindow = false;
 
+	bool assetsWindow = true;
+	bool cameraInspectorWindow = true;
+	bool hierarchyWindow = true;
+	bool inspectorWindow = true;
 	bool showDebugLogWindow = true;
 
 };

@@ -46,7 +46,7 @@ bool ModuleImGUI::Init()
 	ImGuiStyle& style = ImGui::GetStyle();
 	// Set ImGui windows rounding
 	style.WindowRounding = 5.0f;
-	// Swt ImGui custom font
+	// Set ImGui custom font
 	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
 	RootGO = new GameObject();
@@ -95,14 +95,35 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Configuration Window")) 
+			if (ImGui::MenuItem("Configuration")) 
 			{
 				configWindow = !configWindow;
 			}
-			if (ImGui::MenuItem("ImGui Debug Log Window"))
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Windows"))
+		{
+			if (ImGui::MenuItem("Assets")) 
+			{
+				assetsWindow = !assetsWindow;
+			}
+			if (ImGui::MenuItem("Camera Inspector"))
+			{
+				cameraInspectorWindow = !cameraInspectorWindow;
+			}
+			if (ImGui::MenuItem("Hierarchy"))
+			{
+				hierarchyWindow = !hierarchyWindow;
+			}
+			if (ImGui::MenuItem("ImGui Console Log"))
 			{
 				showDebugLogWindow = !showDebugLogWindow;
 			}
+			if (ImGui::MenuItem("Inspector"))
+			{
+				inspectorWindow = !inspectorWindow;
+			}
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))
@@ -137,8 +158,6 @@ update_status ModuleImGUI::PreUpdate()
 	}
 
 	
-
-
 	// Render the Config window
 	RenderImGUIConfigWindow();
 
@@ -148,28 +167,19 @@ update_status ModuleImGUI::PreUpdate()
 	// Render the Inspector window
 	RenderImGUIInspectorWindow();
 
+	// Render the Camera Inspector window
 	RenderImGUICameraInspectorWindow();
 
 	// Render the ImGui Debug Log window
 	RenderImGUIDebugLogWindow();
 	
-	// Create Assets window
-	ImGui::Begin("Assets");
+	// Render the Assets window
+	RenderImGUIAssetsWindow();
 
-	ImGui::End();
+	// Render Hierarchy window
+	RenderImGUIHierarchyWindow();
 
-
-	// Create Hierarchy window
-
-	ImGui::Begin("Hierarchy");
-
-	ImGui::End();
-
-	//GameObjects hieracy
-	if (ImGui::Begin("GameObjects")) {
-		Hierarchy(RootGO);
-	}
-	ImGui::End();
+	
 
 	if (!App->input->GetMouseButton(SDL_BUTTON_LEFT))
 	{
@@ -274,7 +284,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 {
 	if (configWindow)
 	{
-		ImGui::Begin("Configuration Window", &configWindow);
+		ImGui::Begin("Configuration", &configWindow);
 
 		if (ImGui::CollapsingHeader("Application"))
 		{
@@ -379,123 +389,140 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 void ModuleImGUI::RenderImGUICameraInspectorWindow()
 {
-	// Create Camera Inspector window
-	ImGui::Begin("Camera Inspector");
-
-	// Camera Speed slider
-	ImGui::Text("Camera Speed: ");
-	float cameraSpeedChanger = App->game_engine->camera.cameraSpeed;
-	if (ImGui::SliderFloat("", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
+	if (cameraInspectorWindow)
 	{
-		App->game_engine->camera.cameraSpeed = cameraSpeedChanger;
+		// Create Camera Inspector window
+		ImGui::Begin("Camera Inspector", &cameraInspectorWindow);
+
+		// Camera Speed slider
+		ImGui::Text("Camera Speed: ");
+		float cameraSpeedChanger = App->game_engine->camera.cameraSpeed;
+		if (ImGui::SliderFloat("", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
+		{
+			App->game_engine->camera.cameraSpeed = cameraSpeedChanger;
+		}
+		ToolTipMessage("CTRL+Click to input a value");
+
+		// Camera Speed Multiplier slider
+		ImGui::Text("Camera Speed Multiplier: ");
+		ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
+		ToolTipMessage("CTRL+Click to input a value");
+
+		//--------------------------------------------
+
+		// Camera Mouse Sensitivity slider
+		ImGui::Separator();
+		ImGui::Text("Camera Mouse Sensitivy: ");
+		ImGui::SliderFloat(" \n", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
+		ToolTipMessage("CTRL+Click to input a value");
+
+		//--------------------------------------------
+
+		ImGui::Separator();
+		ImGui::SeparatorText("Camera Parameters");
+		ImGui::PushItemWidth(60.0f);	// Make components text width shorter
+
+		// Camera World Position X 
+		ImGui::BulletText("Position vector:");
+		float p1 = App->game_engine->camera.worldPosVec.x;
+		ImGui::InputFloat("x1", &p1);
+		App->game_engine->camera.worldPosVec.x = p1;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera World Position Y
+		float p2 = App->game_engine->camera.worldPosVec.y;
+		ImGui::InputFloat("y1", &p2);
+		App->game_engine->camera.worldPosVec.y = p2;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera World Position Z
+		float p3 = App->game_engine->camera.worldPosVec.z;
+		ImGui::InputFloat("z1", &p3);
+		App->game_engine->camera.worldPosVec.z = p3;
+		ToolTipMessage("Click to input a value");
+
+		//--------------------------------------------
+
+		// Camera Focus Point X 
+		ImGui::BulletText("Reference vector:");
+		float r1 = App->game_engine->camera.focusPosVec.x;
+		ImGui::InputFloat("x2", &r1);
+		App->game_engine->camera.focusPosVec.x = r1;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera Focus Point Y 
+		float r2 = App->game_engine->camera.focusPosVec.y;
+		ImGui::InputFloat("y2", &r2);
+		App->game_engine->camera.focusPosVec.y = r2;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera Focus Point Z
+		float r3 = App->game_engine->camera.focusPosVec.z;
+		ImGui::InputFloat("z2", &r3);
+		App->game_engine->camera.focusPosVec.z = r3;
+		ToolTipMessage("Click to input a value");
+
+		//--------------------------------------------
+
+		// Camera Up Vector X
+		ImGui::BulletText("Up vector :");
+		float u1 = App->game_engine->camera.upVec.x;
+		ImGui::InputFloat("x3", &u1);
+		App->game_engine->camera.upVec.x = u1;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera Focus Point Y 
+		float u2 = App->game_engine->camera.upVec.y;
+		ImGui::InputFloat("y3", &u2);
+		App->game_engine->camera.upVec.y = u2;
+		ToolTipMessage("Click to input a value");
+
+		ImGui::SameLine();
+
+		// Camera Focus Point Z
+		float u3 = App->game_engine->camera.upVec.z;
+		ImGui::InputFloat("z3", &u3);
+		App->game_engine->camera.upVec.z = u3;
+		ToolTipMessage("Click to input a value");
+
+		//--------------------------------------------
+
+		ImGui::PopItemWidth();
+
+
+		// Button to reset camera to initial position
+		if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
+			App->game_engine->camera.ResetCameraParameters();
 	}
-	ToolTipMessage("CTRL+Click to input a value");
+}
 
-	// Camera Speed Multiplier slider
-	ImGui::Text("Camera Speed Multiplier: ");
-	ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
-	ToolTipMessage("CTRL+Click to input a value");
+void ModuleImGUI::RenderImGUIAssetsWindow()
+{
+	if (assetsWindow)
+	{
+		// Create Assets window
+		ImGui::Begin("Assets", &assetsWindow);
+			
+		// TO DO
 
-	//--------------------------------------------
-	
-	// Camera Mouse Sensitivity slider
-	ImGui::Separator();
-	ImGui::Text("Camera Mouse Sensitivy: ");
-	ImGui::SliderFloat(" \n", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
-	ToolTipMessage("CTRL+Click to input a value");
-
-	//--------------------------------------------
-
-	ImGui::Separator();
-	ImGui::SeparatorText("Camera Parameters");
-	ImGui::PushItemWidth(60.0f);	// Make components text width shorter
-
-	// Camera World Position X 
-	ImGui::BulletText("Position vector:");
-	float p1 = App->game_engine->camera.worldPosVec.x;
-	ImGui::InputFloat("x1", &p1);
-	App->game_engine->camera.worldPosVec.x = p1;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-
-	// Camera World Position Y
-	float p2 = App->game_engine->camera.worldPosVec.y;
-	ImGui::InputFloat("y1", &p2);
-	App->game_engine->camera.worldPosVec.y = p2;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-	
-	// Camera World Position Z
-	float p3 = App->game_engine->camera.worldPosVec.z;
-	ImGui::InputFloat("z1", &p3);
-	App->game_engine->camera.worldPosVec.z = p3;
-	ToolTipMessage("Click to input a value");
-
-	//--------------------------------------------
-
-	// Camera Focus Point X 
-	ImGui::BulletText("Reference vector:");
-	float r1 = App->game_engine->camera.focusPosVec.x;
-	ImGui::InputFloat("x2", &r1);
-	App->game_engine->camera.focusPosVec.x = r1;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-
-	// Camera Focus Point Y 
-	float r2 = App->game_engine->camera.focusPosVec.y;
-	ImGui::InputFloat("y2", &r2);
-	App->game_engine->camera.focusPosVec.y = r2;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-
-	// Camera Focus Point Z
-	float r3 = App->game_engine->camera.focusPosVec.z;
-	ImGui::InputFloat("z2", &r3);
-	App->game_engine->camera.focusPosVec.z = r3;
-	ToolTipMessage("Click to input a value");
-
-	//--------------------------------------------
-
-	// Camera Up Vector X
-	ImGui::BulletText("Up vector :");
-	float u1 = App->game_engine->camera.upVec.x;
-	ImGui::InputFloat("x3", &u1);
-	App->game_engine->camera.upVec.x = u1;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-
-	// Camera Focus Point Y 
-	float u2 = App->game_engine->camera.upVec.y;
-	ImGui::InputFloat("y3", &u2);
-	App->game_engine->camera.upVec.y = u2;
-	ToolTipMessage("Click to input a value");
-
-	ImGui::SameLine();
-
-	// Camera Focus Point Z
-	float u3 = App->game_engine->camera.upVec.z;
-	ImGui::InputFloat("z3", &u3);
-	App->game_engine->camera.upVec.z = u3;
-	ToolTipMessage("Click to input a value");
-	
-	//--------------------------------------------
-
-	ImGui::PopItemWidth();
-
-	// Button to reset camera to initial position
-	if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
-		App->game_engine->camera.ResetCameraParameters();
+		ImGui::End();
+	}
 }
 
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
 	
-	if (ImGui::Begin("Inspector")) {
+	if (ImGui::Begin("Inspector", &inspectorWindow)) {
 		//Configuration options
 		if (ImGui::CollapsingHeader("Configuration"))
 		{
@@ -517,6 +544,18 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 {
 	if (showDebugLogWindow)
 		ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+}
+
+void ModuleImGUI::RenderImGUIHierarchyWindow()
+{
+	if (hierarchyWindow)
+	{
+		//GameObjects hieracy
+		if (ImGui::Begin("Hierarchy", &hierarchyWindow)) {
+			Hierarchy(RootGO);
+		}
+		ImGui::End();
+	}
 }
 
 void ModuleImGUI::GeneratePrimitives()
@@ -650,7 +689,6 @@ void ModuleImGUI::GeneratePrimitives()
 
 		ImGui::EndMenu();
 	}
-
 }
 
 void ModuleImGUI::Hierarchy(GameObject* parent) {
