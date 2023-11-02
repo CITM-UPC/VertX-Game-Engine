@@ -10,6 +10,7 @@
 #include "ModuleWindow.h"
 #include "SDL2/SDL_cpuinfo.h"
 
+
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -352,7 +353,17 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-			/* CPU */
+			/* SDL Info */
+			SDL_version compiled;
+			SDL_version linked;
+			SDL_VERSION(&compiled);
+			SDL_GetVersion(&linked);
+			ImGui::Text("SDL Compiled version:");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%u.%u.%u", compiled.major, compiled.minor, compiled.patch);
+			ImGui::Text("SDL Linked version:");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%u.%u.%u", linked.major, linked.minor, linked.patch);
+			
+			ImGui::Separator();
+
+			/* CPU Info*/
 			// Display System's CPU cores
 			ImGui::Text("CPUs: ");
 			ImGui::SameLine();
@@ -367,7 +378,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			ImGui::SameLine();
 			float systemRAM = (SDL_GetSystemRAM() / 1000);	// Get system RAM (in gb)
 			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%.2f GB", systemRAM);
-			
+
 			ImGui::Separator();
 
 			/* GPU Info */
@@ -412,10 +423,14 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Mouse Sensitivity slider
 		ImGui::Separator();
-		ImGui::Text("Camera Mouse Sensitivy: ");
+		ImGui::Text("Camera Mouse Sensitivity: ");
 		ImGui::SliderFloat(" \n", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
 		ToolTipMessage("CTRL+Click to input a value");
 
+		ImGui::SeparatorText("Mouse Parameters");
+		ImGui::BulletText("X Position: %d", App->input->GetMouseX());	ImGui::SameLine();	ImGui::BulletText("X Motion: %d", App->input->GetMouseXMotion());
+		ImGui::BulletText("Y Position: %d", App->input->GetMouseY());	ImGui::SameLine();	ImGui::BulletText("Y Motion: %d", App->input->GetMouseYMotion());
+		
 		//--------------------------------------------
 
 		ImGui::Separator();
