@@ -1,7 +1,6 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "GameObject.h"
 
 
 class ModuleImGUI : public Module
@@ -32,12 +31,9 @@ public:
 	void ToolTipMessage(const char* tip);
 
 	void GeneratePrimitives();
-	void Hierarchy(GameObject* parent);
 
 	bool hierarchy = true;
 
-	GameObject* RootGO = nullptr;
-	GameObject* Selected = nullptr;
 	bool CreatedOnce = true;
 
 private:

@@ -12,6 +12,7 @@ void log(const char file[], int line, const char* format, ...);
 #define RADTODEG 57.295779513082320876f
 #define HAVE_M_PI
 
+
 typedef unsigned int uint;
 
 enum update_status
@@ -28,7 +29,7 @@ enum update_status
 #define WIN_FULLSCREEN false
 #define WIN_RESIZABLE false
 #define WIN_BORDERLESS false
-#define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC false
+#define WIN_FULLSCREEN_DESKTOP false
 #define FPS 60
 #define TITLE "VertX Game Engine"

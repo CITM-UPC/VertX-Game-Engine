@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include <GL/glew.h>
-#include "../Editor/GameObject.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
