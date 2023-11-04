@@ -536,6 +536,48 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			/*ImGui::Checkbox("Color Material", &ColorMaterial);*/
 
 		}
+		if (ImGui::CollapsingHeader("Transform"))
+		{
+			//ImGui::Checkbox("Active", );
+			
+			ImGui::Separator();
+
+
+		}
+		if (ImGui::CollapsingHeader("Mesh"))
+		{
+			//ImGui::Checkbox("Active", );
+			//ImGui::SameLine();
+			ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "MeshFileName.fbx");	// TO DO: Introduce mesh file name from mesh file path
+
+			ImGui::Separator();
+
+			ImGui::Text("Draw:");
+			/*ImGui::Checkbox("Vertex Normals", );
+			ImGui::Checkbox("Face Normals", );*/
+
+			ImGui::Separator();
+
+			ImGui::Text("Indexes: ");
+			ImGui::Text("Normals: ");
+			ImGui::Text("Vertexs: ");
+			ImGui::Text("Faces: ");
+
+			ImGui::Separator();
+
+		}
+		if (ImGui::CollapsingHeader("Material"))
+		{
+			//ImGui::Checkbox("Active", );
+			//ImGui::SameLine();
+			ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "MeshTextureFileName.png");	// TO DO: Introduce mesh texture file name from mesh texture file path
+
+			ImGui::Separator();
+
+
+		}
+
+
 	}
 
 	ImGui::End();
