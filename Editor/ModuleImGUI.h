@@ -1,6 +1,8 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include <string>
+#include <IL/il.h>
 
 
 class ModuleImGUI : public Module
@@ -36,6 +38,9 @@ public:
 
 	bool CreatedOnce = true;
 
+	std::string nameholder;
+	bool renamed = false;
+
 private:
 	
 	bool aboutWindow = false;
@@ -46,5 +51,14 @@ private:
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
 	bool showDebugLogWindow = true;
+
+	int numVerts;
+	int numIndexes;
+	std::string Name; 
+	std::string MeshFileName;
+	std::string MeshTexture;
+
+	char Title[150] = "Write Text";
+	std::string name;
 
 };

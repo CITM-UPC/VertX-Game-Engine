@@ -522,63 +522,81 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
+
+	
 	
 	if (ImGui::Begin("Inspector", &inspectorWindow)) {
-		//Configuration options
-		if (ImGui::CollapsingHeader("Configuration"))
-		{
-			GeneratePrimitives();
 
-			/*ImGui::Checkbox("WireFrame", &Wireframe);
-			ImGui::Checkbox("Depth Test", &DepthTest);
-			ImGui::Checkbox("Cull Face", &CullFace);
-			ImGui::Checkbox("Lighting", &Lighting);*/
-			/*ImGui::Checkbox("Color Material", &ColorMaterial);*/
+			//if (ImGui::MenuItem(vector.data()->get()->getName().c_str())) {
+			//	// select the mesh
+			//}
 
-		}
-		if (ImGui::CollapsingHeader("Transform"))
-		{
-			//ImGui::Checkbox("Active", );
+			//Configuration options
+			if (ImGui::CollapsingHeader("Asset Add"))
+			{
+				GeneratePrimitives();
+
+				/*ImGui::Checkbox("WireFrame", &Wireframe);
+				ImGui::Checkbox("Depth Test", &DepthTest);
+				ImGui::Checkbox("Cull Face", &CullFace);
+				ImGui::Checkbox("Lighting", &Lighting);*/
+				/*ImGui::Checkbox("Color Material", &ColorMaterial);*/
+			}
+
+			/*if (ImGui::CollapsingHeader("Rename"))
+			{
+				for (const auto& vector : App->game_engine->renderer3D_engine->meshList) {
+					ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+					if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+						vector.data()->get()->setName(Title);
+					}
+				}
+
+				ImGui::Separator();
+
+
+			}*/
+
+			if (ImGui::CollapsingHeader("Transform"))
+			{
+				//ImGui::Checkbox("Active", );
 			
-			ImGui::Separator();
+				ImGui::Separator();
 
+
+			}
+			if (ImGui::CollapsingHeader("Mesh"))
+			{
+				//ImGui::Checkbox("Active", );
+				//ImGui::SameLine();
+				const char* MeshFileNameC = MeshFileName.c_str();
+				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), MeshFileNameC);	// TO DO: Introduce mesh file name from mesh file path
+
+				ImGui::Separator();
+
+				ImGui::Text("Draw:");
+				/*ImGui::Checkbox("Vertex Normals", );
+				ImGui::Checkbox("Face Normals", );*/
+
+				ImGui::Separator();
+
+				ImGui::Text("Indexes: %i", numIndexes);
+				/*ImGui::Text("Normals: ");*/
+				ImGui::Text("Vertexs: %i", numVerts);
+				/*ImGui::Text("Faces: ");*/
+
+				ImGui::Separator();
+
+			}
+			if (ImGui::CollapsingHeader("Material"))
+			{
+				//ImGui::Checkbox("Active", );
+				//ImGui::SameLine();
+				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", MeshFileName);	// TO DO: Introduce mesh texture file name from mesh texture file path
+				ImGui::Separator();
+			}
 
 		}
-		if (ImGui::CollapsingHeader("Mesh"))
-		{
-			//ImGui::Checkbox("Active", );
-			//ImGui::SameLine();
-			ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "MeshFileName.fbx");	// TO DO: Introduce mesh file name from mesh file path
-
-			ImGui::Separator();
-
-			ImGui::Text("Draw:");
-			/*ImGui::Checkbox("Vertex Normals", );
-			ImGui::Checkbox("Face Normals", );*/
-
-			ImGui::Separator();
-
-			ImGui::Text("Indexes: ");
-			ImGui::Text("Normals: ");
-			ImGui::Text("Vertexs: ");
-			ImGui::Text("Faces: ");
-
-			ImGui::Separator();
-
-		}
-		if (ImGui::CollapsingHeader("Material"))
-		{
-			//ImGui::Checkbox("Active", );
-			//ImGui::SameLine();
-			ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "MeshTextureFileName.png");	// TO DO: Introduce mesh texture file name from mesh texture file path
-
-			ImGui::Separator();
-
-
-		}
-
-
-	}
 
 	ImGui::End();
 }
@@ -593,18 +611,23 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
 	ImGui::Begin("Hierarchy", &hierarchy);
 	for (const auto& vector : App->game_engine->renderer3D_engine->meshList) {
-
-		if (ImGui::MenuItem(vector.data()->get()->getName().c_str())) {
-			// select the mesh
+		if (ImGui::Selectable(vector.data()->get()->getName().c_str())) {
+			numVerts = vector.data()->get()->getNumVerts();
+			numIndexes = vector.data()->get()->getNumIndexs();
+			MeshFileName = vector.data()->get()->getName();
+			vector.data()->get()->texture.get()->bind();
+			if (renamed == true) {
+				vector.data()->get()->setName(nameholder);
+				renamed = false;
+			}
 		}
-
 	}
+
 	ImGui::EndMenu();
 }
 
 void ModuleImGUI::GeneratePrimitives()
 {
-
 	if (ImGui::BeginMenu("GameObject"))
 	{
 		//if (ImGui::Button("Generate Empty GameObject")) {
