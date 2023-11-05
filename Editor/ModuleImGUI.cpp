@@ -163,11 +163,11 @@ update_status ModuleImGUI::PreUpdate()
 	// Render the About window
 	RenderImGUIAboutWindow();
 
-	// Render the Inspector window
-	RenderImGUIInspectorWindow();
-
 	// Render the Camera Inspector window
 	RenderImGUICameraInspectorWindow();
+
+	// Render the Inspector window
+	RenderImGUIInspectorWindow();
 
 	// Render the ImGui Debug Log window
 	RenderImGUIDebugLogWindow();
