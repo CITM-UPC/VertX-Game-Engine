@@ -571,6 +571,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				//ImGui::SameLine();
 				const char* MeshFileNameC = MeshFileName.c_str();
 				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), MeshFileNameC);	// TO DO: Introduce mesh file name from mesh file path
+				if (ImGui::IsItemHovered()) {
+					ImGui::SetTooltip("Assets/%s", MeshFileNameC);
+				}
 
 				ImGui::Separator();
 
@@ -592,7 +595,11 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			{
 				//ImGui::Checkbox("Active", );
 				//ImGui::SameLine();
-				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", MeshFileName);	// TO DO: Introduce mesh texture file name from mesh texture file path
+				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s.png", MeshFileName);	// TO DO: Introduce mesh texture file name from mesh texture file path
+				if (ImGui::IsItemHovered()) {
+					ImGui::SetTooltip("Assets/%s.png", MeshFileName);
+				}
+
 				ImGui::Separator();
 			}
 
@@ -615,6 +622,7 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 			numVerts = vector.data()->get()->getNumVerts();
 			numIndexes = vector.data()->get()->getNumIndexs();
 			MeshFileName = vector.data()->get()->getName();
+			MeshFileName.append(".fbx");
 			vector.data()->get()->texture.get()->bind();
 			if (renamed == true) {
 				vector.data()->get()->setName(nameholder);
