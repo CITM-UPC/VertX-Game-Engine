@@ -73,7 +73,7 @@ bool ModuleImGUI::Init()
 	style.Colors[ImGuiCol_Header] = ImVec4(0.92f, 0.18f, 0.29f, 0.76f);
 	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.92f, 0.18f, 0.29f, 0.86f);
 	style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
-	style.Colors[ImGuiCol_Separator] = ImVec4(0.14f, 0.16f, 0.19f, 1.00f);
+	style.Colors[ImGuiCol_Separator] = ImVec4(0.3922f, 0.3922f, 0.3922f, 1.00f);
 	style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.92f, 0.18f, 0.29f, 0.78f);
 	style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
 	style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.47f, 0.77f, 0.83f, 0.04f);
@@ -92,22 +92,22 @@ bool ModuleImGUI::Init()
 	style.Colors[ImGuiCol_Tab] = ImVec4(0.09f, 0.15f, 0.16f, 0.7f);
 
 	style.WindowMinSize = ImVec2(160, 20);
-	style.FramePadding = ImVec2(4, 6);
-	style.ItemSpacing = ImVec2(6, 2);
+	style.FramePadding = ImVec2(5, 5);
+	style.ItemSpacing = ImVec2(15, 10);
 	style.ItemInnerSpacing = ImVec2(6, 4);
 	style.Alpha = 1.0f;
 	style.WindowRounding = 12.0f;
-	style.WindowPadding = ImVec2(2, 10);
-	style.FrameRounding = 2.0f;
+	style.WindowPadding = ImVec2(12, 10);
+	style.FrameRounding = 5.0f;
 	style.IndentSpacing = 6.0f;
 	style.ItemInnerSpacing = ImVec2(2, 4);
 	style.ItemSpacing = ImVec2(8, 10);
 	style.ColumnsMinSpacing = 50.0f;
-	style.GrabMinSize = 14.0f;
+	style.GrabMinSize = 10.0f;
 	style.GrabRounding = 16.0f;
 	style.ScrollbarSize = 12.0f;
 	style.ScrollbarRounding = 16.0f;
-	style.FrameRounding = 8.0f;
+
 	// Set ImGui custom font
 	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
@@ -495,7 +495,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera World Position X 
 		ImGui::BulletText("Position vector:");
 		float p1 = App->game_engine->camera.worldPosVec.x;
-		ImGui::InputFloat("x1", &p1);
+		ImGui::InputFloat("##CamPosX", &p1);
 		App->game_engine->camera.worldPosVec.x = p1;
 		ToolTipMessage("Click to input a value");
 
@@ -503,7 +503,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera World Position Y
 		float p2 = App->game_engine->camera.worldPosVec.y;
-		ImGui::InputFloat("y1", &p2);
+		ImGui::InputFloat("##CamPosY", &p2);
 		App->game_engine->camera.worldPosVec.y = p2;
 		ToolTipMessage("Click to input a value");
 
@@ -511,7 +511,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera World Position Z
 		float p3 = App->game_engine->camera.worldPosVec.z;
-		ImGui::InputFloat("z1", &p3);
+		ImGui::InputFloat("##CamPosZ", &p3);
 		App->game_engine->camera.worldPosVec.z = p3;
 		ToolTipMessage("Click to input a value");
 
@@ -520,7 +520,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera Focus Point X 
 		ImGui::BulletText("Reference vector:");
 		float r1 = App->game_engine->camera.focusPosVec.x;
-		ImGui::InputFloat("x2", &r1);
+		ImGui::InputFloat("##CamFocusX", &r1);
 		App->game_engine->camera.focusPosVec.x = r1;
 		ToolTipMessage("Click to input a value");
 
@@ -528,7 +528,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Focus Point Y 
 		float r2 = App->game_engine->camera.focusPosVec.y;
-		ImGui::InputFloat("y2", &r2);
+		ImGui::InputFloat("##CamFocusY", &r2);
 		App->game_engine->camera.focusPosVec.y = r2;
 		ToolTipMessage("Click to input a value");
 
@@ -536,7 +536,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Focus Point Z
 		float r3 = App->game_engine->camera.focusPosVec.z;
-		ImGui::InputFloat("z2", &r3);
+		ImGui::InputFloat("##CamFocusZ", &r3);
 		App->game_engine->camera.focusPosVec.z = r3;
 		ToolTipMessage("Click to input a value");
 
@@ -545,7 +545,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera Up Vector X
 		ImGui::BulletText("Up vector :");
 		float u1 = App->game_engine->camera.upVec.x;
-		ImGui::InputFloat("x3", &u1);
+		ImGui::InputFloat("##CamUpX", &u1);
 		App->game_engine->camera.upVec.x = u1;
 		ToolTipMessage("Click to input a value");
 
@@ -553,7 +553,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Focus Point Y 
 		float u2 = App->game_engine->camera.upVec.y;
-		ImGui::InputFloat("y3", &u2);
+		ImGui::InputFloat("##CamUpY", &u2);
 		App->game_engine->camera.upVec.y = u2;
 		ToolTipMessage("Click to input a value");
 
@@ -561,7 +561,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Focus Point Z
 		float u3 = App->game_engine->camera.upVec.z;
-		ImGui::InputFloat("z3", &u3);
+		ImGui::InputFloat("##CamUpZ", &u3);
 		App->game_engine->camera.upVec.z = u3;
 		ToolTipMessage("Click to input a value");
 
@@ -634,34 +634,32 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
-						if (ImGui::BeginTable("", 4))
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-							ImGui::Text("Position");
-							ImGui::Text("Rotation");
-							ImGui::Text("Scale");
+						ImGui::PushItemWidth(60.0f);	// Make Text Input components width shorter
 
-							ImGui::TableSetColumnIndex(1);
-							ImGui::Text("X");
-							ImGui::Text(std::to_string(transform->position.x).c_str());
-							ImGui::Text(std::to_string(transform->rotation.x).c_str());
-							ImGui::Text("1");
+						ImGui::BulletText("Position");
+						ImGui::InputDouble("##PositionX", &transform->position.x, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");
 
-							ImGui::TableSetColumnIndex(2);
-							ImGui::Text("Y");
-							ImGui::Text(std::to_string(transform->position.y).c_str());
-							ImGui::Text(std::to_string(transform->rotation.y).c_str());
-							ImGui::Text("1");
 
-							ImGui::TableSetColumnIndex(3);
-							ImGui::Text("Z");
-							ImGui::Text(std::to_string(transform->position.z).c_str());
-							ImGui::Text(std::to_string(transform->rotation.z).c_str());
-							ImGui::Text("1");
+						ImGui::BulletText("Rotation");
+						ImGui::InputDouble("##RotationX", &transform->rotation.x, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##RotationY", &transform->rotation.y, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##RotationZ", &transform->rotation.z, 0.0, 0.0, "%.3f");
 
-							ImGui::EndTable();
-						}
+
+						ImGui::BulletText("Scale");
+						ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
+						ImGui::SameLine();
+						ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
+
+						ImGui::PopItemWidth();
 					}
 				}
 				if (component.get()->getType() == Component::Type::MESH) {
