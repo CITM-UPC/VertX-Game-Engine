@@ -545,6 +545,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			for (auto& component : gameObjSelected.GetComponents()) {
 				if (component.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(component.get());
+
+					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
 						if (ImGui::BeginTable("", 4))
@@ -581,6 +583,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				}
 				if (component.get()->getType() == Component::Type::MESH) {
 					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+
+					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
 						ImGui::Checkbox("Active", &mesh->isActive);
@@ -600,6 +604,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				}
 				if (component.get()->getType() == Component::Type::TEXTURE2D) {
 					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+
+					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
 					{
 					}
