@@ -50,7 +50,7 @@ bool ModuleImGUI::Init()
 	// Set ImGui windows rounding
 	style.Colors[ImGuiCol_Text] = ImVec4(0.86f, 0.93f, 0.89f, 0.78f);
 	style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.86f, 0.93f, 0.89f, 0.28f);
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 0.50f);
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 0.75f);
 	style.Colors[ImGuiCol_Border] = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
 	style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
@@ -92,11 +92,11 @@ bool ModuleImGUI::Init()
 	style.Colors[ImGuiCol_Tab] = ImVec4(0.09f, 0.15f, 0.16f, 0.7f);
 
 	style.WindowMinSize = ImVec2(160, 20);
-	style.FramePadding = ImVec2(4, 10);
+	style.FramePadding = ImVec2(4, 6);
 	style.ItemSpacing = ImVec2(6, 2);
 	style.ItemInnerSpacing = ImVec2(6, 4);
 	style.Alpha = 1.0f;
-	style.WindowRounding = 20.0f;
+	style.WindowRounding = 12.0f;
 	style.WindowPadding = ImVec2(2, 10);
 	style.FrameRounding = 2.0f;
 	style.IndentSpacing = 6.0f;
@@ -107,7 +107,7 @@ bool ModuleImGUI::Init()
 	style.GrabRounding = 16.0f;
 	style.ScrollbarSize = 12.0f;
 	style.ScrollbarRounding = 16.0f;
-	style.FrameRounding = 12.0f;
+	style.FrameRounding = 8.0f;
 	// Set ImGui custom font
 	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
@@ -367,7 +367,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			ImGui::Checkbox("Resizeable", &App->window->resizableEnabled);
 
 			// Vsync toggle checkbox
-			if (ImGui::Checkbox("Vertical Sincronization", &App->game_engine->renderer3D_engine->vsync))
+			if (ImGui::Checkbox("Vertical Syncronization", &App->game_engine->renderer3D_engine->vsync))
 				OutputDebugString("EDITOR: VSync Toggled\n");
 
 			ImGui::Separator();
