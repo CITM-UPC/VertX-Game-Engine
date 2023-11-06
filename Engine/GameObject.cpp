@@ -86,6 +86,10 @@ void GameObject::UpdateComponents()
 	}
 }
 
-void GameObject::Rename(std::string Rename) {
-	Rename = name;
+void GameObject::Rename(std::string Rename, std::list<GameObject> gameObjectList) {
+
+	for (auto& go : gameObjectList)
+	{
+		Rename = name;
+	}
 }

@@ -30,7 +30,7 @@ public:
 	void AddComponent(Component::Type component);
 	void AddComponent(std::shared_ptr<Mesh> component);
 	void RemoveComponent(Component::Type component);
-	void Rename(std::string Rename);
+	void Rename(std::string Rename, std::list<GameObject> gameObjectList);
 
 	static GameObject* Find(std::string name, std::list<GameObject> gameObjectList);
 
