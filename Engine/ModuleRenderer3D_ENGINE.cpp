@@ -38,6 +38,7 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Extract the filename from the file path
 	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
 	std::string filename = (lastBackslash) ? lastBackslash + 1 : filePath;
+	std::string filenamestore = filename;
 
 	// Determine the destination subfolder based on the file type
 	const char* subfolder = nullptr;
@@ -66,6 +67,15 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 		}
 		else {
 			std::cerr << "Failed to copy the file. Error code: " << GetLastError() << std::endl;
+		}
+	}
+
+	if (extension) {
+		if (_stricmp(extension, ".fbx") == 0) {
+			std::string dirPath = "Assets/FBX_Assets/";
+			std::string filedropcomb = dirPath + filenamestore;
+			std::cout << filedropcomb;
+			addGameObject(filedropcomb);
 		}
 	}
 }
@@ -227,7 +237,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
-	/*addFbx("Assets/BakerHouse.fbx");*/
+	//addGameObject("Assets/BakerHouse.fbx");
 
 	return ret;
 }
@@ -294,11 +304,10 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
 
-	for (const auto& vector : meshList) {
-		for (const auto& mesh_ptr : vector) {
-			mesh_ptr->draw();
-		}
+	for (auto& vector : gameObjectList) {
+		vector.UpdateComponents();
 	}
+
 
 	GLenum error = glGetError();
 	assert(error == GL_NO_ERROR);

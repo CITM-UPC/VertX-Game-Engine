@@ -5,6 +5,9 @@
 #include <IL/il.h>
 #include <vector>
 #include <filesystem>
+#include "../Engine/GameObject.h"
+#include "../Engine/Component.h"
+
 namespace fs = std::filesystem;
 
 
@@ -28,8 +31,6 @@ public:
 
 
 	bool showContextMenu = false;
-
-	void RenderContextMenu();
 
 	void RenderImGUIAssetsWindow();
 	void RenderImGUIAboutWindow();
@@ -69,6 +70,7 @@ private:
 	std::string Name; 
 	std::string MeshFileName;
 	std::string MeshTexture;
+	GameObject gameObjSelected;
 
 	char Title[150] = "Write Text";
 	std::string name;

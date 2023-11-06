@@ -103,3 +103,5 @@ void Transform::Rotate(vec3f axis, Space referenceFrame)
 	right = rotMatrix * right;
 	up = rotMatrix * up;
 }
+
+void Transform::Update() {}

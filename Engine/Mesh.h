@@ -8,7 +8,7 @@
 #include "Texture2D.h"
 
 
-class Mesh : public Graphic
+class Mesh : public Graphic, public Component
 {
 public:
 	enum Formats { F_V3, F_V3C4, F_V3T2 };
@@ -27,14 +27,14 @@ private:
 	const unsigned int _numIndexs;
 
 public:
-	using Ptr = std::shared_ptr<Mesh>;
-
-	static std::vector<Ptr> loadFromFile(const std::string& path);
+	Mesh() : _format(Formats::F_V3), _numVerts(0), _numIndexs(0) {
+	}
 
 	Texture2D::Ptr texture;
 
 	Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* indexs_data = nullptr, unsigned int numIndexs = 0);
 	Mesh(Mesh&& b) noexcept;
+	//Mesh(const Mesh& cpy);
 	void draw();
 	~Mesh();
 
@@ -45,8 +45,15 @@ public:
 
 	const unsigned int getNumIndexs();
 
+	void Update() override;
+
+	//Assigning of Type for later IMGUI Sorting
+
+	Type getType() const override {
+		return Type::MESH;
+	}
+
 private:
-	Mesh(const Mesh& cpy);
 	Mesh& operator=(const Mesh&);
 };
 

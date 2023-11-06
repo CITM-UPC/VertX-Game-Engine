@@ -530,26 +530,84 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
-
-	
-	
 	if (ImGui::Begin("Inspector", &inspectorWindow)) {
 
-			//if (ImGui::MenuItem(vector.data()->get()->getName().c_str())) {
-			//	// select the mesh
-			//}
+		//Configuration options
+		if (ImGui::CollapsingHeader("Asset Add"))
+		{
+			GeneratePrimitives();
+		}
 
-			//Configuration options
-			if (ImGui::CollapsingHeader("Asset Add"))
-			{
-				GeneratePrimitives();
+		if (gameObjSelected.name != "") {
+			ImGui::Checkbox("Active", &gameObjSelected.isActive);
+			ImGui::SameLine(); ImGui::Text("GameObject name: ");
+			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
+			for (auto& component : gameObjSelected.GetComponents()) {
+				if (component.get()->getType() == Component::Type::TRANSFORM) {
+					Transform* transform = dynamic_cast<Transform*>(component.get());
+					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
+					{
+						if (ImGui::BeginTable("", 4))
+						{
+							//ImGui::DragFloat("", &transform->sc.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.3f");
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Checkbox("Active", &transform->isActive);
+							ImGui::Text("Position");
+							ImGui::Text("Rotation");
+							ImGui::Text("Scale");
 
-				/*ImGui::Checkbox("WireFrame", &Wireframe);
-				ImGui::Checkbox("Depth Test", &DepthTest);
-				ImGui::Checkbox("Cull Face", &CullFace);
-				ImGui::Checkbox("Lighting", &Lighting);*/
-				/*ImGui::Checkbox("Color Material", &ColorMaterial);*/
+							ImGui::TableSetColumnIndex(1);
+							ImGui::Text("X");
+							ImGui::Text(std::to_string(transform->position.x).c_str());
+							ImGui::Text(std::to_string(transform->rotation.x).c_str());
+							ImGui::Text("1");
+
+							ImGui::TableSetColumnIndex(2);
+							ImGui::Text("Y");
+							ImGui::Text(std::to_string(transform->position.y).c_str());
+							ImGui::Text(std::to_string(transform->rotation.y).c_str());
+							ImGui::Text("1");
+
+							ImGui::TableSetColumnIndex(3);
+							ImGui::Text("Z");
+							ImGui::Text(std::to_string(transform->position.z).c_str());
+							ImGui::Text(std::to_string(transform->rotation.z).c_str());
+							ImGui::Text("1");
+
+							ImGui::EndTable();
+						}
+					}
+				}
+				if (component.get()->getType() == Component::Type::MESH) {
+					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
+					{
+						ImGui::Checkbox("Active", &mesh->isActive);
+						ImGui::SameLine();  ImGui::Text("Filename: ");
+						ImGui::SameLine();  ImGui::Text(mesh->getName().c_str());
+						ImGui::Separator();
+						ImGui::Text("Indexes: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+						/*ImGui::Text("Normals: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());*/
+						ImGui::Text("Vertexs: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+						/*ImGui::Text("Faces: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());*/
+						ImGui::Separator();
+					}
+				}
+				if (component.get()->getType() == Component::Type::TEXTURE2D) {
+					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+					{
+					}
+				}
+
 			}
+
+		}
 
 			/*if (ImGui::CollapsingHeader("Rename"))
 			{
@@ -565,53 +623,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 			}*/
 
-			if (ImGui::CollapsingHeader("Transform"))
-			{
-				//ImGui::Checkbox("Active", );
-			
-				ImGui::Separator();
-
-
-			}
-			if (ImGui::CollapsingHeader("Mesh"))
-			{
-				//ImGui::Checkbox("Active", );
-				//ImGui::SameLine();
-				const char* MeshFileNameC = MeshFileName.c_str();
-				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), MeshFileNameC);	// TO DO: Introduce mesh file name from mesh file path
-				if (ImGui::IsItemHovered()) {
-					ImGui::SetTooltip("Assets/%s", MeshFileNameC);
-				}
-
-				ImGui::Separator();
-
-				ImGui::Text("Draw:");
-				/*ImGui::Checkbox("Vertex Normals", );
-				ImGui::Checkbox("Face Normals", );*/
-
-				ImGui::Separator();
-
-				ImGui::Text("Indexes: %i", numIndexes);
-				/*ImGui::Text("Normals: ");*/
-				ImGui::Text("Vertexs: %i", numVerts);
-				/*ImGui::Text("Faces: ");*/
-
-				ImGui::Separator();
-
-			}
-			if (ImGui::CollapsingHeader("Material"))
-			{
-				//ImGui::Checkbox("Active", );
-				//ImGui::SameLine();
-				ImGui::Text("File: ");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s.png", MeshFileName);	// TO DO: Introduce mesh texture file name from mesh texture file path
-				if (ImGui::IsItemHovered()) {
-					ImGui::SetTooltip("Assets/%s.png", MeshFileName);
-				}
-
-				ImGui::Separator();
-			}
-
-		}
+	}
 
 	ImGui::End();
 }
@@ -625,7 +637,7 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
 	ImGui::Begin("Hierarchy", &hierarchy);
-	for (const auto& vector : App->game_engine->renderer3D_engine->meshList) {
+	/*for (const auto& vector : App->game_engine->renderer3D_engine->gameObjectList) {
 		if (ImGui::Selectable(vector.data()->get()->getName().c_str())) {
 			numVerts = vector.data()->get()->getNumVerts();
 			numIndexes = vector.data()->get()->getNumIndexs();
@@ -635,33 +647,38 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 			if (renamed == true) {
 				vector.data()->get()->setName(nameholder);
 				renamed = false;
-			}
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-				ImVec2 contextMenuPos;
+			}*/
+			//if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+			//	ImVec2 contextMenuPos;
 
-				// Check if the right mouse button is clicked
-				if (ImGui::IsItemHovered()) {
-					// Set the flag to show the context menu
-					showContextMenu = true;
-					contextMenuPos = ImGui::GetMousePos();
-					if (showContextMenu) {
-						// Open a context menu at the specified position
-						contextMenuPos = ImGui::GetMousePos();
-						ImGui::SetNextWindowPos(contextMenuPos);
-						if (ImGui::Begin("ObjectContextMenu", &showContextMenu, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
-							if (ImGui::MenuItem("Rename")) {
-								// Perform actions when "Rename" is clicked
-							}
-							if (ImGui::MenuItem("Delete")) {
-								// Perform actions when "Delete" is clicked
-							}
-							// Add more options as needed
+			//	// Check if the right mouse button is clicked
+			//	if (ImGui::IsItemHovered()) {
+			//		// Set the flag to show the context menu
+			//		showContextMenu = true;
+			//		contextMenuPos = ImGui::GetMousePos();
+			//		if (showContextMenu) {
+			//			// Open a context menu at the specified position
+			//			contextMenuPos = ImGui::GetMousePos();
+			//			ImGui::SetNextWindowPos(contextMenuPos);
+			//			if (ImGui::Begin("ObjectContextMenu", &showContextMenu, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
+			//				if (ImGui::MenuItem("Rename")) {
+			//					// Perform actions when "Rename" is clicked
+			//				}
+			//				if (ImGui::MenuItem("Delete")) {
+			//					// Perform actions when "Delete" is clicked
+			//				}
+			//				// Add more options as needed
 
-							ImGui::End();
-						}
-					}
-				}
-			}
+			//				ImGui::End();
+			//			}
+			//		}
+			//	}
+			//}
+
+	for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
+
+		if (ImGui::MenuItem(gameObject.name.c_str())) {
+			gameObjSelected = gameObject;
 		}
 	}
 
@@ -689,7 +706,7 @@ void ModuleImGUI::GeneratePrimitives()
 		//}
 
 		if (ImGui::Button("Generate Cube")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/Cube.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Cube.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
 
@@ -701,7 +718,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Plane")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/Plane.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
 
@@ -713,7 +730,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Pyramid")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/Pyramid.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
 
@@ -726,7 +743,7 @@ void ModuleImGUI::GeneratePrimitives()
 
 		if (ImGui::Button("Generate Sphere")) {
 
-			App->game_engine->renderer3D_engine->addFbx("Assets/Sphere.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
 
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -739,7 +756,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Cylinder")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/Cylinder.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
 
@@ -751,7 +768,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Baker House")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/BakerHouse.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
 
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -764,7 +781,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("F1 Ferrari")) {
-			App->game_engine->renderer3D_engine->addFbx("Assets/RaceCar.fbx");
+			App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
 				

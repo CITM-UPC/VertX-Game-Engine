@@ -12,7 +12,6 @@ Texture2D::Texture2D(const std::string& path) {
     auto img = ilGenImage();
     ilBindImage(img);
     ilLoadImage(path.c_str());
-    ilSaveImage(path.c_str());
     auto width = ilGetInteger(IL_IMAGE_WIDTH);
     auto height = ilGetInteger(IL_IMAGE_HEIGHT);
     auto channels = ilGetInteger(IL_IMAGE_CHANNELS);
@@ -39,6 +38,10 @@ Texture2D::Texture2D(Texture2D&& tex) noexcept : _id(tex._id) {
 
 Texture2D::~Texture2D() {
     if(_id) glDeleteTextures(1, &_id);
+}
+
+void Texture2D::Update()
+{
 }
 
 void Texture2D::bind() const {
