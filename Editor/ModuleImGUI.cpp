@@ -127,6 +127,12 @@ update_status ModuleImGUI::PreUpdate()
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Game Objects"))
+		{
+			GeneratePrimitives();
+
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Help"))
 		{
 			if (ImGui::MenuItem("About")) 
@@ -643,6 +649,7 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
 	ImGui::Begin("Hierarchy", &hierarchy);
+
 	/*for (const auto& vector : App->game_engine->renderer3D_engine->gameObjectList) {
 		if (ImGui::Selectable(vector.data()->get()->getName().c_str())) {
 			numVerts = vector.data()->get()->getNumVerts();
