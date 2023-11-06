@@ -22,7 +22,7 @@ ModuleImGUI::~ModuleImGUI()
 
 bool ModuleImGUI::Init()
 {
-	LOG("Initializing ImGui Module");
+	OutputDebugString("EDITOR: Initializing ImGui Module -------\n");
 
 	// Setup ImGui context
 	IMGUI_CHECKVERSION();
@@ -186,7 +186,7 @@ update_status ModuleImGUI::PreUpdate()
 
 bool ModuleImGUI::CleanUp()
 {
-	LOG("Destroying ImGUI");
+	OutputDebugString("EDITOR: Destroying ImGUI----\n");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -278,7 +278,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		if (ImGui::CollapsingHeader("Application"))
 		{
 			ImGui::SeparatorText("Application name:");
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "VertX Game Engine\n");
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), TITLE);
 			
 			ImGui::SeparatorText("Organization:");
 			ImGui::TextColored(ImVec4(0, 1, 1, 1), "UPC CITM");
@@ -301,7 +301,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 			// Vsync toggle checkbox
 			if (ImGui::Checkbox("Vertical Sincronization", &App->game_engine->renderer3D_engine->vsync))
-				LOG("VSYNC Toggled");
+				OutputDebugString("EDITOR: VSync Toggled\n");
 
 			ImGui::Separator();
 

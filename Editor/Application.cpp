@@ -36,7 +36,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	LOG("Application Start --------------");
+	OutputDebugString("EDITOR: Application Start --------------\n");
 	for (auto const& item : list_modules)
 	{
 		item->Start();
@@ -107,8 +107,8 @@ void Application::AddModule(Module* mod)
 
 void Application::OpenWebLink(const char *webLink)
 {
-	LOG("Opening the following link: %s", webLink);
-	
+	OutputDebugString("EDITOR: Opening the website link-------\n");
+
 	// Open web link using Shell Execute command line
 	ShellExecute(NULL, "open", webLink, 0, 0, SW_SHOWDEFAULT);
 }

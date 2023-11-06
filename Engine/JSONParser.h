@@ -16,7 +16,7 @@ Json::Value GetFile(string path) {
 	bool parsingSuccessful = Json::parseFromStream(reader, file, &obj, &errors);
 
 	if (!parsingSuccessful) {
-		LOG_("ENGINE: JsonCPP: ERROR: ");
+		OutputDebugString("ENGINE: JsonCPP ERROR!\n");
 		LOG_("%s", errors);
 	}
 

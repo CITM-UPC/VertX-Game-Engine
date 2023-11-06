@@ -14,7 +14,7 @@ enum main_states
 
 int main(int argc, char ** argv)
 {
-	LOG("Starting game '%s'...", TITLE);
+	OutputDebugString("-------------STARTING VertX Game Engine-------------\n");
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
@@ -30,23 +30,23 @@ int main(int argc, char ** argv)
 		{
 		case MAIN_CREATION:
 
-			LOG("-------------- Application Creation --------------");
+			OutputDebugString("-------------- Application Creation --------------\n");
 			App = new Application();
 			state = MAIN_START;
 			break;
 
 		case MAIN_START:
 
-			LOG("-------------- Application Init --------------");
+			OutputDebugString("-------------- Application Init --------------\n");
 			if (App->Init() == false)
 			{
-				LOG("Application Init exits with ERROR");
+				OutputDebugString("Application Init exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 			else
 			{
+				OutputDebugString("-------------- Application Update --------------\n");
 				state = MAIN_UPDATE;
-				LOG("-------------- Application Update --------------");
 			}
 
 			break;
@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
 
 			if (update_return == UPDATE_ERROR)
 			{
-				LOG("Application Update exits with ERROR");
+				OutputDebugString("Application Update exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 
@@ -83,10 +83,10 @@ int main(int argc, char ** argv)
 
 		case MAIN_FINISH:
 
-			LOG("-------------- Application CleanUp --------------");
+			OutputDebugString("-------------- Application CleanUp --------------\n");
 			if (App->CleanUp() == false)
 			{
-				LOG("Application CleanUp exits with ERROR");
+				OutputDebugString("Application CleanUp exits with ERROR--------------\n");
 			}
 			else
 				main_return = EXIT_SUCCESS;
@@ -99,6 +99,6 @@ int main(int argc, char ** argv)
 	}
 
 	delete App;
-	LOG("Exiting game '%s'...\n", TITLE);
+	OutputDebugString("EXITING VertX Game Engine--------\n");
 	return main_return;
 }
