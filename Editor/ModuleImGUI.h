@@ -3,6 +3,11 @@
 #include "Globals.h"
 #include <string>
 #include <IL/il.h>
+#include <vector>
+#include <filesystem>
+namespace fs = std::filesystem;
+
+
 
 
 class ModuleImGUI : public Module
@@ -15,9 +20,16 @@ public:
 	update_status PreUpdate();
 	bool CleanUp();
 
+	std::vector<std::string> assetFiles;
+
 public:
 
 	void RenderImGUI();
+
+
+	bool showContextMenu = false;
+
+	void RenderContextMenu();
 
 	void RenderImGUIAssetsWindow();
 	void RenderImGUIAboutWindow();
@@ -60,5 +72,18 @@ private:
 
 	char Title[150] = "Write Text";
 	std::string name;
+
+	const std::string assetFolderPath = "Assets";
+
+	std::vector<std::string> GetAssetFiles(const std::string& assetFolderPath) {
+		std::vector<std::string> assetFiles;
+		for (const auto& entry : fs::directory_iterator(assetFolderPath)) {
+			if (fs::is_regular_file(entry.path())) {
+				assetFiles.push_back(entry.path().filename().string()); // Convert path to string
+			}
+		}
+		return assetFiles;
+	}
+
 
 };

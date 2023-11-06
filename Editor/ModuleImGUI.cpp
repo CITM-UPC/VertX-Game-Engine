@@ -9,6 +9,8 @@
 #include "imgui_impl_opengl3.h"
 #include "ModuleWindow.h"
 #include "SDL2/SDL_cpuinfo.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -515,6 +517,12 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 		ImGui::Begin("Assets", &assetsWindow);
 			
 		// TO DO
+		for (const auto& assetFile : assetFiles) {
+			if (ImGui::MenuItem(assetFile.c_str())) {
+				// Handle the asset file click event
+				// You can open, load, or perform other actions on the selected asset here
+			}
+		}
 
 		ImGui::End();
 	}
@@ -628,11 +636,38 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 				vector.data()->get()->setName(nameholder);
 				renamed = false;
 			}
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+				ImVec2 contextMenuPos;
+
+				// Check if the right mouse button is clicked
+				if (ImGui::IsItemHovered()) {
+					// Set the flag to show the context menu
+					showContextMenu = true;
+					contextMenuPos = ImGui::GetMousePos();
+					if (showContextMenu) {
+						// Open a context menu at the specified position
+						contextMenuPos = ImGui::GetMousePos();
+						ImGui::SetNextWindowPos(contextMenuPos);
+						if (ImGui::Begin("ObjectContextMenu", &showContextMenu, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
+							if (ImGui::MenuItem("Rename")) {
+								// Perform actions when "Rename" is clicked
+							}
+							if (ImGui::MenuItem("Delete")) {
+								// Perform actions when "Delete" is clicked
+							}
+							// Add more options as needed
+
+							ImGui::End();
+						}
+					}
+				}
+			}
 		}
 	}
 
 	ImGui::EndMenu();
 }
+
 
 void ModuleImGUI::GeneratePrimitives()
 {
