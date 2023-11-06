@@ -55,15 +55,15 @@ Mesh::Mesh(Mesh&& b) noexcept :
     b._indexs_buffer_id = 0;
 }
 
-//Mesh::Mesh(const Mesh& cpy) : meshName(cpy.meshName), //For aligning pointers
-//_format(cpy._format),
-//_vertex_buffer_id(cpy._vertex_buffer_id),
-//_numVerts(cpy._numVerts),
-//_indexs_buffer_id(cpy._indexs_buffer_id),
-//_numIndexs(cpy._numIndexs),
-//texture(cpy.texture) 
-//{
-//}
+Mesh::Mesh(const Mesh& cpy) : meshName(cpy.meshName), //For aligning pointers
+_format(cpy._format),
+_vertex_buffer_id(cpy._vertex_buffer_id),
+_numVerts(cpy._numVerts),
+_indexs_buffer_id(cpy._indexs_buffer_id),
+_numIndexs(cpy._numIndexs),
+texture(cpy.texture) 
+{
+}
 
 void Mesh::draw() {
 

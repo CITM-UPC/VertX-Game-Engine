@@ -85,3 +85,7 @@ void GameObject::UpdateComponents()
 		comp->Update();
 	}
 }
+
+void GameObject::Rename(std::string Rename) {
+	Rename = name;
+}

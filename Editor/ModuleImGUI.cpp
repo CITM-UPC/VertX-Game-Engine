@@ -548,10 +548,13 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			ImGui::Checkbox("Active", &gameObjSelected.isActive);
 			ImGui::SameLine(); ImGui::Text("GameObject name: ");
 			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
+			ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+				gameObjSelected.name = Title;
+			}
 			for (auto& component : gameObjSelected.GetComponents()) {
 				if (component.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(component.get());
-
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
@@ -599,12 +602,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::Separator();
 						ImGui::Text("Indexes: ");
 						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
-						/*ImGui::Text("Normals: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());*/
 						ImGui::Text("Vertexs: ");
 						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
-						/*ImGui::Text("Faces: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());*/
 						ImGui::Separator();
 					}
 				}

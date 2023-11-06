@@ -34,7 +34,7 @@ public:
 
 	Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* indexs_data = nullptr, unsigned int numIndexs = 0);
 	Mesh(Mesh&& b) noexcept;
-	//Mesh(const Mesh& cpy);
+	Mesh(const Mesh& cpy);
 	void draw();
 	~Mesh();
 
