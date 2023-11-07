@@ -45,4 +45,17 @@ public:
 	double deltaTime;
 	double frameDuration;
 
+private:
+
+	std::vector<std::string> consoleLogs;
+
+public:
+
+	void AddConsoleLog(char* log);
+	void ClearConsoleLogs();
+
+	std::vector<std::string> GetConsoleLogs();
+
 };
+
+extern Application* App;

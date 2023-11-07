@@ -16,12 +16,13 @@ ModuleWindow::~ModuleWindow()
 // Called before render is available
 bool ModuleWindow::Init()
 {
-	OutputDebugString("EDITOR: Init SDL window & surface\n");
+	LOG("EDITOR: Init SDL window & surface", NULL);
 	bool ret = true;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		OutputDebugString("EDITOR: SDL_VIDEO could not initialize!\n");
+		LOG("EDITOR: SDL_VIDEO could not initialize! ERROR: %s", SDL_GetError());
+
 		ret = false;
 	}
 	else
@@ -59,7 +60,8 @@ bool ModuleWindow::Init()
 
 		if(window == NULL)
 		{
-			OutputDebugString("EDITOR: Window could not be created!\n");
+			LOG("EDITOR: Window could not be created! ERROR: %s", SDL_GetError());
+
 			ret = false;
 		}
 		else
@@ -120,7 +122,7 @@ update_status ModuleWindow::Update()
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	OutputDebugString("EDITOR: Destroying SDL window and quitting all SDL systems\n");
+	LOG("EDITOR: Destroying SDL window and quitting all SDL systems!", NULL);
 
 	//Destroy window
 	if(window != NULL)

@@ -16,7 +16,7 @@ Json::Value GetFile(string path) {
 	bool parsingSuccessful = Json::parseFromStream(reader, file, &obj, &errors);
 
 	if (!parsingSuccessful) {
-		OutputDebugString("ENGINE: JsonCPP ERROR!\n");
+		LOG_("ENGINE: JsonCPP ERROR!", NULL);
 		LOG_("%s", errors);
 	}
 
@@ -32,7 +32,7 @@ Json::Value GetFile(string path) {
 // obj["name_attribute"].asString();
 
 // To write data, use the same function GetFile(...)
-// obj["name_attribute"] = "Mondongo";
+// obj["name_attribute"] = "Hello World";
 // obj["name_attribute"] = 12345;
 
 // To add this type of information:  "attribute" : [ 1, 2, 3 ]

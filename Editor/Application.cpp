@@ -1,5 +1,6 @@
 #include "Application.h"
 
+
 Application::Application()
 {
 	game_engine = new ModuleGameEngine();
@@ -36,7 +37,8 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	OutputDebugString("EDITOR: Application Start --------------\n");
+	LOG("EDITOR: Application Start ----------", NULL);
+
 	for (auto const& item : list_modules)
 	{
 		item->Start();
@@ -86,6 +88,8 @@ update_status Application::Update()
 
 bool Application::CleanUp()
 {
+	LOG("EDITOR: Application Clean Up ----------", NULL);
+
 	bool ret = true;
 
 	//This seems to work, but I think it is doing it in the normal order, not reverse.
@@ -105,10 +109,27 @@ void Application::AddModule(Module* mod)
 	list_modules.push_back(mod);
 }
 
+
+void Application::AddConsoleLog(static char* log)
+{
+	consoleLogs.push_back(log);
+}
+
+void Application::ClearConsoleLogs()
+{
+	consoleLogs.clear();
+}
+
+std::vector<std::string> Application::GetConsoleLogs()
+{
+	return consoleLogs;
+}
+
 void Application::OpenWebLink(const char *webLink)
 {
-	OutputDebugString("EDITOR: Opening the website link-------\n");
+	LOG("EDITOR: Opening the following website link: [ %s ]", webLink);
 
 	// Open web link using Shell Execute command line
 	ShellExecute(NULL, "open", webLink, 0, 0, SW_SHOWDEFAULT);
 }
+

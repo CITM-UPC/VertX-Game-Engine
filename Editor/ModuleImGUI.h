@@ -45,6 +45,7 @@ public:
 	void RenderImGUIInspectorWindow();
 	void RenderImGUICameraInspectorWindow();
 	void RenderImGUIDebugLogWindow();
+	void RenderImGUIConsoleWindow();
 
 	void RenderFPSGraph();
 
@@ -95,6 +96,5 @@ private:
 		}
 		return assetFiles;
 	}
-
 
 };

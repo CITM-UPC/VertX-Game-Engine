@@ -12,13 +12,15 @@ enum main_states
 	MAIN_EXIT
 };
 
+Application* App = NULL;
+
 int main(int argc, char ** argv)
 {
-	OutputDebugString("-------------STARTING VertX Game Engine-------------\n");
+	LOG("-------------STARTING VertX Game Engine-------------", NULL);
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
-	Application* App = NULL;
+	//Application* App = NULL;
 
 	// Start computing the game loop tick time
 	std::chrono::high_resolution_clock::time_point lastFrameTime = std::chrono::high_resolution_clock::now();
@@ -30,22 +32,24 @@ int main(int argc, char ** argv)
 		{
 		case MAIN_CREATION:
 
-			OutputDebugString("-------------- Application Creation --------------\n");
+			LOG("-------------- Application Creation --------------", NULL);
 			App = new Application();
 			state = MAIN_START;
 			break;
 
 		case MAIN_START:
 
-			OutputDebugString("-------------- Application Init --------------\n");
+			LOG("-------------- Application Init --------------", NULL);
 			if (App->Init() == false)
 			{
-				OutputDebugString("Application Init exits with ERROR\n");
+				LOG("Application Init exits with ERROR: %s", SDL_GetError());
+
 				state = MAIN_EXIT;
 			}
 			else
 			{
-				OutputDebugString("-------------- Application Update --------------\n");
+				LOG("-------------- Application Update --------------", NULL);
+
 				state = MAIN_UPDATE;
 			}
 
@@ -72,7 +76,8 @@ int main(int argc, char ** argv)
 
 			if (update_return == UPDATE_ERROR)
 			{
-				OutputDebugString("Application Update exits with ERROR\n");
+				LOG("Application Update exits with ERROR: %s", SDL_GetError());
+				
 				state = MAIN_EXIT;
 			}
 
@@ -83,10 +88,10 @@ int main(int argc, char ** argv)
 
 		case MAIN_FINISH:
 
-			OutputDebugString("-------------- Application CleanUp --------------\n");
+			LOG("-------------- Application CleanUp --------------", NULL);
 			if (App->CleanUp() == false)
 			{
-				OutputDebugString("Application CleanUp exits with ERROR--------------\n");
+				LOG("Application CleanUp exits with ERROR: %s", SDL_GetError());
 			}
 			else
 				main_return = EXIT_SUCCESS;
@@ -99,6 +104,6 @@ int main(int argc, char ** argv)
 	}
 
 	delete App;
-	OutputDebugString("EXITING VertX Game Engine--------\n");
+	LOG("EXITING VertX Game Engine----------------------", NULL);
 	return main_return;
 }

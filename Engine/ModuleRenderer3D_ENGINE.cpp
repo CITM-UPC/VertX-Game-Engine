@@ -26,7 +26,7 @@ void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) 
 	// Create the directory if it doesn't exist
 	if (!CreateDirectoryA(directory, nullptr)) {
 		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			OutputDebugString("ENGINE: Failed to create the directory\n");
+			LOG("ENGINE: Failed to create the directory!", NULL);
 		}
 	}
 }
@@ -34,7 +34,7 @@ void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) 
 // Function to render folders and files in ImGui
 void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Extract the file name and extension
-	OutputDebugString("ENGINE: Dropped file\n");
+	LOG("ENGINE: File dropped. Path: %s", filePath);
 
 	// Extract the filename from the file path
 	const char* lastBackslash = strrchr(filePath, '\\');  // Use backslash for Windows
@@ -150,12 +150,13 @@ bool ModuleRenderer3D_ENGINE::RecursiveRemoveDirectory(const char* directory) {
 // Called before render is available
 bool ModuleRenderer3D_ENGINE::Init()
 {
-	OutputDebugString("ENGINE: Creating 3D Renderer context\n");
+	LOG("ENGINE: Creating 3D Renderer context----", NULL);
+
 	bool ret = true;
 
 	if (targetWindow == NULL)
 	{
-		OutputDebugString("ENGINE: Target window has not been set. Try initializing the variable with 'SetTargetWindow()'\n");
+		LOG("ENGINE: Target window has not been set. Try initializing the variable with 'SetTargetWindow()'", NULL);
 		ret = false;
 	}
 
@@ -163,7 +164,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 	context = SDL_GL_CreateContext(targetWindow);
 	if (context == NULL)
 	{
-		OutputDebugString("ENGINE: OpenGL context could not be created!\n");
+		LOG("ENGINE: OpenGL context could not be created!", NULL);
 		ret = false;
 	}
 
@@ -171,9 +172,9 @@ bool ModuleRenderer3D_ENGINE::Init()
 	GLenum error = glewInit();
 	if (GLEW_OK != error)
 	{
-		OutputDebugString("ENGINE: Error initializing Glew!\n");
+		LOG("ENGINE: Error initializing Glew! ERROR: %s", glewGetErrorString(error));
 	}
-	OutputDebugString("ENGINE Status: Using Glew\n");
+	LOG("ENGINE Status: Using Glew version [ %s ]", glewGetString(GLEW_VERSION));
 
 
 	if (ret == true)
@@ -184,7 +185,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 		//Use Vsync
 		if (vsync && SDL_GL_SetSwapInterval(1) < 0)
-			OutputDebugString("ENGINE: Warning: Unable to set VSync!\n");
+			LOG("ENGINE: Warning: Unable to set VSync!", NULL);
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -194,7 +195,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			OutputDebugString("ENGINE: Error initializing OpenGL!\n");
+			LOG("ENGINE: Error initializing OpenGL! ERROR: %s", gluErrorString(error));
 			ret = false;
 		}
 
@@ -206,7 +207,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			OutputDebugString("ENGINE: Error initializing OpenGL!\n");
+			LOG("ENGINE: Error initializing OpenGL! ERROR: %s", gluErrorString(error));
 			ret = false;
 		}
 
@@ -220,7 +221,8 @@ bool ModuleRenderer3D_ENGINE::Init()
 		error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			OutputDebugString("ENGINE: Error initializing OpenGL!\n");
+			LOG("ENGINE: Error initializing OpenGL! ERROR: %s", gluErrorString(error));
+
 			ret = false;
 		}
 
@@ -289,7 +291,8 @@ engine_update_status ModuleRenderer3D_ENGINE::Update()
 			// Handle quit event
 			break;
 		case SDL_DROPFILE:
-			OutputDebugString("ENGINE: File Dropped\n");
+			LOG("ENGINE: File Dropped!", NULL);
+
 			// Handle file drop event
 			HandleFileDrop(event.drop.file);
 			SDL_free(event.drop.file); // Free the dropped file
@@ -319,7 +322,7 @@ engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
 // Called before quitting
 bool ModuleRenderer3D_ENGINE::CleanUp()
 {
-	OutputDebugString("ENGINE: Destroying 3D Renderer\n");
+	LOG("ENGINE: Destroying 3D Renderer-----", NULL);
 	
 	SDL_GL_DeleteContext(context);
 	targetWindow = nullptr;

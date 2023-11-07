@@ -36,7 +36,7 @@ ModuleImGUI::~ModuleImGUI()
 
 bool ModuleImGUI::Init()
 {
-	OutputDebugString("EDITOR: Initializing ImGui Module -------\n");
+	LOG("EDITOR: Initializing ImGui Module -------", NULL);
 
 	// Setup ImGui context
 	IMGUI_CHECKVERSION();
@@ -73,7 +73,7 @@ bool ModuleImGUI::Init()
 	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.92f, 0.18f, 0.29f, 0.50f);
 	style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.20f, 0.22f, 0.27f, 0.75f);
 	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
-	style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.20f, 0.22f, 0.27f, 0.47f);
+	style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.12f, 0.17f, 1.00f);
 	style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
 	style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.09f, 0.15f, 0.16f, 1.00f);
 	style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.92f, 0.18f, 0.29f, 0.78f);
@@ -123,7 +123,8 @@ bool ModuleImGUI::Init()
 	style.ScrollbarRounding = 16.0f;
 
 	// Set ImGui custom font
-	io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
+	io.Fonts->AddFontFromFileTTF("LatinModernMono_bold.ttf", 18);
+	//io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
 	return true;
 }
@@ -259,6 +260,8 @@ update_status ModuleImGUI::PreUpdate()
 	// Render Hierarchy window
 	RenderImGUIHierarchyWindow();
 
+	RenderImGUIConsoleWindow();
+
 	/*ImGui::ShowDemoWindow();*/
 
 
@@ -267,7 +270,7 @@ update_status ModuleImGUI::PreUpdate()
 
 bool ModuleImGUI::CleanUp()
 {
-	OutputDebugString("EDITOR: Destroying ImGUI----\n");
+	LOG("EDITOR: Destroying ImGUI----", NULL);
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -382,7 +385,7 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 			// Vsync toggle checkbox
 			if (ImGui::Checkbox("Vertical Syncronization", &App->game_engine->renderer3D_engine->vsync))
-				OutputDebugString("EDITOR: VSync Toggled\n");
+				LOG("EDITOR: VSync Toggled!", NULL);
 
 			ImGui::Separator();
 
@@ -930,4 +933,22 @@ void ModuleImGUI::GeneratePrimitives()
 
 		ImGui::EndMenu();
 	}
+}
+
+void ModuleImGUI::RenderImGUIConsoleWindow()
+{
+	ImGui::Begin("Console");
+
+	if (ImGui::Button("Clear Console Logs")) 
+	{
+		App->ClearConsoleLogs();
+	}
+	ImGui::Separator();
+
+	std::vector<std::string> logs = App->GetConsoleLogs();
+	for (auto i = logs.begin(); i != logs.end(); ++i) {
+		ImGui::TextUnformatted((*i).c_str());
+	}
+
+	ImGui::End();
 }

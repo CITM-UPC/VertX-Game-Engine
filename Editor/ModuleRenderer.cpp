@@ -14,7 +14,7 @@ ModuleRenderer::~ModuleRenderer()
 // Called before render is available
 bool ModuleRenderer::Init()
 {
-	OutputDebugString("EDITOR: Creating Renderer context------------\n");
+	LOG("EDITOR: Creating Renderer context------------", NULL);
 	bool ret = true;
 
 	ret = App->game_engine->renderer3D_engine->Init();
@@ -73,7 +73,7 @@ update_status ModuleRenderer::PostUpdate()
 // Called before quitting
 bool ModuleRenderer::CleanUp()
 {
-	OutputDebugString("EDITOR: Destroying Renderer\n");
+	LOG("EDITOR: Destroying Renderer-----", NULL);
 
 	App->game_engine->renderer3D_engine->CleanUp();
 
