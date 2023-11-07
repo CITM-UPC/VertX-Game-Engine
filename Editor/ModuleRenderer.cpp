@@ -14,7 +14,7 @@ ModuleRenderer::~ModuleRenderer()
 // Called before render is available
 bool ModuleRenderer::Init()
 {
-	LOG("EDITOR: Creating Renderer context------------", NULL);
+	LOG("EDITOR: Creating Renderer context ------------", NULL);
 	bool ret = true;
 
 	ret = App->game_engine->renderer3D_engine->Init();

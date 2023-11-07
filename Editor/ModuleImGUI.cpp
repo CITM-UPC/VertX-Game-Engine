@@ -260,6 +260,7 @@ update_status ModuleImGUI::PreUpdate()
 	// Render Hierarchy window
 	RenderImGUIHierarchyWindow();
 
+	// Render Console window
 	RenderImGUIConsoleWindow();
 
 	/*ImGui::ShowDemoWindow();*/

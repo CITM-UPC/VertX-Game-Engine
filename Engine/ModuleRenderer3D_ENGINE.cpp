@@ -174,7 +174,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 	{
 		LOG("ENGINE: Error initializing Glew! ERROR: %s", glewGetErrorString(error));
 	}
-	LOG("ENGINE Status: Using Glew version [ %s ]", glewGetString(GLEW_VERSION));
+	LOG("ENGINE: Using Glew version [ %s ]", glewGetString(GLEW_VERSION));
 
 
 	if (ret == true)
@@ -215,7 +215,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 		glClearDepth(1.0f);
 
 		//Initialize clear color
-		glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
+		glClearColor(0.15f, 0.15f, 0.15f, 0.2f);
 
 		//Check for an error
 		error = glGetError();

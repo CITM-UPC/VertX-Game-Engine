@@ -16,7 +16,7 @@ ModuleWindow::~ModuleWindow()
 // Called before render is available
 bool ModuleWindow::Init()
 {
-	LOG("EDITOR: Init SDL window & surface", NULL);
+	LOG("EDITOR: Initializing SDL window & surface", NULL);
 	bool ret = true;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)

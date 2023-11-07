@@ -28,6 +28,8 @@ Application::~Application()
 
 bool Application::Init()
 {
+	LOG("EDITOR: Application Init ----------", NULL);
+
 	bool ret = true;
 
 	// Call Init() in all modules
@@ -38,7 +40,6 @@ bool Application::Init()
 
 	// After all Init calls we call Start() in all modules
 	LOG("EDITOR: Application Start ----------", NULL);
-
 	for (auto const& item : list_modules)
 	{
 		item->Start();

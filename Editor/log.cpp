@@ -17,8 +17,8 @@ void Log(const char file[], int line, const char* format, ...)
 
 	OutputDebugString(tmpString2);
 
-	/*if (App != nullptr) {
+	if (App != nullptr) {
 		sprintf_s(tmpString2, BUFFER_SIZE, "%s", tmpString1);
 		App->AddConsoleLog(tmpString2);
-	}*/
+	}
 }

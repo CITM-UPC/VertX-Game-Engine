@@ -1,4 +1,5 @@
 #include "ModuleGameEngine.h"
+#include "..\Editor\Globals.h"
 
 ModuleGameEngine::ModuleGameEngine()
 {
@@ -30,7 +31,7 @@ bool ModuleGameEngine::Start()
 {
 	bool ret = true;
 	
-	LOG_("ENGINE: Game Engine Start --------------", NULL);
+	LOG("ENGINE: Game Engine Start --------------", NULL);
 	
 	for (auto const& item : list_modules)
 	{
@@ -93,7 +94,7 @@ bool ModuleGameEngine::CleanUp()
 {
 	bool ret = true;
 
-	LOG_("ENGINE: Game Engine CleanUp --------------", NULL);
+	LOG("ENGINE: Game Engine CleanUp --------------", NULL);
 
 	for (auto const& item : list_modules)
 	{

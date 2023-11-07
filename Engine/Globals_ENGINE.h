@@ -6,10 +6,6 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-#define LOG_(format, ...) Log(__FILE__, __LINE__, format, __VA_ARGS__);
-
-void Log(const char file[], int line, const char* format, ...);
-
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)
 
 #define DEGTORAD 0.0174532925199432957f

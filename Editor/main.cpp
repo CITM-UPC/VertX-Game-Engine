@@ -32,14 +32,12 @@ int main(int argc, char ** argv)
 		{
 		case MAIN_CREATION:
 
-			LOG("-------------- Application Creation --------------", NULL);
 			App = new Application();
 			state = MAIN_START;
 			break;
 
 		case MAIN_START:
 
-			LOG("-------------- Application Init --------------", NULL);
 			if (App->Init() == false)
 			{
 				LOG("Application Init exits with ERROR: %s", SDL_GetError());
@@ -103,7 +101,8 @@ int main(int argc, char ** argv)
 		}
 	}
 
+
+	LOG("-------------EXITING VertX Game Engine-------------", NULL);
 	delete App;
-	LOG("EXITING VertX Game Engine----------------------", NULL);
 	return main_return;
 }
