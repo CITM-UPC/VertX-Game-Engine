@@ -947,18 +947,48 @@ void ModuleImGUI::GeneratePrimitives()
 
 void ModuleImGUI::RenderImGUIConsoleWindow()
 {
+	// Buffer to store the search query
+	static char filterInput[256] = ""; 
+
 	ImGui::Begin("Console");
 
-	if (ImGui::Button("Clear Console Logs")) 
+	// Display the Clear Logs button
+	if (ImGui::Button("Clear Console Logs"))
 	{
 		App->ClearConsoleLogs();
 	}
+
+	ImGui::SameLine();
+
+	// Search bar for filtering logs
+	ImGui::InputText("Search", filterInput, IM_ARRAYSIZE(filterInput));
+
 	ImGui::Separator();
 
+	ImGui::BeginChild("Logs Region", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
 	std::vector<std::string> logs = App->GetConsoleLogs();
-	for (auto i = logs.begin(); i != logs.end(); ++i) {
-		ImGui::TextUnformatted((*i).c_str());
+
+	// Convert the search query to lowercase for case-insensitive comparison
+	std::string filterQuery = filterInput;
+	std::transform(filterQuery.begin(), filterQuery.end(), filterQuery.begin(), ::tolower);
+
+	for (auto i = logs.begin(); i != logs.end(); ++i)
+	{
+		// Convert the log text to lowercase for case-insensitive comparison
+		std::string logText = *i;
+		std::transform(logText.begin(), logText.end(), logText.begin(), ::tolower);
+
+		// If the search string is empty or the log contains the search string, display it
+		if (filterQuery.empty() || logText.find(filterQuery) != std::string::npos)
+		{
+			ImGui::TextUnformatted((*i).c_str());
+		}
 	}
 
+	// Scroll to the bottom to display the latest logs
+	ImGui::SetScrollHereY(1.0f);
+
+	ImGui::EndChild();
 	ImGui::End();
 }
