@@ -22,7 +22,7 @@ public:
 	{
 		std::vector<std::shared_ptr<Mesh>> mesh_ptrs;
 
-		auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+		auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs /*| aiProcess_GenNormals*/);
 		for (size_t m = 0; m < scene->mNumMeshes; ++m) {
 			auto mesh = scene->mMeshes[m];
 			auto faces = mesh->mFaces;

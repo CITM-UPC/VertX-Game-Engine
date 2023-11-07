@@ -674,14 +674,6 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
 	if (ImGui::Begin("Inspector", &inspectorWindow)) {
-
-		//Configuration options
-		/*if (ImGui::CollapsingHeader("Asset Add"))
-		{
-			GeneratePrimitives();
-		}*/
-		
-
 		if (gameObjSelected.name != "") {
 			ImGui::Checkbox("Active", &gameObjSelected.isActive);
 			ImGui::SameLine(); ImGui::Text("Game Object: ");
@@ -695,10 +687,10 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 			//Grab Components and set in for allows for constant polling 
 			//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
-			for (auto& component : gameObjSelected.GetComponents()) {
+			for (auto& comp : gameObjSelected.GetComponents()) {
 				bool deleteButtonPressed = false;
-				if (component.get()->getType() == Component::Type::TRANSFORM) {
-					Transform* transform = dynamic_cast<Transform*>(component.get());
+				if (comp.get()->getType() == Component::Type::TRANSFORM) {
+					Transform* transform = dynamic_cast<Transform*>(comp.get());
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
 						ImGui::PushItemWidth(60.0f);
@@ -727,8 +719,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					}
 				}
 				//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
-				if (component.get()->getType() == Component::Type::MESH) {
-					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+				if (comp.get()->getType() == Component::Type::MESH) {
+					Mesh* mesh = dynamic_cast<Mesh*>(comp.get());
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
@@ -761,8 +753,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					}
 				}
 				//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
-				if (component.get()->getType() == Component::Type::TEXTURE) {
-					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+				if (comp.get()->getType() == Component::Type::TEXTURE) {
+					Texture2D* texture2D = dynamic_cast<Texture2D*>(comp.get());
 
 					if (ImGui::CollapsingHeader("Texture Info", ImGuiTreeNodeFlags_None))
 					{

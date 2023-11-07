@@ -63,6 +63,7 @@ Mesh::Mesh(Mesh&& b) noexcept :
     b._indexs_buffer_id = 0;
 }
 
+//Copy Mesh to Other Attached (Baker House is two separate Meshes)
 Mesh::Mesh(const Mesh& cpy) : 
 Component(cpy.gameObject),
 meshName(cpy.meshName),
@@ -109,6 +110,41 @@ void Mesh::draw() {
     }
     else {
         glDrawArrays(GL_TRIANGLES, 0, _numVerts);
+    }
+
+    if (VertexNormDraw) {
+
+        glLineWidth(2.0f);
+        glBegin(GL_LINES);
+        glColor3f(1.0f, 0.0f, 0.0f);
+
+        for (int i = 0; i < _numVerts; i++) {
+
+            glVertex3f(mVertices[i].x, mVertices[i].y, mVertices[i].z);
+            glVertex3f(mVertices[i].x + mNormals[i].x * 0.1f,
+                mVertices[i].y + mNormals[i].y * 0.1f,
+                mVertices[i].z + mNormals[i].z * 0.1f);
+
+        }
+
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glEnd();
+    }
+
+    if (FaceNormDraw) {
+
+        glLineWidth(2.0f);
+        glBegin(GL_LINES);
+        glColor3f(0.0f, 0.0f, 1.0f);
+
+        for (int i = 0; i < _numFaces; i++) {
+            glm::vec3 endPoint = mFaceCenters[i] + 0.1f * mFaceNormals[i];
+            glVertex3f(mFaceCenters[i].x, mFaceCenters[i].y, mFaceCenters[i].z);
+            glVertex3f(endPoint.x, endPoint.y, endPoint.z);
+        }
+
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glEnd();
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
