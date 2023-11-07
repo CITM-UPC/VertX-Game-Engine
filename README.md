@@ -1,3 +1,11 @@
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
+
 # VertX Game Engine
 
 ## Description
@@ -38,7 +46,7 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 
 ## Features
 ***Top Menu***
-- File Window:  (**Status: Visual**) / New, Open, Save, Save As (pending functional implementation)
+- File Window:   / New, Open, Save, Save As (pending functional implementation) @@Status: Visual
 - Edit Window:  (**Status: Visual**) / Undo, Redo, Copy, Paste, Cut (pending functional implementation)
 - Options ->  (**Status: Functional**) / Config Window:
 - Game Object: (**Status: Functional**) / Render Primitives, Test Meshes etc
