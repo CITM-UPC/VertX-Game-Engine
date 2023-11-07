@@ -37,10 +37,10 @@ public:
 	bool VertexNormDraw = false;
 	bool FaceNormDraw = false;
 
-	std::vector<vec3f> mVertices;
-	std::vector<vec3f> mNormals;
-	std::vector<vec3f> mFaceCenters;
-	std::vector<vec3f> mFaceNormals;
+	std::vector<vec3f> meshVertices;
+	std::vector<vec3f> meshNormals;
+	std::vector<vec3f> meshFaceCenters;
+	std::vector<vec3f> meshFaceNormals;
 
 	Mesh(GameObject& owner, Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* indexs_data = nullptr, unsigned int numIndexs = 0, const unsigned int numTexCoords = 0, unsigned int numNormals = 0, unsigned int numFaces = 0);
 	Mesh(Mesh&& b) noexcept;

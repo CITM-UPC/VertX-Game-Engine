@@ -724,9 +724,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
+						ImGui::GetStyle();
 						if(ImGui::Checkbox("Active", &mesh->isActive))
 							LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->isActive ? "ACTIVE" : "INACTIVE");
-
 						ImGui::SameLine();  
 						ImGui::Text("Filename: ");
 						ImGui::SameLine();  
@@ -744,6 +744,11 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::Text("Faces: ");
 						ImGui::SameLine();  
 						ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+						ImGui::Separator();
+						if(ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)){
+							ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw);
+							ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw);
+						}
 						ImGui::Separator();
 						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
 						{
