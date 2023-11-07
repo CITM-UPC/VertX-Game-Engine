@@ -37,13 +37,12 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - {F} - Reset camera parameters to initial values
 
 ## Features
-
-**UI**
-
 ***Top Menu***
 - File Window:  (**Status: Visual**) / New, Open, Save, Save As (pending functional implementation)
 - Edit Window:  (**Status: Visual**) / Undo, Redo, Copy, Paste, Cut (pending functional implementation)
 - Options ->  (**Status: Functional**) / Config Window:
+- Game Object: (**Status: Functional**) / Render Primitives, Test Meshes etc
+- Help: (**Status: Functional**) / View About window for Project Libraries and Licensing. View Github Repository Page. 
 
 ***Config Window***
 - Application Info: (**Status: Functional**) / Engine Title, Creators, Organization
@@ -62,16 +61,16 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - Game Object Meshes: BakerHouse and Race Car meshes are renderable from *Top Menu: Game Object*.
 - Drag&Drop: FBX meshes and textures able to be rendered in Scene from local PC drag location.
 - Drag&Drop Storage: Dragged FBX/Texture objects are stored within the project in Assets Folder with subfolders titled "FBX_Assets" & "Image_Assets" based on file extension.
+- Game Objects have component structure, that controls mesh, texture, and transform when called.
 
 ***Inspector:*** 
-
-Requires selection of Game Object in Hierarchy
+Requires selection of Game Object in Hierarchy:
 - Game Object Name: Game Object name is displayed on top of inspector window. Renaming method functionality is being implemented using IMGUI input text.
 - Game Object Transform: Game Object Rotation, Scaling, and Positioning shown. Only Visual. Functional implementation in progress.
-- Game Object Mesh: Game Object mesh path viewable, Game Object mesh visibility toggle visually implemented, Indexes & Vertices numbers are visible on Game Object selection. 
+- Game Object Mesh: Game Object mesh path viewable, Game Object mesh visibility toggle visually implemented, Indexes & Vertices numbers are visible on Game Object selection.
+- Game Object Texture: Game Object texture path viewable, Texture visibility toggleable, and other texture implementation.
 
-
-**Camera**:
+***Camera***
 - Camera Free Movement & Look Around based on Left-Right Click
 - Camera Speed Adjustment via Camera Inspector
 - Camera Perspective Zoom using scrollwheel
