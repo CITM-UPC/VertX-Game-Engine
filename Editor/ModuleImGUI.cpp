@@ -724,7 +724,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::Separator();
 					}
 				}
-				if (component.get()->getType() == Component::Type::TEXTURE2D) {
+				if (component.get()->getType() == Component::Type::TEXTURE) {
 					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
 
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);

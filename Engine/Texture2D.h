@@ -23,7 +23,7 @@ public:
 	//Assigning of Type for later IMGUI Sorting
 
 	Type getType() const override {
-		return Type::TEXTURE2D;
+		return Type::TEXTURE;
 	}
 
 private:

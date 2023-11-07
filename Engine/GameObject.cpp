@@ -39,7 +39,7 @@ void GameObject::AddComponent(Component::Type component)
 	case Component::Type::MESH:
 		ptr = std::make_shared<Mesh>();
 		break;
-	case Component::Type::TEXTURE2D:
+	case Component::Type::TEXTURE:
 		ptr = std::make_shared<Texture2D>();
 		break;
 	default:

@@ -11,11 +11,12 @@ public:
 	{
 		TRANSFORM,
 		MESH,
-		TEXTURE2D
+		TEXTURE
 	};
 
-	bool isActive = true;
 	GameObject* gameObject;
+	bool isActive = true;
+	
 
 public:
 
