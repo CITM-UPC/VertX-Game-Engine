@@ -38,7 +38,8 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 
 ## Features
 
-**UI**:
+**UI**
+
 ***Top Menu***
 - File Window: *Visual*: New, Open, Save, Save As (pending functional implementation)
 - Edit Window: *Visual* Undo, Redo, Copy, Paste, Cut (pending functional implementation)
