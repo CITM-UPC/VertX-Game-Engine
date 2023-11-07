@@ -841,9 +841,9 @@ void ModuleImGUI::GeneratePrimitives()
 			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
 		}
 
-		if (ImGui::Button("F1 Ferrari")) {
-			LOG("EDITOR: Adding RACE CAR", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
+		if (ImGui::Button("Medieval Bed")) {
+			LOG("EDITOR: Adding MEDIEVAL BED", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Medieval_Bed.fbx");
 		}
 		ImGui::EndMenu();
 	}

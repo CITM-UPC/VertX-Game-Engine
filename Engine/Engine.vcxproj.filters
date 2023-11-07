@@ -48,7 +48,7 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="MeshLoad.h">
+    <ClCompile Include="Mesh.h">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
