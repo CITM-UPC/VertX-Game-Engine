@@ -40,6 +40,7 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 ***Top Menu***
 - File Window:  (**Status: Visual**)/ New, Open, Save, Save As (pending functional implementation) 
 - Edit Window:  (**Status: Visual**) / Undo, Redo, Copy, Paste, Cut (pending functional implementation)
+- Window ->  (**Status: Functional**) / Window Menu to display all displays necessary for UI including: *Assets*, *Inspector*, *Assets*, *Console Log*, *Camera Inspector*
 - Options ->  (**Status: Functional**) / Config Window:
 - Game Object: (**Status: Functional**) / Render Primitives, Test Meshes etc
 - Help: (**Status: Functional**) / View About window for Project Libraries and Licensing. View Github Repository Page. 
