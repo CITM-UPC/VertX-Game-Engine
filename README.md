@@ -63,7 +63,8 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - Drag&Drop: FBX meshes and textures able to be rendered in Scene from local PC drag location.
 - Drag&Drop Storage: Dragged FBX/Texture objects are stored within the project in Assets Folder with subfolders titled "FBX_Assets" & "Image_Assets" based on file extension.
 
-***Inspector*** 
+***Inspector:*** 
+
 Requires selection of Game Object in Hierarchy
 - Game Object Name: Game Object name is displayed on top of inspector window. Renaming method functionality is being implemented using IMGUI input text.
 - Game Object Transform: Game Object Rotation, Scaling, and Positioning shown. Only Visual. Functional implementation in progress.
