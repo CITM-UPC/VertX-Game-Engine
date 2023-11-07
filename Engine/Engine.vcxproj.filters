@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="log.cpp">
-      <Filter>Tools</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleGameEngine.cpp">
       <Filter>Source Files\Engine Modules</Filter>
     </ClCompile>
