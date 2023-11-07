@@ -75,6 +75,8 @@ private:
 	bool inspectorWindow = true;
 	bool showDebugLogWindow = true;
 
+	bool TexEnabled = true;
+
 	int numVerts;
 	int numIndexes;
 	std::string Name; 

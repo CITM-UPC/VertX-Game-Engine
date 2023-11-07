@@ -63,13 +63,22 @@ public:
 	}
 
 	void addGameObject(const std::string& filePath) {
-		auto mesh_vector = MeshLoader::loadFromFile(filePath);
+		//Temp 
+		GameObject tempGO;
 
-		for (const auto& mesh : mesh_vector)
+		auto mesh_vec = MeshLoader::loadMeshFile(tempGO, filePath);
+		auto texture_vec = MeshLoader::loadTextureFile(tempGO, filePath);
+
+		int i = 0;
+		for (const auto& mesh : mesh_vec)
 		{
+			//Application
 			GameObject currentObject;
 
 			currentObject.AddComponent(mesh);
+			currentObject.AddComponent(texture_vec.at(i));
+
+			mesh->texture = currentObject.GetComponent<Texture2D>();
 
 			std::string meshName = filePath;
 			eraseBeforeDelimiter(meshName);
@@ -85,6 +94,7 @@ public:
 
 			currentObject.name = meshName;
 			gameObjectList.push_back(currentObject);
+			i++;
 		}
 	}
 

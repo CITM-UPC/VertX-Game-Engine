@@ -10,10 +10,14 @@
 
 using namespace std;
 
-Mesh::Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* index_data, unsigned int numIndexs) :
+Mesh::Mesh(GameObject& owner, Formats format, const void* vertex_data, unsigned int numVerts, const unsigned int* index_data, unsigned int numIndexs, const unsigned int numTexCoords, unsigned int numNormals, unsigned int numFaces) :
+    Component(owner),
     _format(format),
     _numVerts(numVerts),
-    _numIndexs(numIndexs)
+    _numIndexs(numIndexs),
+    _numNormals(numNormals),
+    _numTexCoords(numTexCoords),
+    _numFaces(numFaces)
 {
     glGenBuffers(1, &_vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
@@ -44,23 +48,32 @@ Mesh::Mesh(Formats format, const void* vertex_data, unsigned int numVerts, const
 
 
 Mesh::Mesh(Mesh&& b) noexcept :
+    Component(b.gameObject),
     _format(b._format),
     _vertex_buffer_id(b._vertex_buffer_id),
     _numVerts(b._numVerts),
     _indexs_buffer_id(b._indexs_buffer_id),
     _numIndexs(b._numIndexs),
+    _numTexCoords(b._numTexCoords),
+    _numNormals(b._numNormals),
+    _numFaces(b._numFaces),
     texture(b.texture)
 {
     b._vertex_buffer_id = 0;
     b._indexs_buffer_id = 0;
 }
 
-Mesh::Mesh(const Mesh& cpy) : meshName(cpy.meshName), //For aligning pointers
+Mesh::Mesh(const Mesh& cpy) : 
+Component(cpy.gameObject),
+meshName(cpy.meshName),
 _format(cpy._format),
 _vertex_buffer_id(cpy._vertex_buffer_id),
 _numVerts(cpy._numVerts),
 _indexs_buffer_id(cpy._indexs_buffer_id),
 _numIndexs(cpy._numIndexs),
+_numTexCoords(cpy._numTexCoords),
+_numNormals(cpy._numNormals),
+_numFaces(cpy._numFaces),
 texture(cpy.texture) 
 {
 }
@@ -83,7 +96,7 @@ void Mesh::draw() {
         break;
     case Formats::F_V3T2:
         glEnable(GL_TEXTURE_2D);
-        if (texture.get()) texture->bind();
+        (texture) ? texture->bind() : texture->unbind();
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
         glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
@@ -126,6 +139,18 @@ const unsigned int Mesh::getNumVerts() {
 
 const unsigned int Mesh::getNumIndexs() {
     return _numIndexs;
+}
+
+const unsigned int Mesh::getNumTexCoords() {
+    return _numTexCoords;
+}
+
+const unsigned int Mesh::getNumNormals() {
+    return _numNormals;
+}
+
+const unsigned int Mesh::getNumFaces() {
+    return _numFaces;
 }
 
 void Mesh::Update()

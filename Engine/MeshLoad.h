@@ -1,6 +1,7 @@
 #pragma once
 #include "Mesh.h"
 #include "Texture2D.h"
+#include "GameObject.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
@@ -10,20 +11,26 @@
 #include <vector>
 #include <string>
 
-//Mesh Loading in single Loader, removes clutter from mesh modules
+//Mesh Loading and Texture Loading both here. Initalized in Renderer3D header ->
 
 class MeshLoader
 {
 public:
 
-	static std::vector<std::shared_ptr<Mesh>> loadFromFile(const std::string& path)
+	//Grab mesh 
+	static std::vector<std::shared_ptr<Mesh>> loadMeshFile(GameObject& parentGO, const std::string& path)
 	{
 		std::vector<std::shared_ptr<Mesh>> mesh_ptrs;
 
-		auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_ForceGenNormals);
+		auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 		for (size_t m = 0; m < scene->mNumMeshes; ++m) {
 			auto mesh = scene->mMeshes[m];
 			auto faces = mesh->mFaces;
+			
+			int numTexCoords = mesh->mNumVertices;
+			int numNormals = mesh->mNumVertices;
+			int numFaces = mesh->mNumFaces;
+
 			vec3f* verts = (vec3f*)mesh->mVertices;
 			vec3f* texCoords = (vec3f*)mesh->mTextureCoords[0];
 
@@ -41,6 +48,25 @@ public:
 				index_data.push_back(faces[f].mIndices[2]);
 			}
 
+			auto mesh_ptr = std::make_shared<Mesh>(parentGO, Mesh::Formats::F_V3T2, vertex_data.data(), vertex_data.size(), index_data.data(), index_data.size());
+
+			mesh_ptrs.push_back(mesh_ptr);
+		}
+
+		aiReleaseImport(scene);
+
+		return mesh_ptrs;
+	}
+
+	//Grab Texture 
+	static std::vector<std::shared_ptr<Texture2D>> loadTextureFile(GameObject& parentGO, const std::string& path)
+	{
+		std::vector<std::shared_ptr<Texture2D>> texture_ptrs;
+
+		auto scene = aiImportFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+		for (size_t m = 0; m < scene->mNumMeshes; ++m) {
+			auto mesh = scene->mMeshes[m];
+
 			auto material = scene->mMaterials[mesh->mMaterialIndex];
 			aiString aiPath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &aiPath);
@@ -50,14 +76,13 @@ public:
 			std::string folder_path = (slash_pos != std::string::npos) ? path.substr(0, slash_pos + 1) : "./";
 			std::string texPath = folder_path + aiScene::GetShortFilename(aiPath.C_Str());
 
-			auto mesh_ptr = std::make_shared<Mesh>(Mesh::Formats::F_V3T2, vertex_data.data(), vertex_data.size(), index_data.data(), index_data.size());
-			mesh_ptr->texture = std::make_shared<Texture2D>(texPath);
+			auto texture_ptr = std::make_shared<Texture2D>(parentGO, texPath);
 
-			mesh_ptrs.push_back(mesh_ptr);
+			texture_ptrs.push_back(texture_ptr);
 		}
 
 		aiReleaseImport(scene);
 
-		return mesh_ptrs;
+		return texture_ptrs;
 	}
 };

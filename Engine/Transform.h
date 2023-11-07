@@ -2,29 +2,32 @@
 #include "Globals_ENGINE.h"
 #include "glm/glm.hpp"
 #include "Component.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 class Transform : public Component
 {
 public:
+
+	//Define Space between Local&Global - Mirrored from Unity Engine
 	enum class Space
 	{
 		LOCAL,
 		GLOBAL,
 	};
 
-	Transform();
+	Transform(GameObject& owner);
 	~Transform();
 
-	//Moves the object to 'position'.
+	//positioning
 	void MoveTo(vec3 position, Space referenceFrame = Space::GLOBAL);
 
-	//Moves the object in 'displacement' increments.
+	//displacement
 	void Move(vec3 displacement, Space referenceFrame = Space::LOCAL);
 
-	//Rotates the object for its rotation to be the one given by 'axis'.
+	//Rotates by axis
 	void RotateTo(vec3f axis);
 
-	//Rotates the object in 'axis' increments.
+	//Rotates by axis increments
 	void Rotate(vec3f axis, Space referenceFrame = Space::LOCAL);
 
 	void Update() override;
@@ -34,6 +37,8 @@ public:
 	}
 
 public:
+
+	//Call by IMGUI for transformations - public
 	vec3 position;
 	vec3 rotation;
 	vec3 scale;
@@ -43,5 +48,4 @@ public:
 	vec3 up;
 
 	glm::mat3x3 referenceFrameMat;
-
 };

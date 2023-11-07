@@ -240,7 +240,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
-	//addGameObject("Assets/BakerHouse.fbx");
+	addGameObject("Assets/BakerHouse.fbx");
 
 	return ret;
 }

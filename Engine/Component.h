@@ -14,12 +14,12 @@ public:
 		TEXTURE
 	};
 
-	GameObject* gameObject;
 	bool isActive = true;
+	GameObject& gameObject;
 	
-
 public:
 
+	Component(GameObject& owner) : gameObject(owner) {}
 	virtual void Update() = 0;
 	virtual Type getType() const = 0;
 };

@@ -664,31 +664,14 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			ImGui::SameLine(); ImGui::Text("GameObject name: ");
 			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
 
-			//Naming Testing
-
-			//for (auto& naming : gameObjSelected.GetComponents()) {
-			//	ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-			//	if (ImGui::CollapsingHeader("Game Object Config", ImGuiTreeNodeFlags_None))
-			//	{
-			//		ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-			//		if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-			//			naming.get()->gameObject->name = Title;
-			//		}
-			//		if (ImGui::Button("Delete GameObject")) {
-			//			/*Selected->~GameObject();*/
-			//			/*gameObjSelected.GetComponents();*/
-			//		}
-			//	}
-			//}
-			
+			//Grab Components and set in for allows for constant polling 
+			//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
 			for (auto& component : gameObjSelected.GetComponents()) {
 				if (component.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(component.get());
-					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
-						ImGui::PushItemWidth(60.0f);	// Make Text Input components width shorter
-
+						ImGui::PushItemWidth(60.0f);
 						ImGui::BulletText("Position");
 						ImGui::InputDouble("##PositionX", &transform->position.x, 0.0, 0.0, "%.3f");
 						ImGui::SameLine();
@@ -696,14 +679,12 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SameLine();
 						ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");
 
-
 						ImGui::BulletText("Rotation");
 						ImGui::InputDouble("##RotationX", &transform->rotation.x, 0.0, 0.0, "%.3f");
 						ImGui::SameLine();
 						ImGui::InputDouble("##RotationY", &transform->rotation.y, 0.0, 0.0, "%.3f");
 						ImGui::SameLine();
 						ImGui::InputDouble("##RotationZ", &transform->rotation.z, 0.0, 0.0, "%.3f");
-
 
 						ImGui::BulletText("Scale");
 						ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
@@ -715,31 +696,52 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::PopItemWidth();
 					}
 				}
+				//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
 				if (component.get()->getType() == Component::Type::MESH) {
 					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
 						ImGui::Checkbox("Active", &mesh->isActive);
+						ImGui::SameLine();  
 						ImGui::Text("Filename: ");
-						ImGui::SameLine();  ImGui::Text(mesh->getName().c_str());
+						ImGui::SameLine();  
+						ImGui::Text(mesh->getName().c_str());
 						ImGui::Separator();
 						ImGui::Text("Indexes: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+						ImGui::SameLine();
+						ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+						ImGui::Text("Normals: ");
+						ImGui::SameLine();  
+						ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
 						ImGui::Text("Vertexs: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+						ImGui::SameLine();  
+						ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+						ImGui::Text("Faces: ");
+						ImGui::SameLine();  
+						ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
 						ImGui::Separator();
+						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
+						{
+							(mesh->usingTexture) ? mesh->texture = gameObjSelected.GetComponent<Texture2D>() : mesh->texture = nullptr;
+						}
 					}
 				}
+				//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
 				if (component.get()->getType() == Component::Type::TEXTURE) {
 					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
 
-					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+					if (ImGui::CollapsingHeader("Texture Info", ImGuiTreeNodeFlags_None))
 					{
-						ImGui::Checkbox("Active", &texture2D->isActive);
-						ImGui::Text("Texture ID");
-						ImGui::Separator();
+						ImGui::Text("Texture File: ");
+						ImGui::SameLine();
+						ImGui::Text(texture2D->getName().c_str());
+						ImGui::Text("Texture Height: ");
+						ImGui::SameLine();
+						ImGui::Text(std::to_string(texture2D->getHeight()).c_str());
+						ImGui::Text("Texture Width: ");
+						ImGui::SameLine();
+						ImGui::Text(std::to_string(texture2D->getWidth()).c_str());
 					}
 				}
 

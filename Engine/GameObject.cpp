@@ -4,26 +4,14 @@
 GameObject::GameObject()
 {
 	name = "";
-	components.push_back(std::make_shared<Transform>()); 
+	components.push_back(std::make_shared<Transform>(*this));
 }
 
 GameObject::~GameObject() = default;
 
-std::shared_ptr<Component> GameObject::GetComponent(Component::Type componentType)
-{
-	for (auto& comp : components)
-	{
-		if (comp->getType() == componentType)
-		{
-			return comp;
-		}
-	}
-
-	return nullptr;
-}
-
 std::vector<std::shared_ptr<Component>> GameObject::GetComponents()
 {
+	//Initialize in Template so Flexible Usage
 	return components;
 }
 
@@ -31,16 +19,17 @@ void GameObject::AddComponent(Component::Type component)
 {
 	std::shared_ptr<Component> ptr;
 
+	//Point to Game Object features:
 	switch (component)
 	{
 	case Component::Type::TRANSFORM:
-		ptr = std::make_shared<Transform>();
+		ptr = std::make_shared<Transform>(*this);
 		break;
 	case Component::Type::MESH:
-		ptr = std::make_shared<Mesh>();
+		ptr = std::make_shared<Mesh>(*this);
 		break;
 	case Component::Type::TEXTURE:
-		ptr = std::make_shared<Texture2D>();
+		ptr = std::make_shared<Texture2D>(*this);
 		break;
 	default:
 		break;
@@ -51,6 +40,13 @@ void GameObject::AddComponent(Component::Type component)
 
 void GameObject::AddComponent(std::shared_ptr<Mesh> component)
 {
+	component->gameObject = *this;
+	components.push_back(component);
+}
+
+void GameObject::AddComponent(std::shared_ptr<Texture2D> component)
+{
+	component->gameObject = *this;
 	components.push_back(component);
 }
 
@@ -66,7 +62,7 @@ void GameObject::RemoveComponent(Component::Type component)
 	}
 }
 
-GameObject* GameObject::Find(std::string name, std::list<GameObject> gameObjectList)
+GameObject* GameObject::FindGO(std::string name, std::list<GameObject> gameObjectList)
 {
 	for (auto& go : gameObjectList)
 	{
@@ -83,13 +79,5 @@ void GameObject::UpdateComponents()
 	for (auto& comp : components)
 	{
 		comp->Update();
-	}
-}
-
-void GameObject::Rename(std::string Rename, std::list<GameObject> gameObjectList) {
-
-	for (auto& go : gameObjectList)
-	{
-		Rename = name;
 	}
 }

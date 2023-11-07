@@ -1,20 +1,24 @@
 #include "Transform.h"
 
-Transform::Transform()
+Transform::Transform(GameObject& owner) : Component(owner)
 {
+	//Define Initial Values for GO Start
 	position = vec3(0, 0, 0);
 	rotation = vec3(0, 0, 0);
-	scale = vec3(1, 1, 1);
+	//scale = vec3(1, 1, 1);
 
+	//Define Base Values
 	right = vec3(1, 0, 0);
 	up = vec3(0, 1, 0);
 	forward = vec3(0, 0, 1);
 
-	referenceFrameMat = glm::mat3(1.0); //Identity
+	//Identity Matrix for Manipulation
+	referenceFrameMat = glm::mat3(1.0); 
 }
 
 Transform::~Transform() {}
 
+//Moving GO to Space
 void Transform::MoveTo(vec3 position, Space referenceFrame)
 {
 	vec3 resultingVector = position;
@@ -29,6 +33,7 @@ void Transform::MoveTo(vec3 position, Space referenceFrame)
 	this->position = resultingVector;
 }
 
+//Moving GO incrementally -> shifting
 void Transform::Move(vec3 displacement, Space referenceFrame)
 {
 	vec3 resultingVector = displacement;
@@ -39,14 +44,15 @@ void Transform::Move(vec3 displacement, Space referenceFrame)
 	position += resultingVector;
 }
 
+//Rotate Game Object via set Axis
 void Transform::RotateTo(vec3f axis)
 {
-	//Reset the referenceFrame to world default
+	//Set RefFrame to Global
 	right = vec3(1, 0, 0);
 	up = vec3(0, 1, 0);
 	forward = vec3(0, 0, 1);
 
-	//Generate the rotation matrix that corresponds to the rotation
+	//Create RotationMatrix to set vals
 	glm::mat3x3 rotX = glm::mat3x3(1, 0, 0,
 		0, glm::cos(glm::radians(axis.x)), -glm::sin(glm::radians(axis.x)),
 		0, glm::sin(glm::radians(axis.x)), glm::cos(glm::radians(axis.x)));
@@ -61,7 +67,7 @@ void Transform::RotateTo(vec3f axis)
 
 	glm::mat3x3 rotMatrix = rotZ * rotY * rotX;
 
-	//Apply the generated rotation matrix to the existing director vectors
+	//Apply rotation matrix
 	forward = rotMatrix * forward;
 	right = rotMatrix * right;
 	up = rotMatrix * up;
@@ -73,8 +79,6 @@ void Transform::RotateTo(vec3f axis)
 
 void Transform::Rotate(vec3f axis, Space referenceFrame)
 {
-	//Translate the axis to the local refernce frame to apply the rotation
-
 	referenceFrameMat[0].x = right.x;		referenceFrameMat[0].y = right.y;		referenceFrameMat[0].z = right.z;
 	referenceFrameMat[1].x = up.x;			referenceFrameMat[1].y = up.y;			referenceFrameMat[1].z = up.z;
 	referenceFrameMat[2].x = forward.x;		referenceFrameMat[2].y = forward.y;		referenceFrameMat[2].z = forward.z;
@@ -84,7 +88,7 @@ void Transform::Rotate(vec3f axis, Space referenceFrame)
 		vecInRefFrame = referenceFrameMat * axis;
 
 
-	//Generate the rotation matrix that corresponds to the rotation
+	//Set the rotation matrix
 	glm::mat3x3 rotX = glm::mat3x3(1, 0, 0,
 		0, glm::cos(glm::radians(vecInRefFrame.x)), -glm::sin(glm::radians(vecInRefFrame.x)),
 		0, glm::sin(glm::radians(vecInRefFrame.x)), glm::cos(glm::radians(vecInRefFrame.x)));
@@ -99,7 +103,7 @@ void Transform::Rotate(vec3f axis, Space referenceFrame)
 
 	glm::mat3x3 rotMatrix = rotZ * rotY * rotX;
 
-	//Apply the generated rotation matrix to the existing director vectors
+	//Apply
 	forward = rotMatrix * forward;
 	right = rotMatrix * right;
 	up = rotMatrix * up;
