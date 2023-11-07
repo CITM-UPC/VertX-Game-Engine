@@ -41,14 +41,14 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 **UI**
 
 ***Top Menu***
-- File Window:  **Status: Visual** New, Open, Save, Save As (pending functional implementation)
-- Edit Window:  **Status: Visual** Undo, Redo, Copy, Paste, Cut (pending functional implementation)
-- Options ->  **Status: Functional** Config Window:
+- File Window:  (**Status: Visual**) / New, Open, Save, Save As (pending functional implementation)
+- Edit Window:  (**Status: Visual**) / Undo, Redo, Copy, Paste, Cut (pending functional implementation)
+- Options ->  (**Status: Functional**) / Config Window:
 
 ***Config Window***
-- Application Info: **Status: Functional** Engine Title, Creators, Organization
-- Settings: **Status: Functional** Allow Application toggle of fullscreen, windowed, bordererd, v-sync, and more visual settings. Visual frame rate histogram, Delta Time, and Frame Rate Cap.
-- Hardware: **Status: Functional** Detects user CPU, RAM, and GPU Data and Displays it, Info on SDL Compiled and Linker status.
+- Application Info: (**Status: Functional**) / Engine Title, Creators, Organization
+- Settings: (**Status: Functional**) / Allow Application toggle of fullscreen, windowed, bordererd, v-sync, and more visual settings. Visual frame rate histogram, Delta Time, and Frame Rate Cap.
+- Hardware: (**Status: Functional**) / Detects user CPU, RAM, and GPU Data and Displays it, Info on SDL Compiled and Linker status.
 
 ***Hierarchy Window***
 - Game Object Hierarchy:  **Status: Functional** User is able to see all Game Objects rendered into scene. Selecting Game Object opens information on Mesh, Texture, and Transform in *Inspector Window*. 
