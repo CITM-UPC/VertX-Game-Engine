@@ -664,6 +664,14 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			ImGui::SameLine(); ImGui::Text("GameObject name: ");
 			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
 
+			for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
+				ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+				if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+					gameObject.name = Title;
+					/*gameObject.name.push_back(Title);*/
+				}
+			}
+
 			//Grab Components and set in for allows for constant polling 
 			//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
 			for (auto& component : gameObjSelected.GetComponents()) {
@@ -745,33 +753,17 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::Text(std::to_string(texture2D->getWidth()).c_str());
 					}
 				}
-
-				if (ImGui::Button("Delete GameObject")) {
+				/*if (ImGui::Button("Delete GameObject")) {
 					deleteButtonPressed = true;
 				}
 				if (deleteButtonPressed) {
-					/*gameObjSelected.~GameObject();
-					deleteButtonPressed = false;*/
-				}
+					gameObjSelected.~GameObject();
+					deleteButtonPressed = false;
+				}*/
 
 			}
 
 		}
-
-			/*if (ImGui::CollapsingHeader("Rename"))
-			{
-				for (const auto& vector : App->game_engine->renderer3D_engine->meshList) {
-					ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-					if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-						vector.data()->get()->setName(Title);
-					}
-				}
-
-				ImGui::Separator();
-
-
-			}*/
-
 	}
 
 	ImGui::End();
@@ -786,44 +778,6 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
 	ImGui::Begin("Hierarchy", &hierarchy);
-
-	/*for (const auto& vector : App->game_engine->renderer3D_engine->gameObjectList) {
-		if (ImGui::Selectable(vector.data()->get()->getName().c_str())) {
-			numVerts = vector.data()->get()->getNumVerts();
-			numIndexes = vector.data()->get()->getNumIndexs();
-			MeshFileName = vector.data()->get()->getName();
-			MeshFileName.append(".fbx");
-			vector.data()->get()->texture.get()->bind();
-			if (renamed == true) {
-				vector.data()->get()->setName(nameholder);
-				renamed = false;
-			}*/
-			//if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-			//	ImVec2 contextMenuPos;
-
-			//	// Check if the right mouse button is clicked
-			//	if (ImGui::IsItemHovered()) {
-			//		// Set the flag to show the context menu
-			//		showContextMenu = true;
-			//		contextMenuPos = ImGui::GetMousePos();
-			//		if (showContextMenu) {
-			//			// Open a context menu at the specified position
-			//			contextMenuPos = ImGui::GetMousePos();
-			//			ImGui::SetNextWindowPos(contextMenuPos);
-			//			if (ImGui::Begin("ObjectContextMenu", &showContextMenu, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
-			//				if (ImGui::MenuItem("Rename")) {
-			//					// Perform actions when "Rename" is clicked
-			//				}
-			//				if (ImGui::MenuItem("Delete")) {
-			//					// Perform actions when "Delete" is clicked
-			//				}
-			//				// Add more options as needed
-
-			//				ImGui::End();
-			//			}
-			//		}
-			//	}
-			//}
 
 	for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
 
@@ -840,118 +794,41 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
-		//if (ImGui::Button("Generate Empty GameObject")) {
-		//	/*App->LoadFbx->PrimitivesObjects(primitive);*/
-		//	/*App->game_engine->renderer3D_engine->addFbx("Assets/BakerHouse.fbx");*/
-		//	if (App->imgui->Selected == nullptr)
-		//	{
-		//		meshGO = new GameObject(App->imgui->RootGO);
-		//		meshGO->name = "GameObject";
-		//	}
-		//	else if (App->imgui->Selected != nullptr)
-		//	{
-		//		meshGO = new GameObject(App->imgui->Selected);
-		//		meshGO->name = "GameObject";
-		//	}
-		//}
 
 		if (ImGui::Button("Generate Cube")) {
 			LOG("EDITOR: Adding CUBE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Cube.fbx");
-			/*if (App->imgui->Selected == nullptr)
-			{
-
-			}
-			else if (App->imgui->Selected != nullptr)
-			{
-
-			}*/
 		}
 
 		if (ImGui::Button("Generate Plane")) {
 			LOG("EDITOR: Adding PLANE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
-			/*if (App->imgui->Selected == nullptr)
-			{
 
+			if (ImGui::Button("Generate Pyramid")) {
+				LOG("EDITOR: Adding PYRAMID Primitive", NULL);
+				App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
 			}
-			else if (App->imgui->Selected != nullptr)
-			{
 
-			}*/
-		}
-
-		if (ImGui::Button("Generate Pyramid")) {
-			LOG("EDITOR: Adding PYRAMID Primitive", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
-			/*if (App->imgui->Selected == nullptr)
-			{
-
+			if (ImGui::Button("Generate Sphere")) {
+				LOG("EDITOR: Adding SPHERE Primitive", NULL);
+				App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
 			}
-			else if (App->imgui->Selected != nullptr)
-			{
 
-			}*/
-		}
-
-		if (ImGui::Button("Generate Sphere")) {
-			LOG("EDITOR: Adding SPHERE Primitive", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
-
-			/*if (App->imgui->Selected == nullptr)
-			{
-
+			if (ImGui::Button("Generate Cylinder")) {
+				LOG("EDITOR: Adding CYLINDER Primitive", NULL);
+				App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
 			}
-			else if (App->imgui->Selected != nullptr)
-			{
 
-			}*/
-		}
-
-		if (ImGui::Button("Generate Cylinder")) {
-			LOG("EDITOR: Adding CYLINDER Primitive", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
-			/*if (App->imgui->Selected == nullptr)
-			{
-
+			if (ImGui::Button("Baker House")) {
+				LOG("EDITOR: Adding BAKER HOUSE", NULL);
+				App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
 			}
-			else if (App->imgui->Selected != nullptr)
-			{
 
-			}*/
-		}
-
-		if (ImGui::Button("Baker House")) {
-			LOG("EDITOR: Adding BAKER HOUSE", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
-
-			/*if (App->imgui->Selected == nullptr)
-			{
-
+			if (ImGui::Button("F1 Ferrari")) {
+				LOG("EDITOR: Adding RACE CAR", NULL);
+				App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
 			}
-			else if (App->imgui->Selected != nullptr)
-			{
-
-			}*/
 		}
-
-		if (ImGui::Button("F1 Ferrari")) {
-			LOG("EDITOR: Adding RACE CAR", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
-			/*if (App->imgui->Selected == nullptr)
-			{
-				
-			}
-			else if (App->imgui->Selected != nullptr)
-			{
-				
-			}*/
-		}
-
-		/*if (ImGui::Button("Delete GameObject")) {
-			Selected->~GameObject();
-		}*/
-
 		ImGui::EndMenu();
 	}
 }
