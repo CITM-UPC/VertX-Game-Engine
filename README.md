@@ -51,7 +51,23 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - Hardware: (**Status: Functional**) / Detects user CPU, RAM, and GPU Data and Displays it, Info on SDL Compiled and Linker status.
 
 ***Hierarchy Window***
-- Game Object Hierarchy:  **Status: Functional** User is able to see all Game Objects rendered into scene. Selecting Game Object opens information on Mesh, Texture, and Transform in *Inspector Window*. 
+- Game Object Hierarchy: (**Status: Functional**) / User is able to see all Game Objects rendered into scene. Selecting Game Object opens information on Mesh, Texture, and Transform in *Inspector Window*.
+
+***Asset Window***
+- Asset Visibility: Users able to see Asset Folder in Project, Assets are displayed in grid similar to Unity and Unreal Stylizing. Drag&Drop from Asset Window is in development.
+
+***Game Objects***
+- Game Objects Rendering: Game Objects rendering possible from *Top Menu: Game Object* window.
+- Game Object Primitives: Pyramid, Cylinder, Cube, Sphere & more primitives available for rendering from *Top Menu: Game Object*.
+- Game Object Meshes: BakerHouse and Race Car meshes are renderable from *Top Menu: Game Object*.
+- Drag&Drop: FBX meshes and textures able to be rendered in Scene from local PC drag location.
+- Drag&Drop Storage: Dragged FBX/Texture objects are stored within the project in Assets Folder with subfolders titled "FBX_Assets" & "Image_Assets" based on file extension.
+
+***Inspector*** 
+!Requires selection of Game Object in Hierarchy!
+- Game Object Name: Game Object name is displayed on top of inspector window. Renaming method functionality is being implemented using IMGUI input text.
+- Game Object Transform: Game Object Rotation, Scaling, and Positioning shown. Only Visual. Functional implementation in progress.
+- Game Object Mesh: Game Object mesh path viewable, Game Object mesh visibility toggle visually implemented, Indexes & Vertices numbers are visible on Game Object selection. 
 
 
 **Camera**:
