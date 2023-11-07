@@ -691,6 +691,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				bool deleteButtonPressed = false;
 				if (comp.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(comp.get());
+
+					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
 						ImGui::PushItemWidth(60.0f);
@@ -721,6 +723,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
 				if (comp.get()->getType() == Component::Type::MESH) {
 					Mesh* mesh = dynamic_cast<Mesh*>(comp.get());
+
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
@@ -761,7 +764,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 				if (comp.get()->getType() == Component::Type::TEXTURE) {
 					Texture2D* texture2D = dynamic_cast<Texture2D*>(comp.get());
 
-					if (ImGui::CollapsingHeader("Texture Info", ImGuiTreeNodeFlags_None))
+					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
 					{
 						ImGui::Text("Texture File: ");
 						ImGui::SameLine();
@@ -850,6 +854,12 @@ void ModuleImGUI::GeneratePrimitives()
 			LOG("EDITOR: Adding MEDIEVAL BED", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Medieval_Bed.fbx");
 		}
+
+		if (ImGui::Button("Obelisque")) {
+			LOG("EDITOR: Adding OBELISQUE", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Obelisque.fbx");
+		}
+
 		ImGui::EndMenu();
 	}
 }
