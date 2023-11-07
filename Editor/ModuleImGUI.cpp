@@ -667,6 +667,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 			//Grab Components and set in for allows for constant polling 
 			//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
 			for (auto& component : gameObjSelected.GetComponents()) {
+				bool deleteButtonPressed = false;
 				if (component.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(component.get());
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
@@ -743,6 +744,14 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SameLine();
 						ImGui::Text(std::to_string(texture2D->getWidth()).c_str());
 					}
+				}
+
+				if (ImGui::Button("Delete GameObject")) {
+					deleteButtonPressed = true;
+				}
+				if (deleteButtonPressed) {
+					/*gameObjSelected.~GameObject();
+					deleteButtonPressed = false;*/
 				}
 
 			}
