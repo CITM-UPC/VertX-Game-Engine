@@ -172,6 +172,7 @@ update_status ModuleImGUI::PreUpdate()
 		{
 			if (ImGui::MenuItem("Configuration")) 
 			{
+				LOG("EDITOR: Opening 'Configuration' window", NULL);
 				configWindow = !configWindow;
 			}
 			ImGui::EndMenu();
@@ -180,22 +181,27 @@ update_status ModuleImGUI::PreUpdate()
 		{
 			if (ImGui::MenuItem("Assets")) 
 			{
+				LOG("EDITOR: Opening 'Assets' window", NULL);
 				assetsWindow = !assetsWindow;
 			}
 			if (ImGui::MenuItem("Camera Inspector"))
 			{
+				LOG("EDITOR: Opening 'Camera Inspector' window", NULL);
 				cameraInspectorWindow = !cameraInspectorWindow;
 			}
 			if (ImGui::MenuItem("Hierarchy"))
 			{
+				LOG("EDITOR: Opening 'Hierarchy' window", NULL);
 				hierarchyWindow = !hierarchyWindow;
 			}
 			if (ImGui::MenuItem("ImGui Console Log"))
 			{
+				LOG("EDITOR: Opening 'ImGui Console Log' window", NULL);
 				showDebugLogWindow = !showDebugLogWindow;
 			}
 			if (ImGui::MenuItem("Inspector"))
 			{
+				LOG("EDITOR: Opening 'Inspector' window", NULL);
 				inspectorWindow = !inspectorWindow;
 			}
 
@@ -211,6 +217,7 @@ update_status ModuleImGUI::PreUpdate()
 		{
 			if (ImGui::MenuItem("About")) 
 			{
+				LOG("EDITOR: Opening 'About' window", NULL);
 				aboutWindow = !aboutWindow;
 			}
 			if (ImGui::MenuItem("Visit our GitHub Page!"))
@@ -272,6 +279,8 @@ update_status ModuleImGUI::PreUpdate()
 bool ModuleImGUI::CleanUp()
 {
 	LOG("EDITOR: Destroying ImGUI----", NULL);
+
+	App->ClearConsoleLogs();
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -376,13 +385,17 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		if (ImGui::CollapsingHeader("Settings"))
 		{
 			// Window parameters sliders
-			ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled);
+			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled))
+				LOG("EDITOR: Fullscreen Toggled!", NULL);
 			ImGui::SameLine();
-			ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled);
+			if(ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled))
+				LOG("EDITOR: Fullscreen Desktop Toggled!", NULL);
 			
-			ImGui::Checkbox("Borderless", &App->window->borderlessEnabled);
+			if(ImGui::Checkbox("Borderless", &App->window->borderlessEnabled))
+				LOG("EDITOR: Borderless Toggled!", NULL);
 			ImGui::SameLine();
-			ImGui::Checkbox("Resizeable", &App->window->resizableEnabled);
+			if(ImGui::Checkbox("Resizeable", &App->window->resizableEnabled))
+				LOG("EDITOR: ResizeableToggled!", NULL);
 
 			// Vsync toggle checkbox
 			if (ImGui::Checkbox("Vertical Syncronization", &App->game_engine->renderer3D_engine->vsync))
@@ -426,16 +439,6 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 		
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
-			/* SDL Info */
-			SDL_version compiled;
-			SDL_version linked;
-			SDL_VERSION(&compiled);
-			SDL_GetVersion(&linked);
-			ImGui::Text("SDL Compiled version:");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%u.%u.%u", compiled.major, compiled.minor, compiled.patch);
-			ImGui::Text("SDL Linked version:");	ImGui::SameLine();	ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%u.%u.%u", linked.major, linked.minor, linked.patch);
-			
-			ImGui::Separator();
-
 			/* CPU Info*/
 			// Display System's CPU cores
 			ImGui::Text("CPUs: ");
@@ -842,6 +845,7 @@ void ModuleImGUI::GeneratePrimitives()
 		//}
 
 		if (ImGui::Button("Generate Cube")) {
+			LOG("EDITOR: Adding CUBE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Cube.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -854,6 +858,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Plane")) {
+			LOG("EDITOR: Adding PLANE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -866,6 +871,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Pyramid")) {
+			LOG("EDITOR: Adding PYRAMID Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -878,7 +884,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Sphere")) {
-
+			LOG("EDITOR: Adding SPHERE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
 
 			/*if (App->imgui->Selected == nullptr)
@@ -892,6 +898,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Generate Cylinder")) {
+			LOG("EDITOR: Adding CYLINDER Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
@@ -904,6 +911,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("Baker House")) {
+			LOG("EDITOR: Adding BAKER HOUSE", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
 
 			/*if (App->imgui->Selected == nullptr)
@@ -917,6 +925,7 @@ void ModuleImGUI::GeneratePrimitives()
 		}
 
 		if (ImGui::Button("F1 Ferrari")) {
+			LOG("EDITOR: Adding RACE CAR", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
 			/*if (App->imgui->Selected == nullptr)
 			{
