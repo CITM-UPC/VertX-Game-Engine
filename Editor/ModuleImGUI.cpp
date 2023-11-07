@@ -684,15 +684,13 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 		if (gameObjSelected.name != "") {
 			ImGui::Checkbox("Active", &gameObjSelected.isActive);
-			ImGui::SameLine(); ImGui::Text("GameObject name: ");
+			ImGui::SameLine(); ImGui::Text("Game Object: ");
 			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
 
-			for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
-				ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-				if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-					gameObject.name = Title;
-					/*gameObject.name.push_back(Title);*/
-				}
+			ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+				gameObjSelected.name = Title;
+				/*gameObject.name.push_back(Title);*/
 			}
 
 			//Grab Components and set in for allows for constant polling 
@@ -829,31 +827,31 @@ void ModuleImGUI::GeneratePrimitives()
 		if (ImGui::Button("Generate Plane")) {
 			LOG("EDITOR: Adding PLANE Primitive", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
+		}
 
-			if (ImGui::Button("Generate Pyramid")) {
-				LOG("EDITOR: Adding PYRAMID Primitive", NULL);
-				App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
-			}
+		if (ImGui::Button("Generate Pyramid")) {
+			LOG("EDITOR: Adding PYRAMID Primitive", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
+		}
 
-			if (ImGui::Button("Generate Sphere")) {
-				LOG("EDITOR: Adding SPHERE Primitive", NULL);
-				App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
-			}
+		if (ImGui::Button("Generate Sphere")) {
+			LOG("EDITOR: Adding SPHERE Primitive", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
+		}
 
-			if (ImGui::Button("Generate Cylinder")) {
-				LOG("EDITOR: Adding CYLINDER Primitive", NULL);
-				App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
-			}
+		if (ImGui::Button("Generate Cylinder")) {
+			LOG("EDITOR: Adding CYLINDER Primitive", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
+		}
 
-			if (ImGui::Button("Baker House")) {
-				LOG("EDITOR: Adding BAKER HOUSE", NULL);
-				App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
-			}
+		if (ImGui::Button("Baker House")) {
+			LOG("EDITOR: Adding BAKER HOUSE", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
+		}
 
-			if (ImGui::Button("F1 Ferrari")) {
-				LOG("EDITOR: Adding RACE CAR", NULL);
-				App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
-			}
+		if (ImGui::Button("F1 Ferrari")) {
+			LOG("EDITOR: Adding RACE CAR", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/RaceCar.fbx");
 		}
 		ImGui::EndMenu();
 	}
