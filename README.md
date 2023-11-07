@@ -46,7 +46,7 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 
 ## Features
 ***Top Menu***
-- File Window:   / New, Open, Save, Save As (pending functional implementation) ```diff -Status: Visual
+- File Window:   / New, Open, Save, Save As (pending functional implementation) ```diff -Status: Visual```
 - Edit Window:  (**Status: Visual**) / Undo, Redo, Copy, Paste, Cut (pending functional implementation)
 - Options ->  (**Status: Functional**) / Config Window:
 - Game Object: (**Status: Functional**) / Render Primitives, Test Meshes etc
