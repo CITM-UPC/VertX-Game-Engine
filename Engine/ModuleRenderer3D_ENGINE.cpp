@@ -232,10 +232,27 @@ bool ModuleRenderer3D_ENGINE::Init()
 		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_COLOR_MATERIAL);
-		//glEnable(GL_LIGHTING);
+
+		if (glDepthTestIsEnabled) 
+		{
+			glEnable(GL_DEPTH_TEST);
+		}
+
+		if (glCullFaceIsEnabled)
+		{
+			glEnable(GL_CULL_FACE);
+		}
+
+		if (glColorMaterialIsEnabled)
+		{
+			glEnable(GL_COLOR_MATERIAL);
+		}
+
+		if (glLightingIsEnabled)
+		{
+			glEnable(GL_LIGHTING);
+		}
+		
 	}
 
 	OnResize(screen_width, screen_height);
@@ -278,6 +295,42 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 		SDL_GL_SetSwapInterval(0);
 	}
 
+
+	if (glDepthTestIsEnabled)
+	{
+		glEnable(GL_DEPTH_TEST);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	if (glCullFaceIsEnabled)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
+	if (glColorMaterialIsEnabled)
+	{
+		glEnable(GL_COLOR_MATERIAL);
+	}
+	else
+	{
+		glDisable(GL_COLOR_MATERIAL);
+	}
+
+	if (glLightingIsEnabled)
+	{
+		glEnable(GL_LIGHTING);
+	}
+	else
+	{
+		glDisable(GL_LIGHTING);
+	}
 
 	return ENGINE_UPDATE_CONTINUE;
 }

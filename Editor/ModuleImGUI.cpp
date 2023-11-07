@@ -61,10 +61,11 @@ bool ModuleImGUI::Init()
 	//ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	// Set ImGui windows rounding
+
+	// Set ImGui style colors
 	style.Colors[ImGuiCol_Text] = ImVec4(0.86f, 0.93f, 0.89f, 0.78f);
 	style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.86f, 0.93f, 0.89f, 0.28f);
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 0.75f);
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 0.9f);
 	style.Colors[ImGuiCol_Border] = ImVec4(0.92f, 0.18f, 0.29f, 1.00f);
 	style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.22f, 0.27f, 1.00f);
@@ -382,24 +383,24 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 
 		}
 
-		if (ImGui::CollapsingHeader("Settings"))
+		if (ImGui::CollapsingHeader("Window"))
 		{
 			// Window parameters sliders
 			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled))
-				LOG("EDITOR: Fullscreen Toggled!", NULL);
+				LOG("EDITOR: Fullscreen option is [ %s ]", App->window->fullscreenEnabled ? "ON" : "OFF");
 			ImGui::SameLine();
 			if(ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled))
-				LOG("EDITOR: Fullscreen Desktop Toggled!", NULL);
+				LOG("EDITOR: Fullscreen Desktop option is [ %s ]", App->window->fullcreenDesktopEnabled ? "ON" : "OFF");
 			
 			if(ImGui::Checkbox("Borderless", &App->window->borderlessEnabled))
-				LOG("EDITOR: Borderless Toggled!", NULL);
+				LOG("EDITOR: Borderless option is [ %s ]", App->window->borderlessEnabled ? "ON" : "OFF");
 			ImGui::SameLine();
 			if(ImGui::Checkbox("Resizeable", &App->window->resizableEnabled))
-				LOG("EDITOR: ResizeableToggled!", NULL);
+				LOG("EDITOR: Resizeable option is [ %s ]", App->window->resizableEnabled ? "ON" : "OFF");
 
 			// Vsync toggle checkbox
 			if (ImGui::Checkbox("Vertical Syncronization", &App->game_engine->renderer3D_engine->vsync))
-				LOG("EDITOR: VSync Toggled!", NULL);
+				LOG("EDITOR: VSync is [ %s ]", App->game_engine->renderer3D_engine->vsync ? "ON" : "OFF");
 
 			ImGui::Separator();
 
@@ -437,6 +438,28 @@ void ModuleImGUI::RenderImGUIConfigWindow()
 			RenderFPSGraph();
 		}
 		
+		if (ImGui::CollapsingHeader("Renderer"))
+		{
+			ImGui::BulletText("OpenGL Renderer Parameters:");
+
+			if (ImGui::Checkbox("Depth Test", &App->game_engine->renderer3D_engine->glDepthTestIsEnabled))
+			{
+				LOG("ENGINE: 'Depth Test' render option is [ %s ]", App->game_engine->renderer3D_engine->glDepthTestIsEnabled ? "ON" : "OFF");
+			}
+			if (ImGui::Checkbox("Cull Face", &App->game_engine->renderer3D_engine->glCullFaceIsEnabled))
+			{
+				LOG("ENGINE: 'Cull Face' render option is [ %s ]", App->game_engine->renderer3D_engine->glCullFaceIsEnabled ? "ON" : "OFF");
+			}
+			if (ImGui::Checkbox("Color Material", &App->game_engine->renderer3D_engine->glColorMaterialIsEnabled))
+			{
+				LOG("ENGINE: 'Color Material' render option is [ %s ]", App->game_engine->renderer3D_engine->glColorMaterialIsEnabled ? "ON" : "OFF");
+			}
+			if (ImGui::Checkbox("Lighting", &App->game_engine->renderer3D_engine->glLightingIsEnabled)) 
+			{
+				LOG("ENGINE: 'Lighting' render option is [ %s ]", App->game_engine->renderer3D_engine->glLightingIsEnabled ? "ON" : "OFF");
+			}
+		}
+
 		if (ImGui::CollapsingHeader("Hardware"))
 		{
 			/* CPU Info*/
@@ -711,7 +734,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 					{
-						ImGui::Checkbox("Active", &mesh->isActive);
+						if(ImGui::Checkbox("Active", &mesh->isActive))
+							LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->isActive ? "ACTIVE" : "INACTIVE");
+
 						ImGui::SameLine();  
 						ImGui::Text("Filename: ");
 						ImGui::SameLine();  
@@ -732,6 +757,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::Separator();
 						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
 						{
+							LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
 							(mesh->usingTexture) ? mesh->texture = gameObjSelected.GetComponent<Texture2D>() : mesh->texture = nullptr;
 						}
 					}

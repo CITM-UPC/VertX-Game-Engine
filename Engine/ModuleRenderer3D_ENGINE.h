@@ -157,10 +157,13 @@ public:
 	int screen_width;
 	int screen_height;
 
+	bool glDepthTestIsEnabled = true;
+	bool glCullFaceIsEnabled = true;
+	bool glColorMaterialIsEnabled = true;
+	bool glLightingIsEnabled = false;
+
 private:
 
 	SDL_Window* targetWindow;
-
-	
 
 };
