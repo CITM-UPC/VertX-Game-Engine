@@ -36,6 +36,27 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - {LALT + LEFT Click} - Camera orbitation
 - {F} - Reset camera parameters to initial values
 
+## Features
+
+**UI**:
+***Top Menu***
+- File Window: *Visual*: New, Open, Save, Save As (pending functional implementation)
+- Edit Window: *Visual* Undo, Redo, Copy, Paste, Cut (pending functional implementation)
+- Options -> *Functional* Config Window:
+
+  ***Config***
+  - Application Info: *Functional* Engine Title, Creators, Organization
+  - Settings: *Functional* Allow Application toggle of fullscreen, windowed, bordererd, v-sync, and more visual settings. Visual frame rate histogram, Delta Time, and Frame Rate Cap. 
+
+
+**Camera**:
+- Camera Free Movement & Look Around based on Left-Right Click
+- Camera Speed Adjustment via Camera Inspector
+- Camera Perspective Zoom using scrollwheel
+- Camera Orbitation implemented
+- Camera Reset to old parameters to ensure User Functionality. 
+
+
 
 ## License
 
