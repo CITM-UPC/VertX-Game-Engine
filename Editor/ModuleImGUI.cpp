@@ -10,8 +10,22 @@
 #include "ModuleWindow.h"
 #include "SDL2/SDL_cpuinfo.h"
 #include <filesystem>
+
 namespace fs = std::filesystem;
 
+// Helper function to sanitize a filename.
+std::string SanitizeFilename(const std::string& filename) {
+    std::string sanitizedName = filename;
+
+    // Replace problematic characters, e.g., remove spaces or non-alphanumeric characters.
+    for (char& c : sanitizedName) {
+        if (!isalnum(c)) {
+            c = '_'; // Replace with an underscore or another valid character.
+        }
+    }
+
+    return sanitizedName;
+}
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -576,19 +590,51 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 	}
 }
 
+
 void ModuleImGUI::RenderImGUIAssetsWindow()
 {
 	if (assetsWindow)
 	{
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
-			
-		// TO DO
-		for (const auto& assetFile : assetFiles) {
-			if (ImGui::MenuItem(assetFile.c_str())) {
-				// Handle the asset file click event
-				// You can open, load, or perform other actions on the selected asset here
+
+		int assetsPerRow = 6.0f;
+		float assetWidth = 100.0f;
+		float assetHeight = 10.0f;
+		std::string projectFolderPath = "Assets";
+		float buttonPadding = 20.0f;
+
+		// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
+		std::vector<std::string> assetNames;
+
+		for (const auto& entry : std::filesystem::directory_iterator(projectFolderPath)) {
+			// Check if the entry is a regular file (you can add more filters as needed).
+			if (entry.is_regular_file()) {
+				assetNames.push_back(entry.path().filename().string());
 			}
+		}
+
+		for (size_t i = 0; i < assetNames.size(); i++) {
+			if (i % assetsPerRow != 0) {
+				ImGui::SameLine();
+			}
+
+			ImGui::BeginGroup();
+
+			if (ImGui::BeginPopupContextItem(assetNames[i].c_str())) {
+				if (ImGui::MenuItem("Render")) {
+					// Handle rendering the asset.
+					// You can implement your rendering logic here.
+				}
+				ImGui::EndPopup();
+			}
+
+			if (ImGui::Selectable(assetNames[i].c_str(), false, 0, ImVec2(assetWidth, assetHeight))) {
+				// Handle the single-click event for the asset.
+				// You can implement your logic here.
+			}
+
+			ImGui::EndGroup();
 		}
 
 		ImGui::End();

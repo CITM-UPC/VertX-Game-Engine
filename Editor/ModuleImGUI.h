@@ -7,10 +7,15 @@
 #include <filesystem>
 #include "../Engine/GameObject.h"
 #include "../Engine/Component.h"
+#include <map>    
+#include <unordered_map>
+#include <IL/il.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 
 namespace fs = std::filesystem;
-
-
 
 
 class ModuleImGUI : public Module
@@ -29,6 +34,7 @@ public:
 
 	void RenderImGUI();
 
+	
 
 	bool showContextMenu = false;
 
@@ -53,6 +59,9 @@ public:
 
 	std::string nameholder;
 	bool renamed = false;
+
+	bool g_IsDragging = false; // Boolean flag to indicate whether an asset is being dragged.
+	std::string g_DraggedAssetName;
 
 private:
 	
