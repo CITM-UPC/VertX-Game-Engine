@@ -17,6 +17,7 @@ This game engine has been made in **C/C++** programming language, and also using
 You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out our Github repository where the project is hosted.
 
 
+
 ## Developers
 
 ![](https://raw.githubusercontent.com/CITM-UPC/VertX-Game-Engine/main/TeamPhotos/adriapons.jpg)
