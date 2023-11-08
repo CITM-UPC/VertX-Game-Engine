@@ -81,80 +81,91 @@ texture(cpy.texture)
 }
 
 void Mesh::draw() {
+    
+    if (meshIsDrawed)
+    {
+        glColor4ub(255, 255, 255, 255);
 
-    glColor4ub(255, 255, 255, 255);
+        glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-    glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    switch (_format) {
-    case Formats::F_V3:
-        glVertexPointer(3, GL_FLOAT, 0, nullptr);
-        break;
-    case Formats::F_V3C4:
-        glEnableClientState(GL_COLOR_ARRAY);
-        glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
-        glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
-        break;
-    case Formats::F_V3T2:
-        glEnable(GL_TEXTURE_2D);
-        (texture) ? texture->bind() : texture->unbind();
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
-        break;
-    }
-
-    if (_indexs_buffer_id) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexs_buffer_id);
-        glDrawElements(GL_TRIANGLES, _numIndexs, GL_UNSIGNED_INT, nullptr);
-    }
-    else {
-        glDrawArrays(GL_TRIANGLES, 0, _numVerts);
-    }
-
-    if (VertexNormDraw) {
-
-        glLineWidth(2.0f);
-        glBegin(GL_LINES);
-        glColor3f(1.0f, 0.0f, 0.0f);
-
-        for (int i = 0; i < _numVerts; i++) {
-
-            glVertex3f(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z);
-            glVertex3f(meshVertices[i].x + meshNormals[i].x * normalsLength,
-                meshVertices[i].y + meshNormals[i].y * normalsLength,
-                meshVertices[i].z + meshNormals[i].z * normalsLength);
-
+        switch (_format) {
+        case Formats::F_V3:
+            glVertexPointer(3, GL_FLOAT, 0, nullptr);
+            break;
+        case Formats::F_V3C4:
+            glEnableClientState(GL_COLOR_ARRAY);
+            glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
+            glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
+            break;
+        case Formats::F_V3T2:
+            glEnable(GL_TEXTURE_2D);
+            (texture) ? texture->bind() : texture->unbind();
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
+            glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
+            break;
         }
 
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glEnd();
-    }
-
-    if (FaceNormDraw) {
-
-        glLineWidth(2.0f);
-        glBegin(GL_LINES);
-        glColor3f(0.0f, 1.0f, 0.0f);
-
-        for (int i = 0; i < _numFaces; i++) {
-            glm::vec3 endPoint = meshFaceCenters[i] + normalsLength * meshFaceNormals[i];
-            glVertex3f(meshFaceCenters[i].x, meshFaceCenters[i].y, meshFaceCenters[i].z);
-            glVertex3f(endPoint.x, endPoint.y, endPoint.z);
+        if (_indexs_buffer_id) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexs_buffer_id);
+            glDrawElements(GL_TRIANGLES, _numIndexs, GL_UNSIGNED_INT, nullptr);
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, _numVerts);
         }
 
-        glColor3f(1.0f, 1.0f, 0.0f);
-        glEnd();
+        if (_indexs_buffer_id) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexs_buffer_id);
+            glDrawElements(GL_TRIANGLES, _numFaces, GL_UNSIGNED_INT, nullptr);
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, _numFaces);
+        }
+
+        if (VertexNormDraw) {
+
+            glLineWidth(2.0f);
+            glBegin(GL_LINES);
+            glColor3f(1.0f, 0.0f, 0.0f);
+
+            for (int i = 0; i < _numVerts; i++) {
+
+                glVertex3f(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z);
+                glVertex3f(meshVertices[i].x + meshNormals[i].x * normalsLength,
+                    meshVertices[i].y + meshNormals[i].y * normalsLength,
+                    meshVertices[i].z + meshNormals[i].z * normalsLength);
+
+            }
+
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glEnd();
+        }
+
+        if (FaceNormDraw) {
+
+            glLineWidth(2.0f);
+            glBegin(GL_LINES);
+            glColor3f(0.0f, 1.0f, 0.0f);
+
+            for (int i = 0; i < _numFaces; i++) {
+                glm::vec3 endPoint = meshFaceCenters[i] + normalsLength * meshFaceNormals[i];
+                glVertex3f(meshFaceCenters[i].x, meshFaceCenters[i].y, meshFaceCenters[i].z);
+                glVertex3f(endPoint.x, endPoint.y, endPoint.z);
+            }
+
+            glColor3f(1.0f, 1.0f, 0.0f);
+            glEnd();
+        }
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisable(GL_TEXTURE_2D);
     }
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisable(GL_TEXTURE_2D);
 }
 
 Mesh::~Mesh() {

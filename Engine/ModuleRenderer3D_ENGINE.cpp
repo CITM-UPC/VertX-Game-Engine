@@ -257,6 +257,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
+	// Render Baker House from App init
 	addGameObject("Assets/BakerHouse.fbx");
 
 	return ret;

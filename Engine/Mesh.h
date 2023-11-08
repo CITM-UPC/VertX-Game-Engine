@@ -39,6 +39,8 @@ public:
 
 	float normalsLength = 1.0f;
 
+	bool meshIsDrawed = true;
+
 	std::vector<vec3f> meshVertices;
 	std::vector<vec3f> meshNormals;
 	std::vector<vec3f> meshFaceCenters;

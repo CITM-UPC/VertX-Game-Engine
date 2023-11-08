@@ -5,7 +5,7 @@ Transform::Transform(GameObject& owner) : Component(owner)
 	//Define Initial Values for GO Start
 	position = vec3(0, 0, 0);
 	rotation = vec3(0, 0, 0);
-	//scale = vec3(1, 1, 1);
+	scale = vec3(1, 1, 1);
 
 	//Define Base Values
 	right = vec3(1, 0, 0);

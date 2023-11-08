@@ -664,7 +664,9 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 				if (ImGui::BeginPopupContextItem(assetNames[i].c_str())) {
 					if (ImGui::MenuItem("Render")) {
 						// Handle rendering the asset.
-						// You can implement your rendering logic here.
+						// Implement the rendering logic here.
+
+						//TO DO
 					}
 					ImGui::EndPopup();
 				}
@@ -737,11 +739,11 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 						{
-							ImGui::GetStyle();
-							if (ImGui::Checkbox("Active", &mesh->isActive))
-								LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->isActive ? "ACTIVE" : "INACTIVE");
+							if (ImGui::Checkbox("Draw", &mesh->meshIsDrawed))
+								LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshIsDrawed ? "ACTIVE" : "INACTIVE");
+
 							ImGui::SameLine();
-							ImGui::Text("Filename: ");
+							ImGui::Text("	Mesh Filename: ");
 							ImGui::SameLine();
 							ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
 							ImGui::Separator();
@@ -793,7 +795,7 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
 						{
-							ImGui::Text("Texture File: ");
+							ImGui::Text("Texture Filename: ");
 							ImGui::SameLine();
 							ImGui::TextColored(ImVec4(0, 1, 0, 1), texture2D->getName().c_str());
 							ImGui::Separator();
@@ -811,6 +813,8 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							ImGui::Text("%s px", std::to_string(texture2D->getWidth()).c_str());
 						}
 					}
+
+					//WORK IN PROGRESS
 					/*if (ImGui::Button("Delete GameObject")) {
 						deleteButtonPressed = true;
 					}
@@ -858,44 +862,54 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
+		ImGui::SeparatorText("Primitives:");
 
 		if (ImGui::Button("Generate Cube")) {
-			LOG("EDITOR: Adding CUBE Primitive", NULL);
+			LOG("EDITOR: Adding CUBE Primitive...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Cube.fbx");
 		}
 
 		if (ImGui::Button("Generate Plane")) {
-			LOG("EDITOR: Adding PLANE Primitive", NULL);
+			LOG("EDITOR: Adding PLANE Primitive...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
 		}
 
 		if (ImGui::Button("Generate Pyramid")) {
-			LOG("EDITOR: Adding PYRAMID Primitive", NULL);
+			LOG("EDITOR: Adding PYRAMID Primitive...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
 		}
 
 		if (ImGui::Button("Generate Sphere")) {
-			LOG("EDITOR: Adding SPHERE Primitive", NULL);
+			LOG("EDITOR: Adding SPHERE Primitive...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
 		}
 
 		if (ImGui::Button("Generate Cylinder")) {
-			LOG("EDITOR: Adding CYLINDER Primitive", NULL);
+			LOG("EDITOR: Adding CYLINDER Primitive...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
 		}
 
+		if (ImGui::Button("Generate Torus")) {
+			LOG("EDITOR: Adding TORUS Primitive...", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Torus.fbx");
+		}
+
+		ImGui::Separator();
+
+		ImGui::SeparatorText("Prefabs:");
+
 		if (ImGui::Button("Baker House")) {
-			LOG("EDITOR: Adding BAKER HOUSE", NULL);
+			LOG("EDITOR: Adding BAKER HOUSE prefab...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
 		}
 
 		if (ImGui::Button("Medieval Bed")) {
-			LOG("EDITOR: Adding MEDIEVAL BED", NULL);
+			LOG("EDITOR: Adding MEDIEVAL BED prefab...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Medieval_Bed.fbx");
 		}
 
 		if (ImGui::Button("Obelisque")) {
-			LOG("EDITOR: Adding OBELISQUE", NULL);
+			LOG("EDITOR: Adding OBELISQUE prefab...", NULL);
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Obelisque.fbx");
 		}
 

@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Texture2D.h"
 #include "GameObject.h"
+#include "..\Editor\Globals.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
@@ -10,8 +11,6 @@
 #include <memory>
 #include <vector>
 #include <string>
-
-//Mesh Loading and Texture Loading both here. Initalized in Renderer3D header ->
 
 class MeshLoader
 {
@@ -75,6 +74,8 @@ public:
 				vec3f faceCenter = (v0 + v1 + v2) / 3.0f;
 				mesh_ptr->meshFaceCenters.push_back(faceCenter);
 			}
+
+			LOG("ENGINE: Mesh Loaded with: %d faces and %d vertices.", mesh->mNumFaces, mesh->mNumVertices);
 
 			mesh_ptrs.push_back(mesh_ptr);
 		}
