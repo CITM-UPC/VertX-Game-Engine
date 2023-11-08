@@ -8,6 +8,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "ModuleWindow.h"
+#include "..\Engine\Mesh.h"
 #include "SDL2/SDL_cpuinfo.h"
 #include <filesystem>
 
@@ -733,7 +734,12 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SameLine();  
 						ImGui::Text("Filename: ");
 						ImGui::SameLine();  
-						ImGui::Text(mesh->getName().c_str());
+						ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
+						if (ImGui::IsItemHovered)
+						{
+							ImGui::SetTooltip("Assets/%s", mesh->getName().c_str());
+						}
+
 						ImGui::Separator();
 						ImGui::Text("Indexes: ");
 						ImGui::SameLine();
@@ -748,9 +754,16 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 						ImGui::SameLine();  
 						ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
 						ImGui::Separator();
+
+						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if(ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)){
-							ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw);
-							ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw);
+							if(ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw))
+								LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");
+							ImGui::SameLine();
+							if(ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw))
+								LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");
+
+							ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
 						}
 						ImGui::Separator();
 						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
@@ -769,7 +782,13 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					{
 						ImGui::Text("Texture File: ");
 						ImGui::SameLine();
-						ImGui::Text(texture2D->getName().c_str());
+						ImGui::TextColored(ImVec4(0, 1, 0, 1), texture2D->getName().c_str());
+						
+						if (ImGui::IsItemHovered)
+						{
+							ImGui::SetTooltip("Assets/%s", texture2D->getName().c_str());
+						}
+
 						ImGui::Text("Texture Height: ");
 						ImGui::SameLine();
 						ImGui::Text(std::to_string(texture2D->getHeight()).c_str());

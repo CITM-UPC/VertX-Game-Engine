@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "ModuleRenderer3D_ENGINE.h"
 #include <GL/glew.h>
 
 #include <assimp/postprocess.h>
@@ -114,16 +115,16 @@ void Mesh::draw() {
 
     if (VertexNormDraw) {
 
-        glLineWidth(6.0f);
+        glLineWidth(2.0f);
         glBegin(GL_LINES);
         glColor3f(1.0f, 0.0f, 0.0f);
 
         for (int i = 0; i < _numVerts; i++) {
 
             glVertex3f(meshVertices[i].x, meshVertices[i].y, meshVertices[i].z);
-            glVertex3f(meshVertices[i].x + meshNormals[i].x * 0.1f,
-                meshVertices[i].y + meshNormals[i].y * 0.1f,
-                meshVertices[i].z + meshNormals[i].z * 0.1f);
+            glVertex3f(meshVertices[i].x + meshNormals[i].x * normalsLength,
+                meshVertices[i].y + meshNormals[i].y * normalsLength,
+                meshVertices[i].z + meshNormals[i].z * normalsLength);
 
         }
 
@@ -133,17 +134,17 @@ void Mesh::draw() {
 
     if (FaceNormDraw) {
 
-        glLineWidth(6.0f);
+        glLineWidth(2.0f);
         glBegin(GL_LINES);
         glColor3f(0.0f, 1.0f, 0.0f);
 
         for (int i = 0; i < _numFaces; i++) {
-            glm::vec3 endPoint = meshFaceCenters[i] + 0.1f * meshFaceNormals[i];
+            glm::vec3 endPoint = meshFaceCenters[i] + normalsLength * meshFaceNormals[i];
             glVertex3f(meshFaceCenters[i].x, meshFaceCenters[i].y, meshFaceCenters[i].z);
             glVertex3f(endPoint.x, endPoint.y, endPoint.z);
         }
 
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(1.0f, 1.0f, 0.0f);
         glEnd();
     }
 

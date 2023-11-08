@@ -37,6 +37,8 @@ public:
 	bool VertexNormDraw = false;
 	bool FaceNormDraw = false;
 
+	float normalsLength = 1.0f;
+
 	std::vector<vec3f> meshVertices;
 	std::vector<vec3f> meshNormals;
 	std::vector<vec3f> meshFaceCenters;
