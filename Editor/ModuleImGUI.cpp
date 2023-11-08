@@ -629,44 +629,42 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
 
-		int assetsPerRow = 6.0f;
-		float assetWidth = 100.0f;
-		float assetHeight = 10.0f;
-		std::string projectFolderPath = "Assets";
-		float buttonPadding = 20.0f;
+			int assetsPerRow = 6.0f;
+			float assetWidth = 150.0f;
+			float assetHeight = 20.0f;
+			std::string projectFolderPath = "Assets";
+			float buttonPadding = 20.0f;
 
-		// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
-		std::vector<std::string> assetNames;
+			// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
+			std::vector<std::string> assetNames;
 
-		for (const auto& entry : std::filesystem::directory_iterator(projectFolderPath)) {
-			// Check if the entry is a regular file (you can add more filters as needed).
-			if (entry.is_regular_file()) {
-				assetNames.push_back(entry.path().filename().string());
-			}
-		}
-
-		for (size_t i = 0; i < assetNames.size(); i++) {
-			if (i % assetsPerRow != 0) {
-				ImGui::SameLine();
-			}
-
-			ImGui::BeginGroup();
-
-			if (ImGui::BeginPopupContextItem(assetNames[i].c_str())) {
-				if (ImGui::MenuItem("Render")) {
-					// Handle rendering the asset.
-					// You can implement your rendering logic here.
+			for (const auto& entry : std::filesystem::directory_iterator(projectFolderPath)) {
+				// Check if the entry is a regular file (you can add more filters as needed).
+				if (entry.is_regular_file()) {
+					assetNames.push_back(entry.path().filename().string());
 				}
-				ImGui::EndPopup();
 			}
 
-			if (ImGui::Selectable(assetNames[i].c_str(), false, 0, ImVec2(assetWidth, assetHeight))) {
-				// Handle the single-click event for the asset.
-				// You can implement your logic here.
-			}
+			for (size_t i = 0; i < assetNames.size(); i++) {
+				if (i % assetsPerRow != 0) {
+					ImGui::SameLine();
+				}
 
-			ImGui::EndGroup();
-		}
+				ImGui::BeginGroup();
+
+				if (ImGui::BeginPopupContextItem(assetNames[i].c_str())) {
+					if (ImGui::MenuItem("Render")) {
+						// Handle rendering the asset.
+						// You can implement your rendering logic here.
+					}
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::Selectable(assetNames[i].c_str(), false, 0, ImVec2(assetWidth, assetHeight))) {
+				}
+
+				ImGui::EndGroup();
+			}
 
 		ImGui::End();
 	}
