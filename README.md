@@ -65,7 +65,11 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 - [x] **Functional -> Drag & Drop Texture&FBX:** FBX meshes and textures able to be rendered in Scene from local PC drag location.
 - [x] **Functional -> Drag & Drop Project Storage:** Dragged FBX/Texture objects are stored within the project in Assets Folder with subfolders titled "FBX_Assets" & "Image_Assets" based on file extension.
 - [x] **Functional -> Game Object Components:** Game Objects have component structure, that controls Mesh, Texture, and Transform when called. These components are called on select in the *Inspector Window*. 
-- [x] **Functional -> Game Object View Options:** Game Objects can be rendered to display Vertex Normals & Face Normals on toggle in the *Inspector Window*. Visible normal length can be adjusted via slider. 
+- [x] **Functional -> Game Object View Options:** Game Objects can be rendered to display Vertex Normals & Face Normals on toggle in the *Inspector Window*. Visible normal length can be adjusted via slider.
+
+### Console
+- [x] **Functional -> Editor Console Display:**  Editor console displays to user updates in Renderer, Windows Status, Library Loading & more.
+- [x] **Functional -> Editor Console Find:**  User can sort through Console display to find desired elements in search bar
 
 ### Inspector:
 Requires selection of Game Object in Hierarchy:
