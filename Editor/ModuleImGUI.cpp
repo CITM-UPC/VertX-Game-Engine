@@ -755,19 +755,19 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							ImGui::Separator();
 							ImGui::Text("Indexes: ");
 							ImGui::SameLine();
-							ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+							ImGui::Text("%d", mesh->getNumIndexs());
 							ImGui::SameLine();
 							ImGui::Text("Vertexs: ");
 							ImGui::SameLine();
-							ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+							ImGui::Text("%d", mesh->getNumVerts());
 
 							ImGui::Text("Normals: ");
 							ImGui::SameLine();
-							ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+							ImGui::Text("%d", mesh->getNumNormals());
 							ImGui::SameLine();
 							ImGui::Text("Faces: ");
 							ImGui::SameLine();
-							ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+							ImGui::Text("%d", mesh->getNumFaces());
 							ImGui::Separator();
 
 							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
@@ -807,10 +807,10 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							ImGui::Separator();
 							ImGui::Text("Texture Height: ");
 							ImGui::SameLine();
-							ImGui::Text("%s px", std::to_string(texture2D->getHeight()).c_str());
+							ImGui::Text("%d px", texture2D->getHeight());
 							ImGui::Text("Texture Width: ");
 							ImGui::SameLine();
-							ImGui::Text("%s px", std::to_string(texture2D->getWidth()).c_str());
+							ImGui::Text("%d px", texture2D->getWidth());
 						}
 					}
 
