@@ -54,7 +54,6 @@ public:
 
 	void GeneratePrimitives();
 
-	bool hierarchy = true;
 
 	bool CreatedOnce = true;
 
@@ -64,16 +63,19 @@ public:
 	bool g_IsDragging = false; // Boolean flag to indicate whether an asset is being dragged.
 	std::string g_DraggedAssetName;
 
+
+	GameObject gameObjSelected;
+
 private:
 	
 	bool aboutWindow = false;
 	bool configWindow = false;
-
 	bool assetsWindow = true;
 	bool cameraInspectorWindow = true;
+	bool consoleWindow = true;
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
-	bool showDebugLogWindow = true;
+	bool showImGuiDebugLogWindow = false;
 
 	bool TexEnabled = true;
 
@@ -82,7 +84,7 @@ private:
 	std::string Name; 
 	std::string MeshFileName;
 	std::string MeshTexture;
-	GameObject gameObjSelected;
+	
 
 	char Title[150] = "Write Text";
 	std::string name;

@@ -172,38 +172,43 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Options"))
 		{
-			if (ImGui::MenuItem("Configuration")) 
+			if (ImGui::MenuItem("Configuration", NULL, configWindow, !configWindow))
 			{
-				LOG("EDITOR: Opening 'Configuration' window", NULL);
+				LOG("EDITOR: Opening 'Configuration' window...", NULL);
 				configWindow = !configWindow;
 			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Windows"))
 		{
-			if (ImGui::MenuItem("Assets")) 
+			if (ImGui::MenuItem("Assets", NULL, assetsWindow, !assetsWindow)) 
 			{
-				LOG("EDITOR: Opening 'Assets' window", NULL);
+				LOG("EDITOR: Opening 'Assets' window...", NULL);
 				assetsWindow = !assetsWindow;
 			}
-			if (ImGui::MenuItem("Camera Inspector"))
+			if (ImGui::MenuItem("Camera Inspector", NULL, cameraInspectorWindow, !cameraInspectorWindow))
 			{
-				LOG("EDITOR: Opening 'Camera Inspector' window", NULL);
+				LOG("EDITOR: Opening 'Camera Inspector' window...", NULL);
 				cameraInspectorWindow = !cameraInspectorWindow;
 			}
-			if (ImGui::MenuItem("Hierarchy"))
+			if (ImGui::MenuItem("Console", NULL, consoleWindow, !consoleWindow))
 			{
-				LOG("EDITOR: Opening 'Hierarchy' window", NULL);
+				LOG("EDITOR: Opening 'Console' window...", NULL);
+				consoleWindow = !consoleWindow;
+			}
+			if (ImGui::MenuItem("Hierarchy", NULL, hierarchyWindow, !hierarchyWindow))
+			{
+				LOG("EDITOR: Opening 'Hierarchy' window...", NULL);
 				hierarchyWindow = !hierarchyWindow;
 			}
-			if (ImGui::MenuItem("ImGui Console Log"))
+			if (ImGui::MenuItem("ImGui Console Log", NULL, showImGuiDebugLogWindow, !showImGuiDebugLogWindow))
 			{
-				LOG("EDITOR: Opening 'ImGui Console Log' window", NULL);
-				showDebugLogWindow = !showDebugLogWindow;
+				LOG("EDITOR: Opening 'ImGui Console Log' window...", NULL);
+				showImGuiDebugLogWindow = !showImGuiDebugLogWindow;
 			}
-			if (ImGui::MenuItem("Inspector"))
+			if (ImGui::MenuItem("Inspector", NULL, inspectorWindow, !inspectorWindow))
 			{
-				LOG("EDITOR: Opening 'Inspector' window", NULL);
+				LOG("EDITOR: Opening 'Inspector' window...", NULL);
 				inspectorWindow = !inspectorWindow;
 			}
 
@@ -217,9 +222,9 @@ update_status ModuleImGUI::PreUpdate()
 		}
 		if (ImGui::BeginMenu("Help"))
 		{
-			if (ImGui::MenuItem("About")) 
+			if (ImGui::MenuItem("About", NULL, aboutWindow, !aboutWindow))
 			{
-				LOG("EDITOR: Opening 'About' window", NULL);
+				LOG("EDITOR: Opening 'About' window...", NULL);
 				aboutWindow = !aboutWindow;
 			}
 			if (ImGui::MenuItem("Visit our GitHub Page!"))
@@ -240,8 +245,11 @@ update_status ModuleImGUI::PreUpdate()
 		if (ImGui::BeginMenu("Quit"))
 		{
 			if (ImGui::MenuItem("Exit", "(Alt + F4)"))
+			{
+				LOG("--- EXITING VERTX GAME ENGINE ---", NULL);
 				return UPDATE_STOP;
-
+			}
+				
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
@@ -335,7 +343,8 @@ void ModuleImGUI::RenderFPSGraph()
 
 void ModuleImGUI::RenderImGUIAboutWindow()
 {
-	if (aboutWindow) {
+	if (aboutWindow) 
+	{
 		ImGui::SetNextWindowSize(ImVec2(600, 545));
 		ImGui::Begin("About", &aboutWindow);
 
@@ -672,163 +681,176 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 
 void ModuleImGUI::RenderImGUIInspectorWindow()
 {
-	if (ImGui::Begin("Inspector", &inspectorWindow)) {
-		if (gameObjSelected.name != "") {
-			ImGui::Checkbox("Active", &gameObjSelected.isActive);
-			ImGui::SameLine(); ImGui::Text("Game Object: ");
-			ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
+	if (inspectorWindow)
+	{
+		if (ImGui::Begin("Inspector", &inspectorWindow)) {
+			if (gameObjSelected.name != "") {
+				ImGui::Checkbox("Active", &gameObjSelected.isActive);
+				ImGui::SameLine(); ImGui::Text("Game Object: ");
+				ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
 
-			ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-				gameObjSelected.name = Title;
-				/*gameObject.name.push_back(Title);*/
-			}
-
-			//Grab Components and set in for allows for constant polling 
-			//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
-			for (auto& comp : gameObjSelected.GetComponents()) {
-				bool deleteButtonPressed = false;
-				if (comp.get()->getType() == Component::Type::TRANSFORM) {
-					Transform* transform = dynamic_cast<Transform*>(comp.get());
-
-					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::PushItemWidth(60.0f);
-						ImGui::BulletText("Position");
-						ImGui::InputDouble("##PositionX", &transform->position.x, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");
-
-						ImGui::BulletText("Rotation");
-						ImGui::InputDouble("##RotationX", &transform->rotation.x, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##RotationY", &transform->rotation.y, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##RotationZ", &transform->rotation.z, 0.0, 0.0, "%.3f");
-
-						ImGui::BulletText("Scale");
-						ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
-						ImGui::SameLine();
-						ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
-
-						ImGui::PopItemWidth();
-					}
+				ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+				if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+					gameObjSelected.name = Title;
+					/*gameObject.name.push_back(Title);*/
 				}
-				//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
-				if (comp.get()->getType() == Component::Type::MESH) {
-					Mesh* mesh = dynamic_cast<Mesh*>(comp.get());
 
-					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::GetStyle();
-						if(ImGui::Checkbox("Active", &mesh->isActive))
-							LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->isActive ? "ACTIVE" : "INACTIVE");
-						ImGui::SameLine();  
-						ImGui::Text("Filename: ");
-						ImGui::SameLine();  
-						ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
-						if (ImGui::IsItemHovered)
-						{
-							ImGui::SetTooltip("Assets/%s", mesh->getName().c_str());
-						}
-
-						ImGui::Separator();
-						ImGui::Text("Indexes: ");
-						ImGui::SameLine();
-						ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
-						ImGui::Text("Normals: ");
-						ImGui::SameLine();  
-						ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
-						ImGui::Text("Vertexs: ");
-						ImGui::SameLine();  
-						ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
-						ImGui::Text("Faces: ");
-						ImGui::SameLine();  
-						ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
-						ImGui::Separator();
+				//Grab Components and set in for allows for constant polling 
+				//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
+				for (auto& comp : gameObjSelected.GetComponents()) {
+					bool deleteButtonPressed = false;
+					if (comp.get()->getType() == Component::Type::TRANSFORM) {
+						Transform* transform = dynamic_cast<Transform*>(comp.get());
 
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if(ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)){
-							if(ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw))
-								LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");
+						if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
+						{
+							ImGui::PushItemWidth(60.0f);
+							ImGui::BulletText("Position");
+							ImGui::InputDouble("##PositionX", &transform->position.x, 0.0, 0.0, "%.3f");
 							ImGui::SameLine();
-							if(ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw))
-								LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");
+							ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");
+							ImGui::SameLine();
+							ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");
 
-							ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
-						}
-						ImGui::Separator();
-						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
-						{
-							LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
-							(mesh->usingTexture) ? mesh->texture = gameObjSelected.GetComponent<Texture2D>() : mesh->texture = nullptr;
+							ImGui::BulletText("Rotation");
+							ImGui::InputDouble("##RotationX", &transform->rotation.x, 0.0, 0.0, "%.3f");
+							ImGui::SameLine();
+							ImGui::InputDouble("##RotationY", &transform->rotation.y, 0.0, 0.0, "%.3f");
+							ImGui::SameLine();
+							ImGui::InputDouble("##RotationZ", &transform->rotation.z, 0.0, 0.0, "%.3f");
+
+							ImGui::BulletText("Scale");
+							ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
+							ImGui::SameLine();
+							ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
+							ImGui::SameLine();
+							ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
+
+							ImGui::PopItemWidth();
 						}
 					}
-				}
-				//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
-				if (comp.get()->getType() == Component::Type::TEXTURE) {
-					Texture2D* texture2D = dynamic_cast<Texture2D*>(comp.get());
+					//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
+					if (comp.get()->getType() == Component::Type::MESH) {
+						Mesh* mesh = dynamic_cast<Mesh*>(comp.get());
 
-					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::Text("Texture File: ");
-						ImGui::SameLine();
-						ImGui::TextColored(ImVec4(0, 1, 0, 1), texture2D->getName().c_str());
-						
-						if (ImGui::IsItemHovered)
+						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+						if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 						{
-							ImGui::SetTooltip("Assets/%s", texture2D->getName().c_str());
-						}
+							ImGui::GetStyle();
+							if (ImGui::Checkbox("Active", &mesh->isActive))
+								LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->isActive ? "ACTIVE" : "INACTIVE");
+							ImGui::SameLine();
+							ImGui::Text("Filename: ");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
+							ImGui::Separator();
 
-						ImGui::Text("Texture Height: ");
-						ImGui::SameLine();
-						ImGui::Text(std::to_string(texture2D->getHeight()).c_str());
-						ImGui::Text("Texture Width: ");
-						ImGui::SameLine();
-						ImGui::Text(std::to_string(texture2D->getWidth()).c_str());
+							ImGui::Text("File path: ");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", mesh->getName().c_str());
+								
+							ImGui::Separator();
+							ImGui::Text("Indexes: ");
+							ImGui::SameLine();
+							ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+							ImGui::SameLine();
+							ImGui::Text("Vertexs: ");
+							ImGui::SameLine();
+							ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+
+							ImGui::Text("Normals: ");
+							ImGui::SameLine();
+							ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+							ImGui::SameLine();
+							ImGui::Text("Faces: ");
+							ImGui::SameLine();
+							ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+							ImGui::Separator();
+
+							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+							if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)) {
+								if (ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw))
+									LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");
+								ImGui::SameLine();
+								if (ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw))
+									LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");
+
+								ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
+							}
+							ImGui::Separator();
+							if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
+							{
+								LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
+								(mesh->usingTexture) ? mesh->texture = gameObjSelected.GetComponent<Texture2D>() : mesh->texture = nullptr;
+							}
+						}
 					}
+					//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
+					if (comp.get()->getType() == Component::Type::TEXTURE) {
+						Texture2D* texture2D = dynamic_cast<Texture2D*>(comp.get());
+
+						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+						if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+						{
+							ImGui::Text("Texture File: ");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(0, 1, 0, 1), texture2D->getName().c_str());
+							ImGui::Separator();
+
+							ImGui::Text("File path: ");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", texture2D->getName().c_str());
+							
+							ImGui::Separator();
+							ImGui::Text("Texture Height: ");
+							ImGui::SameLine();
+							ImGui::Text("%s px", std::to_string(texture2D->getHeight()).c_str());
+							ImGui::Text("Texture Width: ");
+							ImGui::SameLine();
+							ImGui::Text("%s px", std::to_string(texture2D->getWidth()).c_str());
+						}
+					}
+					/*if (ImGui::Button("Delete GameObject")) {
+						deleteButtonPressed = true;
+					}
+					if (deleteButtonPressed) {
+						gameObjSelected.~GameObject();
+						deleteButtonPressed = false;
+					}*/
+
 				}
-				/*if (ImGui::Button("Delete GameObject")) {
-					deleteButtonPressed = true;
-				}
-				if (deleteButtonPressed) {
-					gameObjSelected.~GameObject();
-					deleteButtonPressed = false;
-				}*/
 
 			}
-
 		}
-	}
 
-	ImGui::End();
+		ImGui::End();
+	}
 }
 
 void ModuleImGUI::RenderImGUIDebugLogWindow()
 {
-	if (showDebugLogWindow)
-		ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+	if (showImGuiDebugLogWindow)
+	{
+		ImGui::ShowDebugLogWindow(&showImGuiDebugLogWindow);
+	}
 }
 
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
-	ImGui::Begin("Hierarchy", &hierarchy);
+	if (hierarchyWindow)
+	{
+		ImGui::Begin("Hierarchy", &hierarchyWindow);
 
-	for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
+		for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
 
-		if (ImGui::MenuItem(gameObject.name.c_str())) {
-			gameObjSelected = gameObject;
+			if (ImGui::MenuItem(gameObject.name.c_str())) {
+				gameObjSelected = gameObject;
+			}
 		}
-	}
 
-	ImGui::EndMenu();
+		ImGui::EndMenu();
+	}
 }
 
 
@@ -883,48 +905,51 @@ void ModuleImGUI::GeneratePrimitives()
 
 void ModuleImGUI::RenderImGUIConsoleWindow()
 {
-	// Buffer to store the search query
-	static char filterInput[256] = ""; 
-
-	ImGui::Begin("Console");
-
-	// Display the Clear Logs button
-	if (ImGui::Button("Clear Console Logs"))
+	if (consoleWindow)
 	{
-		App->ClearConsoleLogs();
-	}
+		// Buffer to store the search query
+		static char filterInput[256] = "";
 
-	ImGui::SameLine();
+		ImGui::Begin("Console", &consoleWindow);
 
-	// Search bar for filtering logs
-	ImGui::InputText("Search", filterInput, IM_ARRAYSIZE(filterInput));
-
-	ImGui::Separator();
-
-	ImGui::BeginChild("Logs Region", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-	std::vector<std::string> logs = App->GetConsoleLogs();
-
-	// Convert the search query to lowercase for case-insensitive comparison
-	std::string filterQuery = filterInput;
-	std::transform(filterQuery.begin(), filterQuery.end(), filterQuery.begin(), ::tolower);
-
-	for (auto i = logs.begin(); i != logs.end(); ++i)
-	{
-		// Convert the log text to lowercase for case-insensitive comparison
-		std::string logText = *i;
-		std::transform(logText.begin(), logText.end(), logText.begin(), ::tolower);
-
-		// If the search string is empty or the log contains the search string, display it
-		if (filterQuery.empty() || logText.find(filterQuery) != std::string::npos)
+		// Display the Clear Logs button
+		if (ImGui::Button("Clear Console Logs"))
 		{
-			ImGui::TextUnformatted((*i).c_str());
+			App->ClearConsoleLogs();
 		}
+
+		ImGui::SameLine();
+
+		// Search bar for filtering logs
+		ImGui::InputText("Search", filterInput, IM_ARRAYSIZE(filterInput));
+
+		ImGui::Separator();
+
+		ImGui::BeginChild("Logs Region", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+		std::vector<std::string> logs = App->GetConsoleLogs();
+
+		// Convert the search query to lowercase for case-insensitive comparison
+		std::string filterQuery = filterInput;
+		std::transform(filterQuery.begin(), filterQuery.end(), filterQuery.begin(), ::tolower);
+
+		for (auto i = logs.begin(); i != logs.end(); ++i)
+		{
+			// Convert the log text to lowercase for case-insensitive comparison
+			std::string logText = *i;
+			std::transform(logText.begin(), logText.end(), logText.begin(), ::tolower);
+
+			// If the search string is empty or the log contains the search string, display it
+			if (filterQuery.empty() || logText.find(filterQuery) != std::string::npos)
+			{
+				ImGui::TextUnformatted((*i).c_str());
+			}
+		}
+
+		// Scroll to the bottom to display the latest logs
+		ImGui::SetScrollHereY(1.0f);
+
+		ImGui::EndChild();
+		ImGui::End();
 	}
-
-	// Scroll to the bottom to display the latest logs
-	ImGui::SetScrollHereY(1.0f);
-
-	ImGui::EndChild();
-	ImGui::End();
 }

@@ -115,9 +115,27 @@ void ModuleRenderer::CameraOrbitation()
 	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		// Setting the Camera Focus Point to the desired
-		App->game_engine->camera.focusPosVec.x = 0;
-		App->game_engine->camera.focusPosVec.y = 0;
-		App->game_engine->camera.focusPosVec.z = 0;
+		// WORK IN PROGRESS!
+		if (App->imgui->gameObjSelected.isActive)	// If there's an object sected, orbit around its position
+		{
+			for (auto& comp : App->imgui->gameObjSelected.GetComponents()) {
+
+				if (comp.get()->getType() == Component::Type::TRANSFORM) {
+					Transform* transform = dynamic_cast<Transform*>(comp.get());
+
+					App->game_engine->camera.focusPosVec.x = transform->position.x;
+					App->game_engine->camera.focusPosVec.y = transform->position.y;
+					App->game_engine->camera.focusPosVec.z = transform->position.z;
+				}
+			}
+		}
+		else
+		{
+			// If there's no object selected, orbit around (0,0,0) world coordinates
+			App->game_engine->camera.focusPosVec.x = 0;
+			App->game_engine->camera.focusPosVec.y = 0;
+			App->game_engine->camera.focusPosVec.z = 0;
+		}
 
 		double radius = glm::length(App->game_engine->camera.worldPosVec - App->game_engine->camera.focusPosVec);
 
