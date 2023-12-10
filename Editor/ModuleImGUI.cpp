@@ -913,6 +913,11 @@ void ModuleImGUI::GeneratePrimitives()
 			App->game_engine->renderer3D_engine->addGameObject("Assets/Obelisque.fbx");
 		}
 
+		if (ImGui::Button("Street Environment")) {
+			LOG("EDITOR: Adding STREET ENVIRONMENT prefab...", NULL);
+			App->game_engine->renderer3D_engine->addGameObject("Assets/Street_Environment.fbx");
+		}
+
 		ImGui::EndMenu();
 	}
 }

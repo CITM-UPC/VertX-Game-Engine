@@ -258,7 +258,7 @@ bool ModuleRenderer3D_ENGINE::Init()
 	OnResize(screen_width, screen_height);
 
 	// Render Street Scene from App init
-	addGameObject("Assets/street/Street_Environment.fbx");
+	addGameObject("Assets/Street_Environment.fbx");
 
 	return ret;
 }
