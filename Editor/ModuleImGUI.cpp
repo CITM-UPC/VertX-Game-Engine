@@ -283,6 +283,73 @@ update_status ModuleImGUI::PreUpdate()
 	/*ImGui::ShowDemoWindow();*/
 
 
+	// ImGui UI code
+	ImGui::Begin("Simulation Controls");
+	if (ImGui::Button("Start")) 
+	{
+		App->isSimulationRunning = true;
+
+		if (!App->isSimulationPaused) {
+			// Only update the start time if not paused
+			App->simulationTime = std::chrono::high_resolution_clock::now();
+		}
+		App->isSimulationPaused = false;
+
+		LOG("EDITOR: Starting the simulation...", NULL);
+	}
+	ImGui::SameLine();
+	if (App->isSimulationRunning)
+	{
+		if (ImGui::Button("Pause"))
+		{
+			App->isSimulationRunning = !App->isSimulationRunning;
+			App->isSimulationPaused = !App->isSimulationPaused;
+
+			if (App->isSimulationPaused) {
+				LOG("EDITOR: Pausing the simulation...", NULL);
+			}
+			else if (!App->isSimulationPaused) {
+				LOG("EDITOR: Resuming the simulation...", NULL);
+			}
+		}
+	}
+	else if(!App->isSimulationRunning)
+	{
+		ImGui::TextWrapped("Pause");
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Stop")) 
+	{
+		App->lastSimulationTime = std::chrono::high_resolution_clock::time_point();
+
+		auto lastSimulationCount = std::chrono::duration<float>((App->simulationTime - App->lastSimulationTime)/1000).count();
+
+		//App->lastSimulationTime = App->simulationTime;
+
+		App->isSimulationRunning = false;
+		App->isSimulationPaused = false;
+
+		App->simulationTime = std::chrono::high_resolution_clock::time_point();  // Reset to zero
+		
+		LOG("EDITOR: Stopping the simulation...", NULL);
+		LOG("LAST SIMULATION TIME: %f seconds", lastSimulationCount);
+	}
+
+	ImGui::End();
+
+	
+	//if (App->isSimulationRunning && !App->isSimulationPaused) {
+	//	// Update your game's time-dependent logic here
+	//	auto currentTime = std::chrono::high_resolution_clock::now();
+	//	auto elapsedSeconds = std::chrono::duration<float>(currentTime - App->simulationTime).count();
+
+	//	// Update your game state using elapsedSeconds
+	//	App->simulationTime = currentTime;  // Update the simulation start time
+
+	//	LOG("Simulation elapsed time : %f", elapsedSeconds);
+	//}
+
+
 	return UPDATE_CONTINUE;
 }
 

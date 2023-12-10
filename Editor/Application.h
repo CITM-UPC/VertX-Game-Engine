@@ -45,6 +45,11 @@ public:
 	double deltaTime;
 	double frameDuration;
 
+	bool isSimulationRunning = false;
+	bool isSimulationPaused = false;
+	std::chrono::high_resolution_clock::time_point simulationTime;
+	std::chrono::high_resolution_clock::time_point lastSimulationTime;
+
 private:
 
 	std::vector<std::string> consoleLogs;
