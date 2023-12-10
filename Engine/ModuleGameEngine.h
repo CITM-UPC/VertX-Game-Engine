@@ -13,6 +13,8 @@ public:
 
 	Camera camera;
 
+	GameObject scene;
+
 private:
 
 	std::list<Engine_Module*> list_modules;

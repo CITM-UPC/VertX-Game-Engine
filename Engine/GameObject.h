@@ -8,6 +8,9 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "Texture2D.h"
+#include "BBox.hpp"
+#include "Tree.hpp"
+#include "Graphic.h"
 
 class GameObject
 {
@@ -15,6 +18,18 @@ public:
 
 	std::string name;
 	bool isActive = true;
+
+	union {
+		mat4 _transform;
+		struct {
+			vec3 _u; double __uw;
+			vec3 _v; double __vw;
+			vec3 _w; double __ww;
+			vec3 _pos;
+		};
+	};
+
+	std::shared_ptr<Graphic> _graphic;
 
 private:
 
@@ -36,6 +51,14 @@ public:
 	static GameObject* FindGO(std::string name, std::list<GameObject> gameObjectList);
 
 	void UpdateComponents();
+
+	void rotate(double degrees, const vec3& axis);
+	void translate(const vec3& dv);
+
+	AABBox aabb() const;
+
+	void paint() const;
+
 };
 
 //Expand Template Info for GetComponent Function --> Improves consistency & Usability with multiple data formats

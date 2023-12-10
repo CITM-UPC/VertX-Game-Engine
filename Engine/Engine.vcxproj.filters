@@ -48,8 +48,8 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.h">
-      <Filter>Source Files\Helpers</Filter>
+    <ClCompile Include="MeshLoad.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,12 @@
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="BBox.hpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree.hpp">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
