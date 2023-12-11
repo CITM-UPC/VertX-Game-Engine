@@ -12,6 +12,7 @@
 #include "SDL2/SDL_cpuinfo.h"
 #include <filesystem>
 #include <functional>
+#include <Windows.h>
 
 namespace fs = std::filesystem;
 
@@ -44,9 +45,32 @@ void ShowFolderContents(const std::string& folderName, std::vector<Asset>& asset
 	}
 }
 
-void ShowFolderViewer(const std::string& folderName) {
-	// Implement the logic to open the folder viewer here
-	// This function will be called when a folder is double-clicked
+void ImportFile() {
+	OPENFILENAME ofn;
+	char szFile[260] = { 0 };
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = szFile;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	if (GetOpenFileName(&ofn) == TRUE) {
+		// Process the selected file here
+		// szFile contains the selected file path
+
+		std::filesystem::path selectedFile = szFile;
+		std::filesystem::path destinationPath = "Assets/" + selectedFile.filename().string();
+
+		// Copy the selected file to the Assets directory
+		std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
+
+		MessageBox(NULL, "File imported to Assets directory.", "Import Successful", MB_OK);
+	}
 }
 
 // Function to display a popup for deleting an asset
@@ -781,6 +805,7 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 				}
 			}
 
+
 			for (size_t i = 0; i < assets.size(); i++) {
             if (i % assetsPerRow != 0) {
                 ImGui::SameLine();
@@ -999,6 +1024,11 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
+		if (ImGui::Button("Import Local File")) {
+			ImportFile(); // Trigger the file import function
+			ImGui::CloseCurrentPopup();
+		}
+
 		ImGui::SeparatorText("Primitives:");
 
 		if (ImGui::Button("Generate Cube")) {
