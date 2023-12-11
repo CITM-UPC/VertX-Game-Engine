@@ -14,6 +14,29 @@
 
 namespace fs = std::filesystem;
 
+struct Asset {
+	std::string name;
+	bool isDirectory;
+	bool isSelected;
+	bool showDeletePopup;
+};
+
+
+// Function to display a popup for deleting an asset
+void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
+	if (ImGui::BeginPopup("DeletePopup")) {
+		ImGui::Text("Delete asset: %s", assetName.c_str());
+		ImGui::Separator();
+
+		if (ImGui::Button("Delete")) {
+			deleteAsset = true; // Set the flag to delete the asset
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
 // Helper function to sanitize a filename.
 std::string SanitizeFilename(const std::string& filename) {
     std::string sanitizedName = filename;
@@ -702,6 +725,7 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 {
 	if (assetsWindow)
 	{
+
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
 
@@ -710,39 +734,48 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 			float assetHeight = 20.0f;
 			std::string projectFolderPath = "Assets";
 			float buttonPadding = 20.0f;
+			std::vector<Asset> assets;
 
 			// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
 			std::vector<std::string> assetNames;
 
 			for (const auto& entry : std::filesystem::directory_iterator(projectFolderPath)) {
-				// Check if the entry is a regular file (you can add more filters as needed).
-				if (entry.is_regular_file()) {
-					assetNames.push_back(entry.path().filename().string());
-				}
+				assets.push_back({ entry.path().filename().string(),
+									entry.is_directory(),
+									false,
+									false });
 			}
 
-			for (size_t i = 0; i < assetNames.size(); i++) {
+			for (size_t i = 0; i < assets.size(); i++) {
 				if (i % assetsPerRow != 0) {
 					ImGui::SameLine();
 				}
 
 				ImGui::BeginGroup();
 
-				if (ImGui::BeginPopupContextItem(assetNames[i].c_str())) {
-					if (ImGui::MenuItem("Render")) {
-						// Handle rendering the asset.
-						// Implement the rendering logic here.
+				if (ImGui::Selectable(assets[i].name.c_str(), &assets[i].isSelected, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(assetWidth, assetHeight))) {
+					if (ImGui::IsMouseReleased(1)) {
+						assets[i].showDeletePopup = true;
+					}
+				}
 
-						//TO DO
+				if (assets[i].showDeletePopup) {
+					ImGui::OpenPopup(("DeletePopup##" + assets[i].name).c_str());
+				}
+
+				if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
+					if (ImGui::MenuItem("Delete")) {
+						std::filesystem::remove(projectFolderPath + "/" + assets[i].name);
+						assets.erase(assets.begin() + i);
+						ImGui::CloseCurrentPopup();
+						break;
 					}
 					ImGui::EndPopup();
 				}
 
-				if (ImGui::Selectable(assetNames[i].c_str(), false, 0, ImVec2(assetWidth, assetHeight))) {
-				}
-
 				ImGui::EndGroup();
 			}
+
 
 		ImGui::End();
 	}
