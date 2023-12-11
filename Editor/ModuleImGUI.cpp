@@ -275,15 +275,20 @@ update_status ModuleImGUI::PreUpdate()
 				LOG("EDITOR: Opening 'Hierarchy' window...", NULL);
 				hierarchyWindow = !hierarchyWindow;
 			}
-			if (ImGui::MenuItem("ImGui Console Log", NULL, showImGuiDebugLogWindow, !showImGuiDebugLogWindow))
+			if (ImGui::MenuItem("ImGui Console Log", NULL, imGuiDebugLogWindow, !imGuiDebugLogWindow))
 			{
 				LOG("EDITOR: Opening 'ImGui Console Log' window...", NULL);
-				showImGuiDebugLogWindow = !showImGuiDebugLogWindow;
+				imGuiDebugLogWindow = !imGuiDebugLogWindow;
 			}
 			if (ImGui::MenuItem("Inspector", NULL, inspectorWindow, !inspectorWindow))
 			{
 				LOG("EDITOR: Opening 'Inspector' window...", NULL);
 				inspectorWindow = !inspectorWindow;
+			}
+			if (ImGui::MenuItem("Simulation Buttons", NULL, simulationButtonsWindow, !simulationButtonsWindow))
+			{
+				LOG("EDITOR: Opening 'Simulation Buttons' window...", NULL);
+				simulationButtonsWindow = !simulationButtonsWindow;
 			}
 
 			ImGui::EndMenu();
@@ -933,9 +938,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 void ModuleImGUI::RenderImGUIDebugLogWindow()
 {
-	if (showImGuiDebugLogWindow)
+	if (imGuiDebugLogWindow)
 	{
-		ImGui::ShowDebugLogWindow(&showImGuiDebugLogWindow);
+		ImGui::ShowDebugLogWindow(&imGuiDebugLogWindow);
 	}
 }
 
@@ -1079,62 +1084,65 @@ void ModuleImGUI::RenderImGUIConsoleWindow()
 
 void ModuleImGUI::RenderImGUISimulationControlsWindow()
 {
-	ImGui::Begin("Simulation Controls");
-
-	// Play button
-	if (!App->isPlaying) {
-		if (ImGui::Button("Play"))
-		{
-			LOG("EDITOR: Starting the simulation...", NULL);
-			App->isPlaying = true;
-			App->isPaused = false;
-			App->startTime = SDL_GetTicks() / 1000.0;
-		}
-	}
-	else
+	if (simulationButtonsWindow)
 	{
-		ImGui::TextWrapped("Play");
-	}
-	ImGui::SameLine();
-	// Pause button
-	if (App->isPlaying) {
-		if (ImGui::Button("Pause"))
-		{
-			App->isPaused = !App->isPaused;
-			if (App->isPaused) {
-				// Paused, calculate elapsed time so far
-				LOG("EDITOR: Pausing the simulation...", NULL);
-				App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
-			}
-			else {
-				// Resumed, update start time
-				LOG("EDITOR: Resuming the simulation...", NULL);
+		ImGui::Begin("Simulation Controls", &simulationButtonsWindow);
+
+		// Play button
+		if (!App->isPlaying) {
+			if (ImGui::Button("Play"))
+			{
+				LOG("EDITOR: Starting the simulation...", NULL);
+				App->isPlaying = true;
+				App->isPaused = false;
 				App->startTime = SDL_GetTicks() / 1000.0;
 			}
 		}
-	}
-	else
-	{
-		ImGui::TextWrapped("Pause");
-	}
-	ImGui::SameLine();
-	// Stop button
-	if (App->isPlaying) {
-		if (ImGui::Button("Stop"))
+		else
 		{
-			LOG("EDITOR: Stopping the simulation...", NULL);
-			App->isPlaying = false;
-			App->isPaused = false;
-			App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
-
-			LOG("TOTAL SIMULATION TIME: %f seconds", App->elapsedTime);
-			App->elapsedTime = 0.0;
+			ImGui::TextWrapped("Play");
 		}
-	}
-	else
-	{
-		ImGui::TextWrapped("Stop");
-	}
+		ImGui::SameLine();
+		// Pause button
+		if (App->isPlaying) {
+			if (ImGui::Button("Pause"))
+			{
+				App->isPaused = !App->isPaused;
+				if (App->isPaused) {
+					// Paused, calculate elapsed time so far
+					LOG("EDITOR: Pausing the simulation...", NULL);
+					App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
+				}
+				else {
+					// Resumed, update start time
+					LOG("EDITOR: Resuming the simulation...", NULL);
+					App->startTime = SDL_GetTicks() / 1000.0;
+				}
+			}
+		}
+		else
+		{
+			ImGui::TextWrapped("Pause");
+		}
+		ImGui::SameLine();
+		// Stop button
+		if (App->isPlaying) {
+			if (ImGui::Button("Stop"))
+			{
+				LOG("EDITOR: Stopping the simulation...", NULL);
+				App->isPlaying = false;
+				App->isPaused = false;
+				App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
 
-	ImGui::End();
+				LOG("TOTAL SIMULATION TIME: %.3f seconds", App->elapsedTime);
+				App->elapsedTime = 0.0;
+			}
+		}
+		else
+		{
+			ImGui::TextWrapped("Stop");
+		}
+
+		ImGui::End();
+	}
 }

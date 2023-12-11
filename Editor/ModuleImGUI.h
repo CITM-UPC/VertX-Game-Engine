@@ -76,7 +76,8 @@ private:
 	bool consoleWindow = true;
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
-	bool showImGuiDebugLogWindow = false;
+	bool imGuiDebugLogWindow = false;
+	bool simulationButtonsWindow = true;
 
 	bool TexEnabled = true;
 
