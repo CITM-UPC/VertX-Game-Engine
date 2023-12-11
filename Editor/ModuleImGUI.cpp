@@ -600,7 +600,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera Speed slider
 		ImGui::Text("Camera Speed: ");
 		float cameraSpeedChanger = App->game_engine->camera.cameraSpeed;
-		if (ImGui::SliderFloat("", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
+		if (ImGui::SliderFloat("##CamSpeed", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
 		{
 			App->game_engine->camera.cameraSpeed = cameraSpeedChanger;
 		}
@@ -608,7 +608,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Speed Multiplier slider
 		ImGui::Text("Camera Speed Multiplier: ");
-		ImGui::SliderFloat("\n", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
+		ImGui::SliderFloat("##CamSpeedMult", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
 		ToolTipMessage("CTRL+Click to input a value");
 
 		//--------------------------------------------
@@ -616,7 +616,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera Mouse Sensitivity slider
 		ImGui::Separator();
 		ImGui::Text("Camera Mouse Sensitivity: ");
-		ImGui::SliderFloat(" \n", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
+		ImGui::SliderFloat("##CamMouseSens", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
 		ToolTipMessage("CTRL+Click to input a value");
 
 		ImGui::SeparatorText("Mouse Parameters");
@@ -706,6 +706,49 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		ImGui::PopItemWidth();
 
+		/* --- Camera Frustum Culling parameters --- */
+		ImGui::SeparatorText("Camera Frustum Culling");
+
+		// FOV slider
+		ImGui::Text("Field Of View (FOV): ");
+		float fov = App->game_engine->camera.fov;
+		if (ImGui::SliderFloat("##fov", &fov, 30.0f, 120.0f, "%.0f"))
+		{
+			App->game_engine->camera.fov = fov;
+		}
+		ToolTipMessage("CTRL+Click to input a value");
+
+		// zNear Clipping View Plane slider
+		ImGui::Text("Z-Near Clipping Plane distance: ");
+		float zNear = App->game_engine->camera.clippingPlaneViewNear;
+		if (ImGui::SliderFloat("##zNear", &zNear, 0.1f, 1000.0f, "%.1f"))
+		{
+			App->game_engine->camera.clippingPlaneViewNear = zNear;
+		}
+		ToolTipMessage("CTRL+Click to input a value");
+
+		// zFar Clipping View Plane slider
+		ImGui::Text("Z-Far Clipping Plane distance: ");
+		float zFar = App->game_engine->camera.clippingPlaneViewFar;
+		if (ImGui::SliderFloat("##zFar", &zFar, 0.1f, 1000.0f, "%.1f"))
+		{
+			App->game_engine->camera.clippingPlaneViewFar = zFar;
+		}
+		ToolTipMessage("CTRL+Click to input a value");
+
+		// Display Camera Yaw value
+		ImGui::BulletText("Camera Yaw:");
+		ImGui::SameLine();
+		ImGui::TextWrapped("%.1f", App->game_engine->camera.cameraYaw);
+
+		ImGui::SameLine();
+
+		// Display Camera Pitch value
+		ImGui::BulletText("Camera Pitch:");
+		ImGui::SameLine();
+		ImGui::TextWrapped("%.1f", App->game_engine->camera.cameraPitch);
+
+		// ------------------------------
 
 		// Button to reset camera to initial position
 		if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
@@ -1096,6 +1139,8 @@ void ModuleImGUI::RenderImGUISimulationControlsWindow()
 				App->isPlaying = true;
 				App->isPaused = false;
 				App->startTime = SDL_GetTicks() / 1000.0;
+
+				App->game_engine->camera.ResetCameraParameters();
 			}
 		}
 		else
