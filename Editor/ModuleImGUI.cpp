@@ -11,16 +11,43 @@
 #include "..\Engine\Mesh.h"
 #include "SDL2/SDL_cpuinfo.h"
 #include <filesystem>
+#include <functional>
 
 namespace fs = std::filesystem;
 
+using DoubleClickCallback = std::function<void(const std::string&)>;
+
+std::string currentFolderPath = "Assets";
+
 struct Asset {
 	std::string name;
-	bool isDirectory;
+	bool isFolder;
 	bool isSelected;
 	bool showDeletePopup;
 };
 
+void GoBack() {
+	if (currentFolderPath != "Assets") {
+		currentFolderPath = std::filesystem::path(currentFolderPath).parent_path().string();
+	}
+}
+
+void DoubleClickHandler(const std::string& folderName) {
+	currentFolderPath = "Assets/" + folderName;
+}
+
+void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {
+	currentFolderPath = currentFolderPath + "/" + folderName;
+	assets.clear(); // Clear current asset list
+	for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
+		assets.push_back({ entry.path().filename().string(), entry.is_directory() });
+	}
+}
+
+void ShowFolderViewer(const std::string& folderName) {
+	// Implement the logic to open the folder viewer here
+	// This function will be called when a folder is double-clicked
+}
 
 // Function to display a popup for deleting an asset
 void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
@@ -732,52 +759,62 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 			int assetsPerRow = 6.0f;
 			float assetWidth = 150.0f;
 			float assetHeight = 20.0f;
-			std::string projectFolderPath = "Assets";
+			//std::string currentfolderPath = "Assets";
 			float buttonPadding = 20.0f;
 			std::vector<Asset> assets;
+			DoubleClickCallback callback = DoubleClickHandler;
 
 			// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
 			std::vector<std::string> assetNames;
 
-			for (const auto& entry : std::filesystem::directory_iterator(projectFolderPath)) {
-				assets.push_back({ entry.path().filename().string(),
-									entry.is_directory(),
-									false,
-									false });
+			for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
+				assets.push_back({ entry.path().filename().string(), entry.is_directory(), false, false });
+			}
+
+			if (currentFolderPath != "Assets") {
+				if (ImGui::Button("Back")) {
+					GoBack();
+					assets.clear();
+					for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
+						assets.push_back({ entry.path().filename().string(), entry.is_directory() });
+					}
+				}
 			}
 
 			for (size_t i = 0; i < assets.size(); i++) {
-				if (i % assetsPerRow != 0) {
-					ImGui::SameLine();
+            if (i % assetsPerRow != 0) {
+                ImGui::SameLine();
+            }
+
+            ImGui::BeginGroup();
+
+            if (ImGui::Selectable(assets[i].name.c_str(), &assets[i].isSelected, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(assetWidth, assetHeight))) {
+				if (assets[i].isFolder && ImGui::IsMouseDoubleClicked(0)) {
+					callback(assets[i].name); // Trigger the callback function
 				}
+                if (!assets[i].isFolder && ImGui::IsMouseReleased(1)) {
+                    assets[i].showDeletePopup = true;
+                }
+            }
 
-				ImGui::BeginGroup();
+            if (assets[i].showDeletePopup) {
+                ImGui::OpenPopup(("DeletePopup##" + assets[i].name).c_str());
+            }
 
-				if (ImGui::Selectable(assets[i].name.c_str(), &assets[i].isSelected, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(assetWidth, assetHeight))) {
-					if (ImGui::IsMouseReleased(1)) {
-						assets[i].showDeletePopup = true;
-					}
-				}
+            if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
+                if (ImGui::MenuItem("Delete")) {
+                    std::filesystem::remove(currentFolderPath + "/" + assets[i].name);
+                    assets.erase(assets.begin() + i);
+                    ImGui::CloseCurrentPopup();
+                    break;
+                }
+                ImGui::EndPopup();
+            }
 
-				if (assets[i].showDeletePopup) {
-					ImGui::OpenPopup(("DeletePopup##" + assets[i].name).c_str());
-				}
+            ImGui::EndGroup();
+        }
 
-				if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
-					if (ImGui::MenuItem("Delete")) {
-						std::filesystem::remove(projectFolderPath + "/" + assets[i].name);
-						assets.erase(assets.begin() + i);
-						ImGui::CloseCurrentPopup();
-						break;
-					}
-					ImGui::EndPopup();
-				}
-
-				ImGui::EndGroup();
-			}
-
-
-		ImGui::End();
+        ImGui::End();
 	}
 }
 
