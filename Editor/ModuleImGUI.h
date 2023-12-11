@@ -46,6 +46,7 @@ public:
 	void RenderImGUICameraInspectorWindow();
 	void RenderImGUIDebugLogWindow();
 	void RenderImGUIConsoleWindow();
+	void RenderImGUISimulationControlsWindow();
 
 	void RenderFPSGraph();
 

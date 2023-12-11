@@ -45,10 +45,17 @@ public:
 	double deltaTime;
 	double frameDuration;
 
-	bool isSimulationRunning = false;
+	/*bool isSimulationRunning = false;
 	bool isSimulationPaused = false;
 	std::chrono::high_resolution_clock::time_point simulationTime;
-	std::chrono::high_resolution_clock::time_point lastSimulationTime;
+	std::chrono::high_resolution_clock::time_point lastSimulationTime;*/
+
+	// Timer variables
+	bool isPlaying = false;
+	bool isPaused = false;
+	double startTime = 0.0;
+	double elapsedTime = 0.0;
+
 
 private:
 
