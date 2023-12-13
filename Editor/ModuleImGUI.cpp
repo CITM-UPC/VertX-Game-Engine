@@ -812,7 +812,9 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
             }
 
             if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
-                if (ImGui::MenuItem("Delete")) {
+                if (ImGui::MenuItem("Delete")) 
+				{
+					LOG("EDITOR: Deleting '%s' asset...", assets[i].name.c_str());
                     std::filesystem::remove(currentFolderPath + "/" + assets[i].name);
                     assets.erase(assets.begin() + i);
                     ImGui::CloseCurrentPopup();
@@ -989,14 +991,16 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
+
 	if (hierarchyWindow)
 	{
 		ImGui::Begin("Hierarchy", &hierarchyWindow);
 
 		for (auto& gameObject : App->game_engine->renderer3D_engine->gameObjectList) {
-
-			if (ImGui::MenuItem(gameObject.name.c_str())) {
+				
+			if (ImGui::Selectable(gameObject.name.c_str())) {
 				gameObjSelected = gameObject;
+
 			}
 		}
 
