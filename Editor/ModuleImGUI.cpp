@@ -90,52 +90,6 @@ bool copyFileToAssetsFolder(const std::string& sourcePath) {
 	}
 }
 
-//void ImportFile() 
-//{
-//		OPENFILENAME ofn;
-//		char szFile[260] = { 0 };
-//
-//		ZeroMemory(&ofn, sizeof(ofn));
-//		ofn.lStructSize = sizeof(ofn);
-//		ofn.hwndOwner = NULL;
-//		ofn.lpstrFile = szFile;
-//		ofn.lpstrFile[0] = '\0';
-//		ofn.nMaxFile = sizeof(szFile);
-//		ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
-//		ofn.nFilterIndex = 1;
-//		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-//
-//		if (GetOpenFileName(&ofn) == TRUE) {
-//			std::filesystem::path selectedFile = szFile;
-//			std::filesystem::path destinationPath = std::string("Assets") + selectedFile.filename().string();
-//
-//			try {
-//				// Check if the selected file exists
-//				if (!std::filesystem::exists(selectedFile)) {
-//					MessageBox(NULL, "Selected file does not exist.", "Error", MB_OK | MB_ICONERROR);
-//					return;
-//				}
-//
-//				// Check if the destination file already exists
-//				if (std::filesystem::exists(destinationPath)) {
-//					int result = MessageBox(NULL, "File already exists in 'Assets' directory. Overwrite?", "Warning", MB_YESNO | MB_ICONWARNING);
-//					if (result == IDNO) {
-//						return;
-//					}
-//				}
-//
-//				// Copy the file
-//				std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
-//
-//				MessageBox(NULL, "File imported to 'Assets' directory.", "Import Successful", MB_OK);
-//				LOG("EDITOR: File '%s' imported to 'Assets' directory SUCCESSFULLY...", szFile);
-//			}
-//			catch (const std::exception& e) {
-//				MessageBox(NULL, e.what(), "Error due to Access Permissions or other.", MB_OK | MB_ICONERROR);
-//			}
-//		}
-//}
-
 
 // Function to display a popup for deleting an asset
 void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
@@ -828,7 +782,7 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
 		
-		if (ImGui::Button("Import File")) {
+		if (ImGui::Button("Import Local File")) {
 			std::string selectedFilePath = openFileDialog();
 
 			if (!selectedFilePath.empty()) {
@@ -1092,6 +1046,21 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
+		if (ImGui::Button("Import Local File")) {
+			std::string selectedFilePath = openFileDialog();
+
+			if (!selectedFilePath.empty()) {
+				if (copyFileToAssetsFolder(selectedFilePath)) {
+					// File import successful
+					LOG("EDITOR: File '%s' imported successfully!", selectedFilePath.c_str());
+				}
+				else {
+					// Handle the case where file import failed
+					LOG("EDITOR: ERROR while importing file '%s'", selectedFilePath);
+				}
+			}
+		}
+
 		ImGui::SeparatorText("Primitives:");
 
 		if (ImGui::Button("Generate Cube")) {
