@@ -14,6 +14,7 @@
 #include <functional>
 #include <Windows.h>
 
+
 namespace fs = std::filesystem;
 
 using DoubleClickCallback = std::function<void(const std::string&)>;
@@ -45,33 +46,53 @@ void ShowFolderContents(const std::string& folderName, std::vector<Asset>& asset
 	}
 }
 
-void ImportFile() {
-	OPENFILENAME ofn;
-	char szFile[260] = { 0 };
+void ImportFile() 
+{
+		OPENFILENAME ofn;
+		char szFile[260] = { 0 };
 
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = NULL;
-	ofn.lpstrFile = szFile;
-	ofn.lpstrFile[0] = '\0';
-	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
-	ofn.nFilterIndex = 1;
-	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = NULL;
+		ofn.lpstrFile = szFile;
+		ofn.lpstrFile[0] = '\0';
+		ofn.nMaxFile = sizeof(szFile);
+		ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
+		ofn.nFilterIndex = 1;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-	if (GetOpenFileName(&ofn) == TRUE) {
-		// Process the selected file here
-		// szFile contains the selected file path
+		if (GetOpenFileName(&ofn) == TRUE) {
+			std::filesystem::path selectedFile = szFile;
+			std::filesystem::path destinationPath = "Assets/" + selectedFile.filename().string();
 
-		std::filesystem::path selectedFile = szFile;
-		std::filesystem::path destinationPath = "Assets/" + selectedFile.filename().string();
+			try {
+				// Check if the selected file exists
+				if (!std::filesystem::exists(selectedFile)) {
+					MessageBox(NULL, "Selected file does not exist.", "Error", MB_OK | MB_ICONERROR);
+					return;
+				}
 
-		// Copy the selected file to the Assets directory
-		std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
+				// Check if the destination file already exists
+				if (std::filesystem::exists(destinationPath)) {
+					int result = MessageBox(NULL, "File already exists in 'Assets' directory. Overwrite?", "Warning", MB_YESNO | MB_ICONWARNING);
+					if (result == IDNO) {
+						return;
+					}
+				}
 
-		MessageBox(NULL, "File imported to Assets directory.", "Import Successful", MB_OK);
-	}
+				// Copy the file
+				std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
+
+				MessageBox(NULL, "File imported to 'Assets' directory.", "Import Successful", MB_OK);
+				LOG("EDITOR: File '%s' imported to 'Assets' directory SUCCESSFULLY...", szFile);
+			}
+			catch (const std::exception& e) {
+				MessageBox(NULL, e.what(), "Error due to Access Permissions or other.", MB_OK | MB_ICONERROR);
+			}
+		}
+
 }
+
 
 // Function to display a popup for deleting an asset
 void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
@@ -761,9 +782,13 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 {
 	if (assetsWindow)
 	{
-
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
+
+		if (ImGui::Button("Import Local File")) {
+			ImportFile();
+			ImGui::CloseCurrentPopup();
+		}
 
 			int assetsPerRow = 6.0f;
 			float assetWidth = 150.0f;
@@ -1013,8 +1038,9 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
-		if (ImGui::Button("Import Local File")) {
-			ImportFile(); // Trigger the file import function
+		if (ImGui::Button("Import Local File")) 
+		{
+			ImportFile();// Trigger the file import function
 			ImGui::CloseCurrentPopup();
 		}
 
