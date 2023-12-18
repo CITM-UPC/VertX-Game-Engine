@@ -13,7 +13,7 @@
 #include <filesystem>
 #include <functional>
 #include <Windows.h>
-
+#include <commdlg.h>
 
 namespace fs = std::filesystem;
 
@@ -46,52 +46,95 @@ void ShowFolderContents(const std::string& folderName, std::vector<Asset>& asset
 	}
 }
 
-void ImportFile() 
-{
-		OPENFILENAME ofn;
-		char szFile[260] = { 0 };
+// Function to open a file dialog and return the selected file path
+std::string openFileDialog() {
+	OPENFILENAME ofn;
+	char szFileName[MAX_PATH] = "";
 
-		ZeroMemory(&ofn, sizeof(ofn));
-		ofn.lStructSize = sizeof(ofn);
-		ofn.hwndOwner = NULL;
-		ofn.lpstrFile = szFile;
-		ofn.lpstrFile[0] = '\0';
-		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
-		ofn.nFilterIndex = 1;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	ZeroMemory(&ofn, sizeof(ofn));
 
-		if (GetOpenFileName(&ofn) == TRUE) {
-			std::filesystem::path selectedFile = szFile;
-			std::filesystem::path destinationPath = "Assets/" + selectedFile.filename().string();
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
+	ofn.lpstrFile = szFileName;
+	ofn.nMaxFile = sizeof(szFileName);
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-			try {
-				// Check if the selected file exists
-				if (!std::filesystem::exists(selectedFile)) {
-					MessageBox(NULL, "Selected file does not exist.", "Error", MB_OK | MB_ICONERROR);
-					return;
-				}
+	if (GetOpenFileName(&ofn))
+		return ofn.lpstrFile;
 
-				// Check if the destination file already exists
-				if (std::filesystem::exists(destinationPath)) {
-					int result = MessageBox(NULL, "File already exists in 'Assets' directory. Overwrite?", "Warning", MB_YESNO | MB_ICONWARNING);
-					if (result == IDNO) {
-						return;
-					}
-				}
-
-				// Copy the file
-				std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
-
-				MessageBox(NULL, "File imported to 'Assets' directory.", "Import Successful", MB_OK);
-				LOG("EDITOR: File '%s' imported to 'Assets' directory SUCCESSFULLY...", szFile);
-			}
-			catch (const std::exception& e) {
-				MessageBox(NULL, e.what(), "Error due to Access Permissions or other.", MB_OK | MB_ICONERROR);
-			}
-		}
-
+	return "";
 }
+
+// Function to copy a file to the "Assets/" folder
+bool copyFileToAssetsFolder(const std::string& sourcePath) {
+	// Adjust this path according to your project structure
+	const std::string assetsFolderPath = "Assets/";
+
+	try {
+		// Extract the file name from the source path
+		std::string fileName = fs::path(sourcePath).filename().string();
+
+		// Create the destination path
+		std::string destinationPath = assetsFolderPath + fileName;
+
+		// Copy the file
+		fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
+
+		std::cout << "File copied to Assets folder: " << destinationPath << std::endl;
+		return true;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Error copying file: " << e.what() << std::endl;
+		return false;
+	}
+}
+
+//void ImportFile() 
+//{
+//		OPENFILENAME ofn;
+//		char szFile[260] = { 0 };
+//
+//		ZeroMemory(&ofn, sizeof(ofn));
+//		ofn.lStructSize = sizeof(ofn);
+//		ofn.hwndOwner = NULL;
+//		ofn.lpstrFile = szFile;
+//		ofn.lpstrFile[0] = '\0';
+//		ofn.nMaxFile = sizeof(szFile);
+//		ofn.lpstrFilter = "All Files (*.*)\0*.*\0";
+//		ofn.nFilterIndex = 1;
+//		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+//
+//		if (GetOpenFileName(&ofn) == TRUE) {
+//			std::filesystem::path selectedFile = szFile;
+//			std::filesystem::path destinationPath = std::string("Assets") + selectedFile.filename().string();
+//
+//			try {
+//				// Check if the selected file exists
+//				if (!std::filesystem::exists(selectedFile)) {
+//					MessageBox(NULL, "Selected file does not exist.", "Error", MB_OK | MB_ICONERROR);
+//					return;
+//				}
+//
+//				// Check if the destination file already exists
+//				if (std::filesystem::exists(destinationPath)) {
+//					int result = MessageBox(NULL, "File already exists in 'Assets' directory. Overwrite?", "Warning", MB_YESNO | MB_ICONWARNING);
+//					if (result == IDNO) {
+//						return;
+//					}
+//				}
+//
+//				// Copy the file
+//				std::filesystem::copy_file(selectedFile, destinationPath, std::filesystem::copy_options::overwrite_existing);
+//
+//				MessageBox(NULL, "File imported to 'Assets' directory.", "Import Successful", MB_OK);
+//				LOG("EDITOR: File '%s' imported to 'Assets' directory SUCCESSFULLY...", szFile);
+//			}
+//			catch (const std::exception& e) {
+//				MessageBox(NULL, e.what(), "Error due to Access Permissions or other.", MB_OK | MB_ICONERROR);
+//			}
+//		}
+//}
 
 
 // Function to display a popup for deleting an asset
@@ -784,11 +827,22 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 	{
 		// Create Assets window
 		ImGui::Begin("Assets", &assetsWindow);
+		
+		if (ImGui::Button("Import File")) {
+			std::string selectedFilePath = openFileDialog();
 
-		if (ImGui::Button("Import Local File")) {
-			ImportFile();
-			ImGui::CloseCurrentPopup();
+			if (!selectedFilePath.empty()) {
+				if (copyFileToAssetsFolder(selectedFilePath)) {
+					// File import successful
+					LOG("EDITOR: File '%s' imported successfully!", selectedFilePath.c_str());
+				}
+				else {
+					// Handle the case where file import failed
+					LOG("EDITOR: ERROR while importing file '%s'", selectedFilePath);
+				}
+			}
 		}
+
 
 			int assetsPerRow = 6.0f;
 			float assetWidth = 150.0f;
@@ -1038,12 +1092,6 @@ void ModuleImGUI::GeneratePrimitives()
 {
 	if (ImGui::BeginMenu("GameObject"))
 	{
-		if (ImGui::Button("Import Local File")) 
-		{
-			ImportFile();// Trigger the file import function
-			ImGui::CloseCurrentPopup();
-		}
-
 		ImGui::SeparatorText("Primitives:");
 
 		if (ImGui::Button("Generate Cube")) {
