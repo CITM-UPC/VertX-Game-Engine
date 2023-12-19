@@ -57,6 +57,8 @@ public:
 
 	AABBox aabb() const;
 
+	void render(bool drawBoundingBox = false);
+
 	void paint() const;
 
 };
