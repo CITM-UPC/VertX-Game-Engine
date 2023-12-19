@@ -35,7 +35,7 @@ void GoBack() {
 }
 
 void DoubleClickHandler(const std::string& folderName) {
-	currentFolderPath = "Assets/" + folderName;
+	currentFolderPath = currentFolderPath + folderName;
 }
 
 void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {
@@ -43,6 +43,33 @@ void ShowFolderContents(const std::string& folderName, std::vector<Asset>& asset
 	assets.clear(); // Clear current asset list
 	for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
 		assets.push_back({ entry.path().filename().string(), entry.is_directory() });
+	}
+}
+
+vec3 ModuleImGUI::GetSelectedObjectPos()
+{
+	if (gameObjSelected != nullptr)
+		return gameObjSelected->GetComponent<Transform>()->position();
+
+	return vec3(0, 0, 0);
+}
+
+
+void ModuleImGUI::SetSelectedObjectTexture(string filePath)
+{
+	if (gameObjSelected != nullptr) {
+		if (gameObjSelected->GetComponent<Texture2D>() != nullptr)
+		{
+			gameObjSelected->RemoveComponent(Component::Type::TEXTURE2D);
+		}
+
+		Texture2D textureToPush(gameObjSelected, filePath);
+		gameObjSelected->AddComponent(textureToPush);
+
+		if (gameObjSelected->GetComponent<Mesh>()->texture)
+		{
+			gameObjSelected->GetComponent<Mesh>()->texture = gameObjSelected->GetComponent<Texture2D>();
+		}
 	}
 }
 
@@ -69,7 +96,7 @@ std::string openFileDialog() {
 // Function to copy a file to the "Assets/" folder
 bool copyFileToAssetsFolder(const std::string& sourcePath) {
 	// Adjust this path according to your project structure
-	const std::string assetsFolderPath = "Assets/";
+	const std::string assetsFolderPath = "Assets/Library/Imports/";
 
 	try {
 		// Extract the file name from the source path
@@ -81,7 +108,7 @@ bool copyFileToAssetsFolder(const std::string& sourcePath) {
 		// Copy the file
 		fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
 
-		std::cout << "File copied to Assets folder: " << destinationPath << std::endl;
+		std::cout << "File copied to Imports folder: " << destinationPath << std::endl;
 		return true;
 	}
 	catch (const std::exception& e) {
@@ -617,16 +644,16 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera Speed slider
 		ImGui::Text("Camera Speed: ");
-		float cameraSpeedChanger = App->game_engine->camera.cameraSpeed;
+		float cameraSpeedChanger = App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeed;
 		if (ImGui::SliderFloat("##CamSpeed", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
 		{
-			App->game_engine->camera.cameraSpeed = cameraSpeedChanger;
+			App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeed = cameraSpeedChanger;
 		}
 		ToolTipMessage("CTRL+Click to input a value");
 
 		// Camera Speed Multiplier slider
 		ImGui::Text("Camera Speed Multiplier: ");
-		ImGui::SliderFloat("##CamSpeedMult", &App->game_engine->camera.cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
+		ImGui::SliderFloat("##CamSpeedMult", &App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
 		ToolTipMessage("CTRL+Click to input a value");
 
 		//--------------------------------------------
@@ -634,7 +661,7 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 		// Camera Mouse Sensitivity slider
 		ImGui::Separator();
 		ImGui::Text("Camera Mouse Sensitivity: ");
-		ImGui::SliderFloat("##CamMouseSens", &App->game_engine->camera.mouseSensitivity, 0.01f, 1.0f, "%.2f");
+		ImGui::SliderFloat("##CamMouseSens", &App->game_engine->cameraGO.GetComponent<Camera>()->mouseSensitivity, 0.01f, 1.0f, "%.2f");
 		ToolTipMessage("CTRL+Click to input a value");
 
 		ImGui::SeparatorText("Mouse Parameters");
@@ -649,75 +676,75 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// Camera World Position X 
 		ImGui::BulletText("Position vector:");
-		float p1 = App->game_engine->camera.worldPosVec.x;
+		float p1 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.x;
 		ImGui::InputFloat("##CamPosX", &p1);
-		App->game_engine->camera.worldPosVec.x = p1;
+		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.x = p1;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera World Position Y
-		float p2 = App->game_engine->camera.worldPosVec.y;
+		float p2 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.y;
 		ImGui::InputFloat("##CamPosY", &p2);
-		App->game_engine->camera.worldPosVec.y = p2;
+		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.y = p2;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera World Position Z
-		float p3 = App->game_engine->camera.worldPosVec.z;
+		float p3 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.z;
 		ImGui::InputFloat("##CamPosZ", &p3);
-		App->game_engine->camera.worldPosVec.z = p3;
+		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.z = p3;
 		ToolTipMessage("Click to input a value");
 
 		//--------------------------------------------
 
 		// Camera Focus Point X 
 		ImGui::BulletText("Reference vector:");
-		float r1 = App->game_engine->camera.focusPosVec.x;
+		float r1 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.x;
 		ImGui::InputFloat("##CamFocusX", &r1);
-		App->game_engine->camera.focusPosVec.x = r1;
+		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.x = r1;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera Focus Point Y 
-		float r2 = App->game_engine->camera.focusPosVec.y;
+		float r2 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.y;
 		ImGui::InputFloat("##CamFocusY", &r2);
-		App->game_engine->camera.focusPosVec.y = r2;
+		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.y = r2;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera Focus Point Z
-		float r3 = App->game_engine->camera.focusPosVec.z;
+		float r3 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.z;
 		ImGui::InputFloat("##CamFocusZ", &r3);
-		App->game_engine->camera.focusPosVec.z = r3;
+		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.z = r3;
 		ToolTipMessage("Click to input a value");
 
 		//--------------------------------------------
 
 		// Camera Up Vector X
 		ImGui::BulletText("Up vector :");
-		float u1 = App->game_engine->camera.upVec.x;
+		float u1 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.x;
 		ImGui::InputFloat("##CamUpX", &u1);
-		App->game_engine->camera.upVec.x = u1;
+		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.x = u1;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera Focus Point Y 
-		float u2 = App->game_engine->camera.upVec.y;
+		float u2 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.y;
 		ImGui::InputFloat("##CamUpY", &u2);
-		App->game_engine->camera.upVec.y = u2;
+		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.y = u2;
 		ToolTipMessage("Click to input a value");
 
 		ImGui::SameLine();
 
 		// Camera Focus Point Z
-		float u3 = App->game_engine->camera.upVec.z;
+		float u3 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.z;
 		ImGui::InputFloat("##CamUpZ", &u3);
-		App->game_engine->camera.upVec.z = u3;
+		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.z = u3;
 		ToolTipMessage("Click to input a value");
 
 		//--------------------------------------------
@@ -729,48 +756,48 @@ void ModuleImGUI::RenderImGUICameraInspectorWindow()
 
 		// FOV slider
 		ImGui::Text("Field Of View (FOV): ");
-		float fov = App->game_engine->camera.fov;
+		float fov = App->game_engine->cameraGO.GetComponent<Camera>()->fov;
 		if (ImGui::SliderFloat("##fov", &fov, 30.0f, 120.0f, "%.0f"))
 		{
-			App->game_engine->camera.fov = fov;
+			App->game_engine->cameraGO.GetComponent<Camera>()->fov = fov;
 		}
 		ToolTipMessage("CTRL+Click to input a value");
 
 		// zNear Clipping View Plane slider
 		ImGui::Text("Z-Near Clipping Plane distance: ");
-		float zNear = App->game_engine->camera.clippingPlaneViewNear;
+		float zNear = App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear;
 		if (ImGui::SliderFloat("##zNear", &zNear, 0.1f, 1000.0f, "%.1f"))
 		{
-			App->game_engine->camera.clippingPlaneViewNear = zNear;
+			App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear = zNear;
 		}
 		ToolTipMessage("CTRL+Click to input a value");
 
 		// zFar Clipping View Plane slider
 		ImGui::Text("Z-Far Clipping Plane distance: ");
-		float zFar = App->game_engine->camera.clippingPlaneViewFar;
+		float zFar = App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewFar;
 		if (ImGui::SliderFloat("##zFar", &zFar, 0.1f, 1000.0f, "%.1f"))
 		{
-			App->game_engine->camera.clippingPlaneViewFar = zFar;
+			App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewFar = zFar;
 		}
 		ToolTipMessage("CTRL+Click to input a value");
 
 		// Display Camera Yaw value
 		ImGui::BulletText("Camera Yaw:");
 		ImGui::SameLine();
-		ImGui::TextWrapped("%.1f", App->game_engine->camera.cameraYaw);
+		ImGui::TextWrapped("%.1f", App->game_engine->cameraGO.GetComponent<Camera>()->cameraYaw);
 
 		ImGui::SameLine();
 
 		// Display Camera Pitch value
 		ImGui::BulletText("Camera Pitch:");
 		ImGui::SameLine();
-		ImGui::TextWrapped("%.1f", App->game_engine->camera.cameraPitch);
+		ImGui::TextWrapped("%.1f", App->game_engine->cameraGO.GetComponent<Camera>()->cameraPitch);
 
 		// ------------------------------
 
 		// Button to reset camera to initial position
 		if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
-			App->game_engine->camera.ResetCameraParameters();
+			App->game_engine->cameraGO.GetComponent<Camera>()->ResetCameraParameters();
 	}
 }
 
@@ -868,147 +895,156 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 	if (inspectorWindow)
 	{
 		if (ImGui::Begin("Inspector", &inspectorWindow)) {
-			if (gameObjSelected.name != "") {
-				ImGui::Checkbox("Active", &gameObjSelected.isActive);
-				ImGui::SameLine(); ImGui::Text("Game Object: ");
-				ImGui::SameLine(); ImGui::Text(gameObjSelected.name.c_str());
+			if (gameObjSelected != nullptr) {
+				if (gameObjSelected->name != "") {
+					ImGui::Checkbox("Active", &gameObjSelected->isActive);
+					ImGui::SameLine(); ImGui::Text("Game Object: ");
+					ImGui::SameLine(); ImGui::Text(gameObjSelected->name.c_str());
 
-				ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-				if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-					gameObjSelected.name = Title;
-					/*gameObject.name.push_back(Title);*/
-				}
+					if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
-				//Grab Components and set in for allows for constant polling 
-				//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
-				for (auto& comp : gameObjSelected.GetComponents()) {
-					bool deleteButtonPressed = false;
-					if (comp.get()->getType() == Component::Type::TRANSFORM) {
-						Transform* transform = dynamic_cast<Transform*>(comp.get());
+					ImGui::SetNextItemWidth(100.0f);
+					if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
-						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
-						{
-							ImGui::PushItemWidth(60.0f);
-							ImGui::BulletText("Position");
-							ImGui::InputDouble("##PositionX", &transform->position.x, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");
-
-							ImGui::BulletText("Rotation");
-							ImGui::InputDouble("##RotationX", &transform->rotation.x, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##RotationY", &transform->rotation.y, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##RotationZ", &transform->rotation.z, 0.0, 0.0, "%.3f");
-
-							ImGui::BulletText("Scale");
-							ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
-							ImGui::SameLine();
-							ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
-
-							ImGui::PopItemWidth();
-						}
+					ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+					if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+						gameObjSelected->name = Title;
+						/*gameObject.name.push_back(Title);*/
 					}
-					//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
-					if (comp.get()->getType() == Component::Type::MESH) {
-						Mesh* mesh = dynamic_cast<Mesh*>(comp.get());
 
-						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
-						{
-							if (ImGui::Checkbox("Draw", &mesh->meshIsDrawed))
-								LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshIsDrawed ? "ACTIVE" : "INACTIVE");
-
-							ImGui::SameLine();
-							ImGui::Text("	Mesh Filename: ");
-							ImGui::SameLine();
-							ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
-							ImGui::Separator();
-
-							ImGui::Text("File path: ");
-							ImGui::SameLine();
-							ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", mesh->getName().c_str());
-								
-							ImGui::Separator();
-							ImGui::Text("Indexes: ");
-							ImGui::SameLine();
-							ImGui::Text("%d", mesh->getNumIndexs());
-							ImGui::SameLine();
-							ImGui::Text("Vertexs: ");
-							ImGui::SameLine();
-							ImGui::Text("%d", mesh->getNumVerts());
-
-							ImGui::Text("Normals: ");
-							ImGui::SameLine();
-							ImGui::Text("%d", mesh->getNumNormals());
-							ImGui::SameLine();
-							ImGui::Text("Faces: ");
-							ImGui::SameLine();
-							ImGui::Text("%d", mesh->getNumFaces());
-							ImGui::Separator();
-
+					//Grab Components and set in for allows for constant polling 
+					//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
+					for (auto& component : *gameObjSelected->GetComponents()) {
+						bool deleteButtonPressed = false;
+						if (component.get()->getType() == Component::Type::TRANSFORM) {
+							Transform* transform = dynamic_cast<Transform*>(component.get());
 							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-							if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)) {
-								if (ImGui::Checkbox("View Vertex Normals", &mesh->VertexNormDraw))
-									LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");
-								ImGui::SameLine();
-								if (ImGui::Checkbox("View Face Normals", &mesh->FaceNormDraw))
-									LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");
-
-								ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
-							}
-							ImGui::Separator();
-							if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
+							if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 							{
-								LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
-								(mesh->usingTexture) ? mesh->texture = gameObjSelected.GetComponent<Texture2D>() : mesh->texture = nullptr;
+								ImGui::PushItemWidth(60.0f);
+								ImGui::BulletText("Position");
+								/*ImGui::InputDouble("##PositionX", transform->position().x, 0.0, 0.0, "%.3f");*/
+								ImGui::Text(std::to_string(transform->position().x).c_str());
+								ImGui::SameLine();
+								/*ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");*/
+								ImGui::Text(std::to_string(transform->position().y).c_str());
+								ImGui::SameLine();
+								/*ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");*/
+								ImGui::Text(std::to_string(transform->position().z).c_str());
+
+								//ImGui::BulletText("Rotation");
+								///*ImGui::InputDouble("##PositionX", transform->position().x, 0.0, 0.0, "%.3f");*/
+								//ImGui::Text(std::to_string(transform->position().x).c_str());
+								//ImGui::SameLine();
+								///*ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");*/
+								//ImGui::Text(std::to_string(transform->Rotate().y).c_str());
+								//ImGui::SameLine();
+								///*ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");*/
+								//ImGui::Text(std::to_string(transform->position().z).c_str());
+
+								//ImGui::BulletText("Scale");
+								//ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
+								//ImGui::SameLine();
+								//ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
+								//ImGui::SameLine();
+								//ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
+
+								ImGui::PopItemWidth();
 							}
 						}
-					}
-					//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
-					if (comp.get()->getType() == Component::Type::TEXTURE) {
-						Texture2D* texture2D = dynamic_cast<Texture2D*>(comp.get());
+						//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
+						if (component.get()->getType() == Component::Type::MESH) {
+							Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+							if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
+							{
+								if (ImGui::Checkbox("Active", &mesh->isActive))
+									/*LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshActive ? "ACTIVE" : "INACTIVE");*/
+									ImGui::SameLine();
+								ImGui::Text("	Mesh Filename: ");
+								ImGui::SameLine();
+								ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
+								ImGui::Separator();
 
-						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
-						{
-							ImGui::Text("Texture Filename: ");
-							ImGui::SameLine();
-							ImGui::TextColored(ImVec4(0, 1, 0, 1), texture2D->getName().c_str());
-							ImGui::Separator();
+								ImGui::Text("File path: ");
+								ImGui::SameLine();
+								ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", mesh->getName().c_str());
 
-							ImGui::Text("File path: ");
-							ImGui::SameLine();
-							ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", texture2D->getName().c_str());
-							
-							ImGui::Separator();
-							ImGui::Text("Texture Height: ");
-							ImGui::SameLine();
-							ImGui::Text("%d px", texture2D->getHeight());
-							ImGui::Text("Texture Width: ");
-							ImGui::SameLine();
-							ImGui::Text("%d px", texture2D->getWidth());
+								ImGui::Separator();
+								ImGui::Text("Indexes: ");
+								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+								ImGui::SameLine();
+								ImGui::Text("Vertexs: ");
+								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+
+								ImGui::Text("Normals: ");
+								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+								ImGui::SameLine();
+								ImGui::Text("Faces: ");
+								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+								ImGui::Text("Tex coords: ");
+								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumTexCoords()).c_str());
+								ImGui::Separator();
+								if (ImGui::Checkbox("Use Texture", &mesh->usingTexture)) {
+									(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
+								}
+								ImGui::Checkbox("Use Checker Texture", &mesh->useChecker);
+								ImGui::SameLine(); ImGui::TextColored({ 0.5f, 0.5f, 0.5f, 1.0f }, "(?)");
+								if (ImGui::IsItemHovered()) {
+									ImGui::SetTooltip("Use Texture must be checked in order to see the checker texture.");
+								}
+								ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+								if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)) {
+									if (ImGui::Checkbox("View Vertex Normals", &mesh->drawVertexNormals))
+										/*LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");*/
+										ImGui::SameLine();
+									if (ImGui::Checkbox("View Face Normals", &mesh->drawFaceNormals))
+										/*LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");*/
+
+										ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
+								}
+								ImGui::Separator();
+								if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
+								{
+									LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
+									(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
+								}
+							}
 						}
-					}
+						//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
+						if (component.get()->getType() == Component::Type::TEXTURE2D) {
+							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+							Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+							if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+							{
+								ImGui::Checkbox("Active", &texture2D->isActive);
+								if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+								if (ImGui::BeginCombo("Rendering mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+								ImGui::Separator();
+								ImGui::Text("File path: ");
+								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
+								ImGui::Text("Texture size");
+								ImGui::Text("Height: ");
+								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
+								ImGui::Text("Width: ");
+								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
+							}
+						}
 
-					//WORK IN PROGRESS
-					/*if (ImGui::Button("Delete GameObject")) {
-						deleteButtonPressed = true;
+						//WORK IN PROGRESS
+						/*if (ImGui::Button("Delete GameObject")) {
+							deleteButtonPressed = true;
+						}
+						if (deleteButtonPressed) {
+							gameObjSelected.~GameObject();
+							deleteButtonPressed = false;
+						}*/
 					}
-					if (deleteButtonPressed) {
-						gameObjSelected.~GameObject();
-						deleteButtonPressed = false;
-					}*/
 				}
 			}
-		}
 
-		ImGui::End();
+			ImGui::End();
+		}
 	}
 }
 
@@ -1020,44 +1056,71 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 	}
 }
 
+void ModuleImGUI::HierarchyRecursive(GameObject* gO)
+{
+	ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if (gO->childs.empty())		TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (gameObjSelected == gO)	TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+
+	bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
+
+	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+		gameObjSelected = gO;
+	}
+
+
+	if (isOpen)
+	{
+		for (auto& child : gO->childs)
+		{
+			HierarchyRecursive(child.get());
+		}
+		ImGui::TreePop();
+	}
+}
+
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
 	if (hierarchyWindow)
 	{
 		ImGui::Begin("Hierarchy", &hierarchyWindow);
-
-		// Use iterator to keep track of the selected game object
-		auto selectedGameObjectIter = App->game_engine->renderer3D_engine->gameObjectList.end();
-
-		for (auto iter = App->game_engine->renderer3D_engine->gameObjectList.begin();
-			iter != App->game_engine->renderer3D_engine->gameObjectList.end(); ++iter) {
-			auto& gameObject = *iter;
-
-			ImGui::PushID(&gameObject);
-
-			// Display button to delete the game object
-			if (ImGui::Button("Delete")) {
-				selectedGameObjectIter = iter;
-			}
-
-			// Display selectable for the game object
-			ImGui::SameLine();
-			if (ImGui::Selectable(gameObject.name.c_str())) {
-				gameObjSelected = gameObject;
-			}
-
-			ImGui::PopID();
+		for (const auto& gOparentPtr : App->game_engine->scene->gameObjectList)
+		{
+			HierarchyRecursive(gOparentPtr.get());
 		}
 
-		// Check if a game object is selected and delete it
-		if (selectedGameObjectIter != App->game_engine->renderer3D_engine->gameObjectList.end()) {
-			App->game_engine->renderer3D_engine->gameObjectList.erase(selectedGameObjectIter);
-			
-			LOG("EDITOR: Deleting the selected game object from the scene...", NULL);
+		//// Use iterator to keep track of the selected game object
+		//auto selectedGameObjectIter = App->game_engine->renderer3D_engine->gameObjectList.end();
 
-			// Reset the selected game object to "null", so it isn't displayed anymore in the inspector.
-			gameObjSelected = GameObject();
-		}
+		//for (auto iter = App->game_engine->renderer3D_engine->gameObjectList.begin();
+		//	iter != App->game_engine->renderer3D_engine->gameObjectList.end(); ++iter) {
+		//	auto& gameObject = *iter;
+
+		//	ImGui::PushID(&gameObject);
+
+		//	// Display button to delete the game object
+		//	if (ImGui::Button("Delete")) {
+		//		selectedGameObjectIter = iter;
+		//	}
+
+		//	// Display selectable for the game object
+		//	ImGui::SameLine();
+		//	if (ImGui::Selectable(gameObject.name.c_str())) {
+		//		gameObjSelected = gameObject;
+		//	}
+
+		//	ImGui::PopID();
+		//}
+
+		//// Check if a game object is selected and delete it
+		//if (selectedGameObjectIter != App->game_engine->renderer3D_engine->gameObjectList.end()) {
+		//	App->game_engine->renderer3D_engine->gameObjectList.erase(selectedGameObjectIter);
+		//	
+		//	LOG("EDITOR: Deleting the selected game object from the scene...", NULL);
+
+		//	// Reset the selected game object to "null", so it isn't displayed anymore in the inspector.
+		//	gameObjSelected = GameObject();
+		//}
 
 		ImGui::End();
 	}
@@ -1086,32 +1149,32 @@ void ModuleImGUI::GeneratePrimitives()
 
 		if (ImGui::Button("Generate Cube")) {
 			LOG("EDITOR: Adding CUBE Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Cube.fbx");
+			App->game_engine->scene->addGameObject("Assets/Cube.fbx");
 		}
 
 		if (ImGui::Button("Generate Plane")) {
 			LOG("EDITOR: Adding PLANE Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Plane.fbx");
+			App->game_engine->scene->addGameObject("Assets/Plane.fbx");
 		}
 
 		if (ImGui::Button("Generate Pyramid")) {
 			LOG("EDITOR: Adding PYRAMID Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Pyramid.fbx");
+			App->game_engine->scene->addGameObject("Assets/Pyramid.fbx");
 		}
 
 		if (ImGui::Button("Generate Sphere")) {
 			LOG("EDITOR: Adding SPHERE Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Sphere.fbx");
+			App->game_engine->scene->addGameObject("Assets/Sphere.fbx");
 		}
 
 		if (ImGui::Button("Generate Cylinder")) {
 			LOG("EDITOR: Adding CYLINDER Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Cylinder.fbx");
+			App->game_engine->scene->addGameObject("Assets/Cylinder.fbx");
 		}
 
 		if (ImGui::Button("Generate Torus")) {
 			LOG("EDITOR: Adding TORUS Primitive...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Torus.fbx");
+			App->game_engine->scene->addGameObject("Assets/Torus.fbx");
 		}
 
 		ImGui::Separator();
@@ -1120,22 +1183,22 @@ void ModuleImGUI::GeneratePrimitives()
 
 		if (ImGui::Button("Baker House")) {
 			LOG("EDITOR: Adding BAKER HOUSE prefab...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/BakerHouse.fbx");
+			App->game_engine->scene->addGameObject("Assets/BakerHouse.fbx");
 		}
 
 		if (ImGui::Button("Medieval Bed")) {
 			LOG("EDITOR: Adding MEDIEVAL BED prefab...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Medieval_Bed.fbx");
+			App->game_engine->scene->addGameObject("Assets/Medieval_Bed.fbx");
 		}
 
 		if (ImGui::Button("Obelisque")) {
 			LOG("EDITOR: Adding OBELISQUE prefab...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Obelisque.fbx");
+			App->game_engine->scene->addGameObject("Assets/Obelisque.fbx");
 		}
 
 		if (ImGui::Button("Street Environment")) {
 			LOG("EDITOR: Adding STREET ENVIRONMENT prefab...", NULL);
-			App->game_engine->renderer3D_engine->addGameObject("Assets/Street_Environment.fbx");
+			App->game_engine->scene->addGameObject("Assets/Street_Environment.fbx");
 		}
 
 		ImGui::EndMenu();
@@ -1208,7 +1271,7 @@ void ModuleImGUI::RenderImGUISimulationControlsWindow()
 				App->isPaused = false;
 				App->startTime = SDL_GetTicks() / 1000.0;
 
-				App->game_engine->camera.ResetCameraParameters();
+				App->game_engine->cameraGO.GetComponent<Camera>()->ResetCameraParameters();
 			}
 		}
 		else

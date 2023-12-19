@@ -5,9 +5,13 @@ ModuleGameEngine::ModuleGameEngine()
 {
 	//input = new ModuleInput(this);
 	renderer3D_engine = new ModuleRenderer3D_ENGINE(this);
+	scene = new Engine_ModuleScene(this);
 
 	//AddModule(input);
 	AddModule(renderer3D_engine);
+	AddModule(scene);
+
+	cameraGO.AddComponent(Component::Type::CAMERA);
 }
 
 ModuleGameEngine::~ModuleGameEngine()
@@ -19,10 +23,10 @@ bool ModuleGameEngine::Init()
 {
 	bool ret = true;
 
-	for (auto const& item : list_modules)
-	{
-		ret = item->Init();
-	}
+	//for (auto const& item : list_modules)
+	//{
+	//	ret = item->Init();
+	//}
 
 	return ret;
 }
@@ -33,10 +37,10 @@ bool ModuleGameEngine::Start()
 	
 	LOG("ENGINE: Game Engine Start --------------", NULL);
 	
-	for (auto const& item : list_modules)
-	{
-		ret = item->Start();
-	}
+	//for (auto const& item : list_modules)
+	//{
+	//	ret = item->Start();
+	//}
 
 	return ret;
 }
@@ -49,23 +53,23 @@ void ModuleGameEngine::FinishUpdate()
 {
 }
 
-engine_update_status ModuleGameEngine::PreUpdate()
+engine_status ModuleGameEngine::PreUpdate()
 {
-	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
+	engine_status ret = ENGINE_UPDATE_CONTINUE;
 
-	for (auto const& item : list_modules)
+	/*for (auto const& item : list_modules)
 	{
 		ret = item->PreUpdate();
 		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
-	}
+	}*/
 
 	return ret;
 }
 
-engine_update_status ModuleGameEngine::Update()
+engine_status ModuleGameEngine::Update()
 {
-	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
-	PrepareUpdate();
+	engine_status ret = ENGINE_UPDATE_CONTINUE;
+	/*PrepareUpdate();
 
 	for (auto const& item : list_modules)
 	{
@@ -73,19 +77,19 @@ engine_update_status ModuleGameEngine::Update()
 		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
 	}
 
-	FinishUpdate();
+	FinishUpdate();*/
 	return ret;
 }
 
-engine_update_status ModuleGameEngine::PostUpdate()
+engine_status ModuleGameEngine::PostUpdate()
 {
-	engine_update_status ret = ENGINE_UPDATE_CONTINUE;
+	engine_status ret = ENGINE_UPDATE_CONTINUE;
 
-	for (auto const& item : list_modules)
+	/*for (auto const& item : list_modules)
 	{
 		ret = item->PostUpdate();
 		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
-	}
+	}*/
 
 	return ret;
 }

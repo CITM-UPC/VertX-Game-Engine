@@ -1,18 +1,39 @@
 #include "Camera.h"
+#include "GameObject.h"
 
-Camera::Camera() : fov(60),
+Camera::Camera(GameObject* owner) : Component(owner), fov(60),
+aspectRatio(16.0 / 9.0f),
+clippingPlaneViewNear(0.1),
+clippingPlaneViewFar(150),
+worldPosVec(16.5f, 12.75f, 18.75f),
+focusPosVec(0.0f, 0.0f, 0.0f),
+upVec(0.0f, 1.0f, 0.0f),
+cameraSpeed(0.1),
+cameraSpeedMultiplier(3.0f),
+cameraYaw(-90.0f),
+cameraPitch(0.0f),
+mouseSensitivity(0.25f),
+zoomSpeed(0.5f) {
+	lookAtPos + glm::dvec3(0, 0, 0);
+}
+
+Camera::Camera(const Camera& other)
+	: Component(other.owner),
+	fov(60),
 	aspectRatio(16.0 / 9.0f),
 	clippingPlaneViewNear(0.1),
 	clippingPlaneViewFar(150),
 	worldPosVec(16.5f, 12.75f, 18.75f),
 	focusPosVec(0.0f, 0.0f, 0.0f),
 	upVec(0.0f, 1.0f, 0.0f),
-	cameraSpeed(0.1), 
-	cameraSpeedMultiplier(3.0f), 
-	cameraYaw(-90.0f), 
-	cameraPitch(0.0f), 
-	mouseSensitivity(0.25f), 
-	zoomSpeed(0.5f) {}
+	cameraSpeed(0.1),
+	cameraSpeedMultiplier(3.0f),
+	cameraYaw(-90.0f),
+	cameraPitch(0.0f),
+	mouseSensitivity(0.25f),
+	zoomSpeed(0.5f)
+{
+}
 
 void Camera::ResetCameraParameters() 
 {
@@ -40,4 +61,9 @@ void Camera::ResetCameraParameters()
 	cameraSpeedMultiplier = 3.0f;
 
 	mouseSensitivity = 0.25f;
+}
+
+void Camera::Update()
+{
+	lookAtPos = this->owner->GetComponent<Transform>()->position() + this->owner->GetComponent<Transform>()->forward() * camOffset;
 }

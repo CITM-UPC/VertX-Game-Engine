@@ -34,7 +34,8 @@ public:
 
 	void RenderImGUI();
 
-	
+	vec3 GetSelectedObjectPos();
+	void SetSelectedObjectTexture(std::string filePath);
 
 	bool showContextMenu = false;
 
@@ -42,6 +43,7 @@ public:
 	void RenderImGUIAboutWindow();
 	void RenderImGUIConfigWindow();
 	void RenderImGUIHierarchyWindow();
+	void HierarchyRecursive(GameObject* gO);
 	void RenderImGUIInspectorWindow();
 	void RenderImGUICameraInspectorWindow();
 	void RenderImGUIDebugLogWindow();
@@ -63,9 +65,6 @@ public:
 
 	bool g_IsDragging = false; // Boolean flag to indicate whether an asset is being dragged.
 	std::string g_DraggedAssetName;
-
-
-	GameObject gameObjSelected;
 
 private:
 	
@@ -90,6 +89,8 @@ private:
 
 	char Title[150] = "Write Text";
 	std::string name;
+
+	GameObject* gameObjSelected = nullptr;
 
 	const std::string assetFolderPath = "Assets";
 

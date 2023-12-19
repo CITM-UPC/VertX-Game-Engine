@@ -11,15 +11,19 @@ public:
 	{
 		TRANSFORM,
 		MESH,
-		TEXTURE
+		TEXTURE2D,
+		//Added Camera to GO
+		CAMERA,
 	};
 
 	bool isActive = true;
-	GameObject& gameObject;
+	GameObject* owner;
 	
 public:
+	Component(GameObject* gameObject) : owner(gameObject) {}
+	virtual ~Component() = default;
 
-	Component(GameObject& owner) : gameObject(owner) {}
 	virtual void Update() = 0;
+	//virtual void Render() = 0;
 	virtual Type getType() const = 0;
 };

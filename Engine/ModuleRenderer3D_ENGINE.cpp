@@ -19,8 +19,7 @@ ModuleRenderer3D_ENGINE::ModuleRenderer3D_ENGINE(ModuleGameEngine* game_engine, 
 }
 
 // Destructor
-ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE()
-{}
+ModuleRenderer3D_ENGINE::~ModuleRenderer3D_ENGINE() = default;
 
 void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) {
 	// Create the directory if it doesn't exist
@@ -31,7 +30,7 @@ void ModuleRenderer3D_ENGINE::CreateDirectoryIfNotExists(const char* directory) 
 	}
 }
 
-// Function to render folders and files in ImGui
+ //Function to render folders and files in ImGui
 void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 	// Extract the file name and extension
 	LOG("ENGINE: File dropped. Path: %s", filePath);
@@ -73,10 +72,10 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 
 	if (extension) {
 		if (_stricmp(extension, ".fbx") == 0) {
-			std::string dirPath = "Assets/FBX_Assets/";
+			std::string dirPath = "Assets/Library/Meshes/";
 			std::string filedropcomb = dirPath + filenamestore;
 			std::cout << filedropcomb;
-			addGameObject(filedropcomb);
+			game_engine->scene->addGameObject(filedropcomb);
 		}
 	}
 }
@@ -257,32 +256,32 @@ bool ModuleRenderer3D_ENGINE::Init()
 
 	OnResize(screen_width, screen_height);
 
-	// Render Street Scene from App init
-	addGameObject("Assets/Street_Environment.fbx");
-
 	return ret;
 }
 
 // PreUpdate: clear buffer
-engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
+engine_status ModuleRenderer3D_ENGINE::PreUpdate()
 {
+
+	game_engine->cameraGO.UpdateComponents();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(game_engine->camera.fov, game_engine->camera.aspectRatio, game_engine->camera.clippingPlaneViewNear, game_engine->camera.clippingPlaneViewFar);
+	gluPerspective(game_engine->cameraGO.GetComponent<Camera>()->fov, game_engine->cameraGO.GetComponent<Camera>()->aspectRatio, game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear, game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewFar);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(game_engine->camera.worldPosVec.x, game_engine->camera.worldPosVec.y, game_engine->camera.worldPosVec.z,
-			game_engine->camera.focusPosVec.x, game_engine->camera.focusPosVec.y, game_engine->camera.focusPosVec.z,
-			game_engine->camera.upVec.x , game_engine->camera.upVec.y , game_engine->camera.upVec.z);
+	gluLookAt(game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.x, game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.y, game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.z,
+		game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.x, game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.y, game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.z,
+		game_engine->cameraGO.GetComponent<Camera>()->upVec.x , game_engine->cameraGO.GetComponent<Camera>()->upVec.y , game_engine->cameraGO.GetComponent<Camera>()->upVec.z);
 	
 	
-	viewMatrix = glm::lookAt(game_engine->camera.worldPosVec,
-							game_engine->camera.focusPosVec,
-							game_engine->camera.upVec);
+	viewMatrix = glm::lookAt(game_engine->cameraGO.GetComponent<Camera>()->worldPosVec,
+		game_engine->cameraGO.GetComponent<Camera>()->focusPosVec,
+		game_engine->cameraGO.GetComponent<Camera>()->upVec);
 
 	glLoadMatrixf(glm::value_ptr(viewMatrix));
 
@@ -336,30 +335,30 @@ engine_update_status ModuleRenderer3D_ENGINE::PreUpdate()
 	return ENGINE_UPDATE_CONTINUE;
 }
 
-engine_update_status ModuleRenderer3D_ENGINE::Update()
+engine_status ModuleRenderer3D_ENGINE::Update()
 {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		switch (event.type) {
-		case SDL_QUIT:
-			// Handle quit event
-			break;
-		case SDL_DROPFILE:
-			LOG("ENGINE: File Dropped!", NULL);
+	//SDL_Event event;
+	//while (SDL_PollEvent(&event)) {
+	//	switch (event.type) {
+	//	case SDL_QUIT:
+	//		// Handle quit event
+	//		break;
+	//	case SDL_DROPFILE:
+	//		LOG("ENGINE: File Dropped!", NULL);
 
-			// Handle file drop event
-			HandleFileDrop(event.drop.file);
-			SDL_free(event.drop.file); // Free the dropped file
-			break;
-			// Add other event handling as needed
-		}
-	}
+	//		// Handle file drop event
+	//		HandleFileDrop(event.drop.file);
+	//		SDL_free(event.drop.file); // Free the dropped file
+	//		break;
+	//		// Add other event handling as needed
+	//	}
+	//}
 
 	return ENGINE_UPDATE_CONTINUE;
 }
 
 // PostUpdate present buffer to screen
-engine_update_status ModuleRenderer3D_ENGINE::PostUpdate()
+engine_status ModuleRenderer3D_ENGINE::PostUpdate()
 {
 
 	for (auto& vector : gameObjectList) {
@@ -395,7 +394,7 @@ void ModuleRenderer3D_ENGINE::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	projectionMatrix = glm::perspective(70.0f, (float)width / (float)height, 0.125f, 512.0f);
+	projectionMatrix = glm::perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	glLoadMatrixf(glm::value_ptr(projectionMatrix));
 
 	glMatrixMode(GL_MODELVIEW);

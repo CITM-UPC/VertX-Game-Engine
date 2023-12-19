@@ -33,9 +33,6 @@
     <ClCompile Include="Camera.h">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
@@ -48,8 +45,14 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="EngineScene.cpp">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
     <ClCompile Include="MeshLoad.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +93,12 @@
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Tree.hpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineScene.h">
+      <Filter>Source Files\Engine Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshInfo.h">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>

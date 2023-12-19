@@ -23,9 +23,9 @@ public:
 	~ModuleRenderer3D_ENGINE();
 
 	bool Init();
-	engine_update_status PreUpdate();
-	engine_update_status Update();
-	engine_update_status PostUpdate();
+	engine_status PreUpdate();
+	engine_status Update();
+	engine_status PostUpdate();
 	bool CleanUp();
 
 	void OnResize(int width, int height);
@@ -45,58 +45,6 @@ public:
 		vsync = active; 
 	}
 
-	void addGameObject()
-	{
-		GameObject currentObject;
-
-		std::string meshName = "GameObject";
-		int currentCopies = checkNameAvailability(meshName);
-		if (currentCopies > 0) {
-			meshName.append("(");
-			std::string copiesToString = std::to_string(currentCopies);
-			meshName.append(copiesToString);
-			meshName.append(")");
-		}
-
-		currentObject.name = meshName;
-		gameObjectList.push_back(currentObject);
-	}
-
-	void addGameObject(const std::string& filePath) {
-		//Temp 
-		GameObject tempGO;
-
-		auto mesh_vec = MeshLoader::loadMeshFile(tempGO, filePath);
-		auto texture_vec = MeshLoader::loadTextureFile(tempGO, filePath);
-
-		int i = 0;
-		for (const auto& mesh : mesh_vec)
-		{
-			//Application
-			GameObject currentObject;
-
-			currentObject.AddComponent(mesh);
-			currentObject.AddComponent(texture_vec.at(i));
-
-			mesh->texture = currentObject.GetComponent<Texture2D>();
-
-			std::string meshName = filePath;
-			eraseBeforeDelimiter(meshName);
-			mesh.get()->setName(meshName);
-			deleteSubstring(meshName, ".fbx");
-			int currentCopies = checkNameAvailability(meshName);
-			if (currentCopies > 0) {
-				meshName.append("(");
-				std::string copiesToString = std::to_string(currentCopies);
-				meshName.append(copiesToString);
-				meshName.append(")");
-			}
-
-			currentObject.name = meshName;
-			gameObjectList.push_back(currentObject);
-			i++;
-		}
-	}
 
 	void deleteSubstring(std::string& mainString, const std::string& substringToDelete) {
 		size_t pos = mainString.find(substringToDelete);
@@ -142,15 +90,15 @@ public:
 
 	SDL_GLContext context;
 
-	mat3f normalMatrix;
-	mat4f modelMatrix;
-	mat4f viewMatrix;
-	mat4f projectionMatrix;
+	glm::mat3x3 normalMatrix;
+	glm::mat4x4 modelMatrix;
+	glm::mat4x4 viewMatrix;
+	glm::mat4x4 projectionMatrix;
 	std::list<GameObject> gameObjectList;
 
 	const char* parentDirectory = "Assets";
-	const char* fbxAssetsDirectory = "Assets\\FBX_Assets";
-	const char* imageAssetsDirectory = "Assets\\Image_Assets";
+	const char* fbxAssetsDirectory = "Assets\\Library\\Meshes";
+	const char* imageAssetsDirectory = "Assets\\Library\\Textures";
 
 	bool vsync;
 

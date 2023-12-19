@@ -4,16 +4,16 @@
 #include "Engine_Module.h"
 #include "ModuleRenderer3D_ENGINE.h"
 #include "Camera.h"
+#include "EngineScene.h"
 
 class ModuleGameEngine
 {
 public:
 	
 	ModuleRenderer3D_ENGINE* renderer3D_engine;
+	Engine_ModuleScene* scene;
 
-	Camera camera;
-
-	GameObject scene;
+	GameObject cameraGO;
 
 private:
 
@@ -26,9 +26,9 @@ public:
 
 	bool Init();
 	bool Start();
-	engine_update_status PreUpdate();
-	engine_update_status Update();
-	engine_update_status PostUpdate();
+	engine_status PreUpdate();
+	engine_status Update();
+	engine_status PostUpdate();
 	bool CleanUp();
 
 private:

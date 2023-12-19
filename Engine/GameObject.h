@@ -12,64 +12,53 @@
 #include "Tree.hpp"
 #include "Graphic.h"
 
+
 class GameObject
 {
 public:
 
 	std::string name;
 	bool isActive = true;
+	std::list<std::unique_ptr<Component>> components;
 
-	union {
-		mat4 _transform;
-		struct {
-			vec3 _u; double __uw;
-			vec3 _v; double __vw;
-			vec3 _w; double __ww;
-			vec3 _pos;
-		};
-	};
+	std::list<std::unique_ptr<GameObject>> childs;
 
-	std::shared_ptr<Graphic> _graphic;
-
-private:
-
-	std::vector<std::shared_ptr<Component>> components;
+	GameObject* parent;
 
 public:
 
 	GameObject();
 	~GameObject();
+	
 
 	template <typename GOC> GOC* GetComponent();
-	std::vector<std::shared_ptr<Component>> GetComponents();
+
+	std::list<std::unique_ptr<Component>>* GetComponents();
+
 	void AddComponent(Component::Type component);
-	void AddComponent(std::shared_ptr<Mesh> component);
-	void AddComponent(std::shared_ptr<Texture2D> component);
+
+	template <typename GOC>
+	void AddComponent(GOC& component);
 	void RemoveComponent(Component::Type component);
-
-	//Sort Through GOList
-	static GameObject* FindGO(std::string name, std::list<GameObject> gameObjectList);
-
 	void UpdateComponents();
-
-	void rotate(double degrees, const vec3& axis);
-	void translate(const vec3& dv);
-
-	AABBox aabb() const;
-
-	void paint() const;
-
 };
 
 //Expand Template Info for GetComponent Function --> Improves consistency & Usability with multiple data formats
 template<typename GOC>
 inline GOC* GameObject::GetComponent()
 {
-	for (auto component : components) {
+	for (auto& component : components) {
 		GOC* returnComponent = dynamic_cast<GOC*>(component.get());
 		if (returnComponent) {
 			return returnComponent;
 		}
 	}
 	return nullptr;
+}
+
+template<typename GOC>
+inline void GameObject::AddComponent(GOC& component)
+{
+	GOC copyOfComponent = component;
+	components.emplace_back(std::make_unique<GOC>(std::move(copyOfComponent)));
 }

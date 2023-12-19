@@ -3,39 +3,45 @@
 #include <string>
 #include <memory>
 
+#define CHECKERS_HEIGHT 100
+#define CHECKERS_WIDTH  100
+
 class Texture2D : public Component
 {
 
 private:
 	unsigned int _id;
-	std::string texName;
-
-	unsigned int texHeight;
-	unsigned int texWidth;
+	unsigned int _id_checker;
 
 public:
-	Texture2D(GameObject& owner) : Component(owner), _id(0) {}
+	//Constructor -- 
+	Texture2D();
+	//Constructor with Implementation of Component Management within GameObject Class
+	Texture2D(GameObject* owner) : Component(owner), _id(0), _id_checker(0) {}
+	//Grabbing Texture path and assigning to GO
+	Texture2D(GameObject* owner, const std::string& path);
 
-	explicit Texture2D(GameObject& owner, const std::string& path);
+
+	Texture2D(const Texture2D& cpy);
 	Texture2D(Texture2D&& tex) noexcept;
-	void bind() const;
-	void unbind() const;
+
 	~Texture2D();
 
-	void Update() override;
-	std::string getName();
-	void eraseBeforeDelimiter(std::string& str);
-	const unsigned int getWidth();
-	const unsigned int getHeight();
+	void bind() const;
+	void unbind() const;
+	void checker() const;
 
-	//Assigning of Type for later IMGUI Sorting
+	void Update() override;
+
 	Type getType() const override {
-		return Type::TEXTURE;
+		return Type::TEXTURE2D;
 	}
 
-private:
-	Texture2D(const Texture2D&);
-	Texture2D operator=(const Texture2D&) = delete;;
+	std::string path;
+	int width, height;
 
+private:
+
+	Texture2D operator=(const Texture2D&) = delete;
 };
 

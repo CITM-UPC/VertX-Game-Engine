@@ -26,17 +26,17 @@ public:
 		return true;
 	}
 
-	virtual engine_update_status PreUpdate()
+	virtual engine_status PreUpdate()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}
 
-	virtual engine_update_status Update()
+	virtual engine_status Update()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}
 
-	virtual engine_update_status PostUpdate()
+	virtual engine_status PostUpdate()
 	{
 		return ENGINE_UPDATE_CONTINUE;
 	}

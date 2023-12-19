@@ -2,58 +2,47 @@
 #include <memory>
 #include <GL/glew.h>
 #include <glm/ext/matrix_transform.hpp>
-#define NOMINMAX
 #include <Windows.h>
 #include <string>
 #include "Tree.hpp"
+#include "Camera.h"
 
 GameObject::GameObject()
 {
 	name = "";
-	components.push_back(std::make_shared<Transform>(*this));
+	Transform transformToPush(this);
+	AddComponent(transformToPush);
 }
 
-GameObject::~GameObject() = default;
-
-std::vector<std::shared_ptr<Component>> GameObject::GetComponents()
+GameObject::~GameObject()
 {
-	//Initialize in Template so Flexible Usage
-	return components;
+	components.clear();
+};
+
+std::list<std::unique_ptr<Component>>* GameObject::GetComponents()
+{
+	return &components;
 }
 
 void GameObject::AddComponent(Component::Type component)
 {
-	std::shared_ptr<Component> ptr;
-
-	//Point to Game Object features:
 	switch (component)
 	{
 	case Component::Type::TRANSFORM:
-		ptr = std::make_shared<Transform>(*this);
+		components.emplace_back(std::make_unique<Transform>(this));
 		break;
 	case Component::Type::MESH:
-		ptr = std::make_shared<Mesh>(*this);
+		components.emplace_back(std::make_unique<Mesh>(this));
 		break;
-	case Component::Type::TEXTURE:
-		ptr = std::make_shared<Texture2D>(*this);
+	case Component::Type::TEXTURE2D:
+		components.emplace_back(std::make_unique<Texture2D>(this));
+		break;
+	case Component::Type::CAMERA:
+		components.emplace_back(std::make_unique<Camera>(this));
 		break;
 	default:
 		break;
 	}
-
-	components.push_back(ptr);
-}
-
-void GameObject::AddComponent(std::shared_ptr<Mesh> component)
-{
-	component->gameObject = *this;
-	components.push_back(component);
-}
-
-void GameObject::AddComponent(std::shared_ptr<Texture2D> component)
-{
-	component->gameObject = *this;
-	components.push_back(component);
 }
 
 void GameObject::RemoveComponent(Component::Type component)
@@ -68,18 +57,6 @@ void GameObject::RemoveComponent(Component::Type component)
 	}
 }
 
-GameObject* GameObject::FindGO(std::string name, std::list<GameObject> gameObjectList)
-{
-	for (auto& go : gameObjectList)
-	{
-		if (go.name == name)
-		{
-			return &go;
-		}
-	}
-	return nullptr;
-}
-
 void GameObject::UpdateComponents()
 {
 	for (auto& comp : components)
@@ -88,69 +65,33 @@ void GameObject::UpdateComponents()
 	}
 }
 
-void GameObject::rotate(double degrees, const vec3& axis) {
-	_transform = glm::rotate(_transform, glm::radians(degrees), axis);
-}
-void GameObject::translate(const vec3& dv) {
-	_transform = glm::translate(_transform, dv);
-}
+void GameObject::removeChild(GameObject* child)
+{
+	auto it = std::remove_if(childs.begin(), childs.end(), [child](const std::unique_ptr<GameObject>& ptr) {
+		return ptr.get() == child;
+		});
 
-static inline void glVec3(const vec3& v) { glVertex3dv(&v.x); }
-
-static void drawAABBox(const AABBox& aabb) {
-	glLineWidth(2);
-	glBegin(GL_LINE_STRIP);
-
-	glVec3(aabb.a());
-	glVec3(aabb.b());
-	glVec3(aabb.c());
-	glVec3(aabb.d());
-	glVec3(aabb.a());
-
-	glVec3(aabb.e());
-	glVec3(aabb.f());
-	glVec3(aabb.g());
-	glVec3(aabb.h());
-	glVec3(aabb.e());
-	glEnd();
-
-	glBegin(GL_LINES);
-	glVec3(aabb.h());
-	glVec3(aabb.d());
-	glVec3(aabb.f());
-	glVec3(aabb.b());
-	glVec3(aabb.g());
-	glVec3(aabb.c());
-	glEnd();
-}
-
-AABBox GameObject::aabb() const {
-	AABBox aabbox;
-	if (_graphic.get()) aabbox = _graphic->aabb;
-	/*else if (children().empty()) {
-		aabbox.min = vec3(0);
-		aabbox.max = vec3(0);
+	// Check if the child was found
+	if (it != childs.end())
+	{
+		// Erase the element at the end, which was moved there by std::remove_if
+		childs.erase(it, childs.end());
+		// The unique_ptr will automatically delete the removed child
 	}
-
-	for (const auto& child : children()) {
-		const auto child_aabb = (child.transform() * child.aabb()).AABB();
-		aabbox.min = glm::min(aabbox.min, child_aabb.min);
-		aabbox.max = glm::max(aabbox.max, child_aabb.max);
-	}*/
-
-	return aabbox;
 }
 
-void GameObject::paint() const {
+void GameObject::Move(GameObject* newParent)
+{
+	auto it = std::find_if(parent->childs.begin(), parent->childs.end(), [this](const std::unique_ptr<GameObject>& child) {
+		return child.get() == this;
+		});
 
-	glPushMatrix();
-	glMultMatrixd(&_transform[0].x);
+	if (it != parent->childs.end()) {
+		// Move the child to the new list
+		newParent->childs.push_back(std::move(*it));
+		parent->childs.erase(it);
 
-	glColor3ub(128, 0, 0);
-	drawAABBox(aabb());
-
-	if (_graphic.get()) _graphic->draw();
-	/*for (auto& child : children()) child.paint();*/
-
-	glPopMatrix();
+		// Update the parent pointer of the moved child
+		parent = newParent;
+	}
 }
