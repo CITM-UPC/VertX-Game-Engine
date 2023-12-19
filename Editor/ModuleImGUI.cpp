@@ -35,7 +35,7 @@ void GoBack() {
 }
 
 void DoubleClickHandler(const std::string& folderName) {
-	currentFolderPath = currentFolderPath + folderName;
+	currentFolderPath = "Assets" + folderName;
 }
 
 void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {

@@ -64,34 +64,3 @@ void GameObject::UpdateComponents()
 		comp->Update();
 	}
 }
-
-void GameObject::removeChild(GameObject* child)
-{
-	auto it = std::remove_if(childs.begin(), childs.end(), [child](const std::unique_ptr<GameObject>& ptr) {
-		return ptr.get() == child;
-		});
-
-	// Check if the child was found
-	if (it != childs.end())
-	{
-		// Erase the element at the end, which was moved there by std::remove_if
-		childs.erase(it, childs.end());
-		// The unique_ptr will automatically delete the removed child
-	}
-}
-
-void GameObject::Move(GameObject* newParent)
-{
-	auto it = std::find_if(parent->childs.begin(), parent->childs.end(), [this](const std::unique_ptr<GameObject>& child) {
-		return child.get() == this;
-		});
-
-	if (it != parent->childs.end()) {
-		// Move the child to the new list
-		newParent->childs.push_back(std::move(*it));
-		parent->childs.erase(it);
-
-		// Update the parent pointer of the moved child
-		parent = newParent;
-	}
-}

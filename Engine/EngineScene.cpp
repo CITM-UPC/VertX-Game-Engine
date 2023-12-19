@@ -91,7 +91,7 @@ void Engine_ModuleScene::addGameObject(const std::string & filePath)
 
 		gOparent->childs.push_back(std::move(gameObjectToAdd));
 
-		string folderName = "Library/Meshes/";
+		string folderName = "Assets/Library/Meshes/";
 
 		ofstream oFile(folderName + meshName + ".fbx", ios::binary);
 		oFile << meshInfo;
