@@ -34,6 +34,8 @@ public:
 
 	float normalsLength = 1.0f;
 
+	bool meshIsDrawed = true;
+
 private:
 
 	std::string meshName;

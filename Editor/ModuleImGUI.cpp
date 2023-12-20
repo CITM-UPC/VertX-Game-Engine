@@ -824,7 +824,6 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 			}
 		}
 
-
 			int assetsPerRow = 6.0f;
 			float assetWidth = 150.0f;
 			float assetHeight = 20.0f;
@@ -900,9 +899,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 					ImGui::Checkbox("Active", &gameObjSelected->isActive);
 					ImGui::SameLine(); ImGui::Text("Game Object: ");
 					ImGui::SameLine(); ImGui::Text(gameObjSelected->name.c_str());
-
+					ImGui::SetNextItemWidth(150.0f);
 					if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-
+					ImGui::SameLine();
 					ImGui::SetNextItemWidth(100.0f);
 					if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
@@ -958,10 +957,12 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 							if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
 							{
-								if (ImGui::Checkbox("Active", &mesh->isActive))
-									/*LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshActive ? "ACTIVE" : "INACTIVE");*/
-									ImGui::SameLine();
-								ImGui::Text("	Mesh Filename: ");
+								if (ImGui::Checkbox("Draw", &mesh->meshIsDrawed)) {
+									LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshIsDrawed ? "ACTIVE" : "INACTIVE");
+								}
+
+								ImGui::SameLine();
+								ImGui::Text("  File name:");
 								ImGui::SameLine();
 								ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
 								ImGui::Separator();
@@ -996,19 +997,19 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 								ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 								if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)) {
 									if (ImGui::Checkbox("View Vertex Normals", &mesh->drawVertexNormals))
-										/*LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->VertexNormDraw ? "ON" : "OFF");*/
+										LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->drawVertexNormals ? "ON" : "OFF");
 										ImGui::SameLine();
 									if (ImGui::Checkbox("View Face Normals", &mesh->drawFaceNormals))
-										/*LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->FaceNormDraw ? "ON" : "OFF");*/
+										LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->drawFaceNormals ? "ON" : "OFF");
 
 										ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
 								}
-								ImGui::Separator();
+								/*ImGui::Separator();
 								if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
 								{
 									LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
 									(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
-								}
+								}*/
 							}
 						}
 						//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
@@ -1017,17 +1018,19 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
 							if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
 							{
-								ImGui::Checkbox("Active", &texture2D->isActive);
+								//ImGui::Checkbox("Active", &texture2D->isActive);
 								if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-								if (ImGui::BeginCombo("Rendering mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+								if (ImGui::BeginCombo("Rendering Mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 								ImGui::Separator();
 								ImGui::Text("File path: ");
 								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
 								ImGui::Text("Texture size");
-								ImGui::Text("Height: ");
+								ImGui::BulletText("Height: ");
 								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
-								ImGui::Text("Width: ");
+								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, "px");
+								ImGui::BulletText("Width: ");
 								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
+								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, "px");
 							}
 						}
 

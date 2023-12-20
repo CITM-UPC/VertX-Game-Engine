@@ -10,6 +10,7 @@
 #include <array>
 
 #include "GameObject.h"
+#include "ModuleRenderer3D_ENGINE.h"
 
 using namespace std;
 
@@ -135,30 +136,33 @@ void Mesh::draw() {
 	glPushMatrix();
 	glMultMatrixd(&owner->GetComponent<Transform>()->_transformationMatrix[0].x);
 
-	glColor4ub(255, 255, 255, 255);
+	if (meshIsDrawed)
+	{
+		glColor4ub(255, 255, 255, 255);
 
-	glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
-	glEnableClientState(GL_VERTEX_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
+		glEnableClientState(GL_VERTEX_ARRAY);
 
-	switch (_format) {
-	case Formats::F_V3:
-		glVertexPointer(3, GL_FLOAT, 0, nullptr);
-		break;
-	case Formats::F_V3C4:
-		glEnableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
-		glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
-		break;
-	case Formats::F_V3T2:
-		glEnable(GL_TEXTURE_2D);
-		(texture) ? (useChecker) ? texture->checker()
-			: texture->bind()
-			: texture->unbind();
+		switch (_format) {
+		case Formats::F_V3:
+			glVertexPointer(3, GL_FLOAT, 0, nullptr);
+			break;
+		case Formats::F_V3C4:
+			glEnableClientState(GL_COLOR_ARRAY);
+			glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
+			glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
+			break;
+		case Formats::F_V3T2:
+			glEnable(GL_TEXTURE_2D);
+			(texture) ? (useChecker) ? texture->checker()
+				: texture->bind()
+				: texture->unbind();
 
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
-		break;
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
+			break;
+		}
 	}
 
 	if (_indexs_buffer_id) {
@@ -170,15 +174,15 @@ void Mesh::draw() {
 	}
 
 	if (drawVertexNormals) {
-		glLineWidth(4.0f);
+		glLineWidth(2.0f);
 		glBegin(GL_LINES);
 		glColor3f(0.0f, 1.0f, 0.0f);
 
 		for (int i = 0; i < _numVerts; i++) {
 			glVertex3f(mVertices[i].x, mVertices[i].y, mVertices[i].z);
-			glVertex3f(mVertices[i].x + mNormals[i].x * 0.1f,
-				mVertices[i].y + mNormals[i].y * 0.1f,
-				mVertices[i].z + mNormals[i].z * 0.1f);
+			glVertex3f(mVertices[i].x + mNormals[i].x * normalsLength,
+				mVertices[i].y + mNormals[i].y * normalsLength,
+				mVertices[i].z + mNormals[i].z * normalsLength);
 		}
 
 		glColor3f(0.0f, 1.0f, 0.0f);
@@ -186,17 +190,17 @@ void Mesh::draw() {
 	}
 
 	if (drawFaceNormals) {
-		glLineWidth(4.0f);
+		glLineWidth(2.0f);
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);
 
 		for (int i = 0; i < _numFaces; i++) {
-			glm::vec3 endPoint = mFaceCenters[i] + 0.1f * mFaceNormals[i];
+			glm::vec3 endPoint = mFaceCenters[i] + normalsLength * mFaceNormals[i];
 			glVertex3f(mFaceCenters[i].x, mFaceCenters[i].y, mFaceCenters[i].z);
 			glVertex3f(endPoint.x, endPoint.y, endPoint.z);
 		}
 
-		glColor3f(1.0f, 0.0f, 0.0f);
+		glColor3f(1.0f, 1.0f, 0.0f);
 		glEnd();
 	}
 
