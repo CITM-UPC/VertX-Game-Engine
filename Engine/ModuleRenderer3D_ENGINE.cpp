@@ -337,22 +337,22 @@ engine_status ModuleRenderer3D_ENGINE::PreUpdate()
 
 engine_status ModuleRenderer3D_ENGINE::Update()
 {
-	//SDL_Event event;
-	//while (SDL_PollEvent(&event)) {
-	//	switch (event.type) {
-	//	case SDL_QUIT:
-	//		// Handle quit event
-	//		break;
-	//	case SDL_DROPFILE:
-	//		LOG("ENGINE: File Dropped!", NULL);
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		switch (event.type) {
+		case SDL_QUIT:
+			// Handle quit event
+			break;
+		case SDL_DROPFILE:
+			LOG("ENGINE: File Dropped!", NULL);
 
-	//		// Handle file drop event
-	//		HandleFileDrop(event.drop.file);
-	//		SDL_free(event.drop.file); // Free the dropped file
-	//		break;
-	//		// Add other event handling as needed
-	//	}
-	//}
+			// Handle file drop event
+			HandleFileDrop(event.drop.file);
+			SDL_free(event.drop.file); // Free the dropped file
+			break;
+			// Add other event handling as needed
+		}
+	}
 
 	return ENGINE_UPDATE_CONTINUE;
 }
