@@ -11,6 +11,7 @@
 #include "BBox.hpp"
 #include "Tree.hpp"
 #include "Graphic.h"
+#include "Shader.h"
 
 
 class GameObject
@@ -20,6 +21,8 @@ public:
 	std::string name;
 	bool isActive = true;
 	std::list<std::unique_ptr<Component>> components;
+
+	std::shared_ptr<Shader> _shader;
 
 	std::list<std::unique_ptr<GameObject>> childs;
 
@@ -35,12 +38,18 @@ public:
 
 	std::list<std::unique_ptr<Component>>* GetComponents();
 
+	inline std::shared_ptr<Shader>& shaderPtr() { return _shader; }
+
+	std::shared_ptr<Graphic> _graphic;
+
 	void AddComponent(Component::Type component);
 
 	template <typename GOC>
 	void AddComponent(GOC& component);
 	void RemoveComponent(Component::Type component);
 	void UpdateComponents();
+
+	AABBox aabb() const;
 };
 
 //Expand Template Info for GetComponent Function --> Improves consistency & Usability with multiple data formats
