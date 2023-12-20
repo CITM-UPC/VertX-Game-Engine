@@ -244,7 +244,6 @@ bool ModuleImGUI::Init()
 
 	// Set ImGui custom font
 	io.Fonts->AddFontFromFileTTF("LatinModernMono_bold.ttf", 18);
-	//io.Fonts->AddFontFromFileTTF("Roboto-Black.ttf", 14);
 
 	return true;
 }
@@ -408,7 +407,6 @@ update_status ModuleImGUI::PreUpdate()
 	RenderImGUISimulationControlsWindow();
 
 	/*ImGui::ShowDemoWindow();*/
-
 
 
 	return UPDATE_CONTINUE;
