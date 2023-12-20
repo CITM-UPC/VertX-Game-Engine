@@ -70,6 +70,22 @@ static void drawAABBox(const AABBox& aabb) {
 //	return aabbox;
 //}
 
+void GameObject::Move(GameObject* newParent, std::list<unique_ptr<GameObject>>& listToCheck)
+{
+	std::_List_iterator it = std::find_if(listToCheck.begin(), listToCheck.end(), [this](const std::unique_ptr<GameObject>& child) {
+		return child.get() == this;
+		});
+
+	if (it != listToCheck.end()) {
+		// Move the child to the new list
+		newParent->childs.push_back(std::move(*it));
+		listToCheck.erase(it);
+
+		// Update the parent pointer of the moved child
+		parent = newParent;
+	}
+}
+
 void GameObject::AddComponent(Component::Type component)
 {
 	switch (component)

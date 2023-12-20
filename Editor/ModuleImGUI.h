@@ -49,6 +49,8 @@ public:
 	void RenderImGUIDebugLogWindow();
 	void RenderImGUIConsoleWindow();
 	void RenderImGUISimulationControlsWindow();
+	void GameObjectOptions();
+	void ReparentMenu();
 
 	void RenderFPSGraph();
 
@@ -77,8 +79,14 @@ private:
 	bool inspectorWindow = true;
 	bool imGuiDebugLogWindow = false;
 	bool simulationButtonsWindow = true;
+	bool reparentMenu = false;
+	bool reparentThis = true;
+	bool reparentTo = false;
 
 	bool TexEnabled = true;
+
+	GameObject* orphan = nullptr;
+	GameObject* adopter = nullptr;
 
 	int numVerts;
 	int numIndexes;

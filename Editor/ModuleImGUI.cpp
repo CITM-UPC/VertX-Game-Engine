@@ -261,6 +261,7 @@ update_status ModuleImGUI::PreUpdate()
 	flag |= ImGuiDockNodeFlags_PassthruCentralNode;
 	ImGui::DockSpaceOverViewport(0, flag);
 
+	if (reparentMenu) 	ReparentMenu();
 	
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -439,6 +440,67 @@ void ModuleImGUI::ToolTipMessage(const char* tip)
 		ImGui::SetTooltip(tip);
 	}
 }
+
+void ModuleImGUI::GameObjectOptions()
+{
+	bool goIsSelected;
+	gameObjSelected != nullptr ? goIsSelected = true : goIsSelected = false;
+	bool a = false;
+	if (ImGui::MenuItem("Move", "Reparent GameObject", &reparentMenu, goIsSelected))
+	{
+		reparentThis = true;
+		reparentTo = false;
+	}
+}
+
+void ModuleImGUI::ReparentMenu()
+{
+	static ImGuiWindowFlags menuFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGui::Begin("Reparent GameObject", &reparentMenu, menuFlags);
+
+#pragma region Reparent This
+	ImGui::MenuItem("Reparent: ", "", false, false);
+
+	orphan == nullptr ? ImGui::Selectable("...", &reparentThis) : ImGui::Selectable(orphan->name.c_str(), &reparentThis);
+
+	if (reparentThis) {
+		reparentTo = !reparentThis;
+		orphan = gameObjSelected;
+	}
+#pragma endregion
+
+	ImGui::Separator();
+
+#pragma region Reparent To
+	ImGui::MenuItem("To: ", "", false, false);
+
+	adopter == nullptr ? ImGui::Selectable("...", &reparentTo) : ImGui::Selectable(adopter->name.c_str(), &reparentTo);
+
+	if (reparentTo) {
+		reparentThis = !reparentTo;
+		adopter = gameObjSelected;
+	}
+#pragma endregion
+
+	if (ImGui::MenuItem("Confirm"))
+	{
+		if (orphan->parent) {
+			if (adopter != nullptr && orphan != nullptr)
+			{
+				orphan->Move(adopter, orphan->parent->childs);
+			}
+		}
+		else
+		{
+			if (adopter != nullptr && orphan != nullptr)
+			{
+				orphan->Move(adopter, App->game_engine->scene->gameObjectList);
+			}
+		}
+	}
+	ImGui::End();
+}
+
 
 void ModuleImGUI::RenderFPSGraph()
 {
@@ -921,31 +983,25 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							{
 								ImGui::PushItemWidth(60.0f);
 								ImGui::BulletText("Position");
-								/*ImGui::InputDouble("##PositionX", transform->position().x, 0.0, 0.0, "%.3f");*/
-								ImGui::Text(std::to_string(transform->position().x).c_str());
+								ImGui::InputDouble("##PositionX", &transform->_position.x, 0.0, 0.0, "%.3f");
 								ImGui::SameLine();
-								/*ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");*/
-								ImGui::Text(std::to_string(transform->position().y).c_str());
+								ImGui::InputDouble("##PositionY", &transform->_position.y, 0.0, 0.0, "%.3f");
 								ImGui::SameLine();
-								/*ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");*/
-								ImGui::Text(std::to_string(transform->position().z).c_str());
+								ImGui::InputDouble("PositionZ", &transform->_position.z, 0.0, 0.0, "%.3f");
 
-								//ImGui::BulletText("Rotation");
-								///*ImGui::InputDouble("##PositionX", transform->position().x, 0.0, 0.0, "%.3f");*/
-								//ImGui::Text(std::to_string(transform->position().x).c_str());
-								//ImGui::SameLine();
-								///*ImGui::InputDouble("##PositionY", &transform->position.y, 0.0, 0.0, "%.3f");*/
-								//ImGui::Text(std::to_string(transform->Rotate().y).c_str());
-								//ImGui::SameLine();
-								///*ImGui::InputDouble("##PositionZ", &transform->position.z, 0.0, 0.0, "%.3f");*/
-								//ImGui::Text(std::to_string(transform->position().z).c_str());
+								ImGui::BulletText("Rotation");
+								ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f"); transform->RotateTo(transform->_rotation);
+								ImGui::SameLine();
+								if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+								ImGui::SameLine();
+								if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
 
-								//ImGui::BulletText("Scale");
-								//ImGui::InputDouble("##ScaleX", &transform->scale.x, 0.0, 0.0, "%.3f");
-								//ImGui::SameLine();
-								//ImGui::InputDouble("##ScaleY", &transform->scale.y, 0.0, 0.0, "%.3f");
-								//ImGui::SameLine();
-								//ImGui::InputDouble("##ScaleZ", &transform->scale.z, 0.0, 0.0, "%.3f");
+								ImGui::BulletText("Scale");
+								if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+								ImGui::SameLine();
+								if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+								ImGui::SameLine();
+								if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
 
 								ImGui::PopItemWidth();
 							}

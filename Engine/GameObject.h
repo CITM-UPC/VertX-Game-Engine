@@ -38,6 +38,8 @@ public:
 
 	std::list<std::unique_ptr<Component>>* GetComponents();
 
+	void Move(GameObject* newParent, std::list<unique_ptr<GameObject>>& listToCheck);
+
 	inline std::shared_ptr<Shader>& shaderPtr() { return _shader; }
 
 	std::shared_ptr<Graphic> _graphic;
