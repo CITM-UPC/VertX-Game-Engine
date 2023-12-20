@@ -1131,7 +1131,13 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 		{
 			App->game_engine->scene->addEmptyGameObject();
 		}
-		
+		ImGui::SameLine();
+		if (ImGui::Button("Delete All GameObjects"))
+		{
+			gameObjSelected = nullptr;
+			App->game_engine->scene->gameObjectList.clear();
+		}
+
 		ImGui::Separator();
 		
 		for (const auto& gOparentPtr : App->game_engine->scene->gameObjectList)
