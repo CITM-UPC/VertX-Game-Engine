@@ -849,7 +849,6 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 				}
 			}
 
-
 			for (size_t i = 0; i < assets.size(); i++) {
             if (i % assetsPerRow != 0) {
                 ImGui::SameLine();
@@ -1003,12 +1002,6 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 
 										ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
 								}
-								/*ImGui::Separator();
-								if (ImGui::Checkbox("Use Texture", &mesh->usingTexture))
-								{
-									LOG("ENGINE: '%s' texture is [ %s ]", mesh->getName().c_str(), mesh->usingTexture ? "ACTIVE" : "INACTIVE");
-									(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
-								}*/
 							}
 						}
 						//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
@@ -1033,18 +1026,9 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							}
 						}
 
-						//WORK IN PROGRESS
-						/*if (ImGui::Button("Delete GameObject")) {
-							deleteButtonPressed = true;
-						}
-						if (deleteButtonPressed) {
-							gameObjSelected.~GameObject();
-							deleteButtonPressed = false;
-						}*/
 					}
 				}
 			}
-
 			ImGui::End();
 		}
 	}
@@ -1076,7 +1060,7 @@ void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 
 			gameObjSelected = nullptr;
 			gO->childs.clear();
-			gO->name = "Empty Game Object";
+			gO->name = "GameObject";
 		}
 		ImGui::SameLine(); // Move the cursor to the same line as the button
 	}
