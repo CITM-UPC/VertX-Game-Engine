@@ -54,6 +54,9 @@
     <ClCompile Include="MeshLoad.h">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JSONParser.h">
@@ -95,10 +98,14 @@
     <ClInclude Include="Tree.hpp">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="EngineScene.h">
       <Filter>Source Files\Engine Modules</Filter>
     </ClInclude>
     <ClInclude Include="MeshInfo.h">
+=======
+    <ClInclude Include="Shader.h">
+>>>>>>> Stashed changes
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
