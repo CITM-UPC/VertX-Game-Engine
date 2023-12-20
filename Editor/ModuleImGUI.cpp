@@ -1061,26 +1061,45 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 
 void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 {
-	ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
-	if (gO->childs.empty())		TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-	if (gameObjSelected == gO)	TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+    ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+    if (gO->childs.empty()) TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+    if (gameObjSelected == gO) TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-	bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
+    ImGui::PushID(gO); // Push a unique identifier for this TreeNode
 
-	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-		gameObjSelected = gO;
-	}
+    // Add a delete button for parent objects with children
+    if (!gO->parent && !gO->childs.empty())
+    {
+        if (ImGui::Button("Delete"))
+        {
+			gameObjSelected = nullptr; 
 
+            gO->childs.clear();
+			gO->name = "Empty Game Object";
+			App->game_engine->renderer3D_engine->gameObjectList.clear();
+        }
+        ImGui::SameLine(); // Move the cursor to the same line as the button
+    }
 
-	if (isOpen)
-	{
-		for (auto& child : gO->childs)
-		{
-			HierarchyRecursive(child.get());
-		}
-		ImGui::TreePop();
-	}
+    bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
+
+    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+    {
+        gameObjSelected = gO;
+    }
+
+    if (isOpen)
+    {
+        for (auto& child : gO->childs)
+        {
+            HierarchyRecursive(child.get());
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::PopID(); // Pop the unique identifier
 }
+
 
 void ModuleImGUI::RenderImGUIHierarchyWindow()
 {
@@ -1091,6 +1110,8 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 		{
 			HierarchyRecursive(gOparentPtr.get());
 		}
+		ImGui::End();
+	}
 
 		//// Use iterator to keep track of the selected game object
 		//auto selectedGameObjectIter = App->game_engine->renderer3D_engine->gameObjectList.end();
@@ -1126,7 +1147,6 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 		//}
 
 		ImGui::End();
-	}
 }
 
 void ModuleImGUI::GeneratePrimitives()
