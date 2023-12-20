@@ -57,39 +57,18 @@ engine_status ModuleGameEngine::PreUpdate()
 {
 	engine_status ret = ENGINE_UPDATE_CONTINUE;
 
-	/*for (auto const& item : list_modules)
-	{
-		ret = item->PreUpdate();
-		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
-	}*/
-
 	return ret;
 }
 
 engine_status ModuleGameEngine::Update()
 {
 	engine_status ret = ENGINE_UPDATE_CONTINUE;
-	/*PrepareUpdate();
-
-	for (auto const& item : list_modules)
-	{
-		ret = item->Update();
-		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
-	}
-
-	FinishUpdate();*/
 	return ret;
 }
 
 engine_status ModuleGameEngine::PostUpdate()
 {
 	engine_status ret = ENGINE_UPDATE_CONTINUE;
-
-	/*for (auto const& item : list_modules)
-	{
-		ret = item->PostUpdate();
-		if (ret != ENGINE_UPDATE_CONTINUE) return ret;
-	}*/
 
 	return ret;
 }

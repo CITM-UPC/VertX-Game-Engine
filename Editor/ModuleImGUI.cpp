@@ -54,7 +54,6 @@ vec3 ModuleImGUI::GetSelectedObjectPos()
 	return vec3(0, 0, 0);
 }
 
-
 void ModuleImGUI::SetSelectedObjectTexture(string filePath)
 {
 	if (gameObjSelected != nullptr) {
