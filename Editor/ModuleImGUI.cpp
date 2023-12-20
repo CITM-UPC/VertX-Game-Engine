@@ -1061,44 +1061,62 @@ void ModuleImGUI::RenderImGUIDebugLogWindow()
 
 void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 {
-    ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
-    if (gO->childs.empty()) TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-    if (gameObjSelected == gO) TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
+	ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if (gO->childs.empty()) TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (gameObjSelected == gO) TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-    ImGui::PushID(gO); // Push a unique identifier for this TreeNode
+	ImGui::PushID(gO); // Push a unique identifier for this TreeNode
 
-    // Add a delete button for parent objects with children
-    if (!gO->parent && !gO->childs.empty())
-    {
-        if (ImGui::Button("Delete"))
-        {
-			gameObjSelected = nullptr; 
+	// Add a delete button for parent objects with children
+	if (!gO->parent && !gO->childs.empty())
+	{
+		// Delete button for all parent childs
+		if (ImGui::Button(" X "))
+		{
+			gameObjSelected = nullptr;
 
-            gO->childs.clear();
+			gO->childs.clear();
 			gO->name = "Empty Game Object";
-			App->game_engine->renderer3D_engine->gameObjectList.clear();
-        }
-        ImGui::SameLine(); // Move the cursor to the same line as the button
-    }
+		}
+		ImGui::SameLine(); // Move the cursor to the same line as the button
+	}
 
-    bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
+	bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
 
-    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-    {
-        gameObjSelected = gO;
-    }
+	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+	{
+		gameObjSelected = gO;
+	}
 
-    if (isOpen)
-    {
-        for (auto& child : gO->childs)
-        {
-            HierarchyRecursive(child.get());
-        }
-        ImGui::TreePop();
-    }
+	if (isOpen)
+	{
+		auto childIt = gO->childs.begin();
+		while (childIt != gO->childs.end())
+		{
+			ImGui::PushID((*childIt).get()); // Push a unique identifier for this child
 
-    ImGui::PopID(); // Pop the unique identifier
+			// Delete button for childs
+			if (ImGui::Button(" X "))
+			{
+				gameObjSelected = nullptr;
+
+				// Erase the corresponding child
+				childIt = gO->childs.erase(childIt);
+				continue; // Skip the rendering of this child since it's erased
+			}
+
+			ImGui::SameLine(); // Move the cursor to the same line as the button
+			HierarchyRecursive((*childIt).get());
+
+			ImGui::PopID(); // Pop the unique identifier for this child
+			++childIt;
+		}
+		ImGui::TreePop();
+	}
+
+	ImGui::PopID(); // Pop the unique identifier for this TreeNode
 }
+
 
 
 void ModuleImGUI::RenderImGUIHierarchyWindow()
@@ -1112,6 +1130,7 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 		}
 		ImGui::End();
 	}
+
 
 		//// Use iterator to keep track of the selected game object
 		//auto selectedGameObjectIter = App->game_engine->renderer3D_engine->gameObjectList.end();
