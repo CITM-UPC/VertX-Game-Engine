@@ -109,4 +109,32 @@ void GameObject::UpdateComponents()
 	{
 		comp->Update();
 	}
+	drawAABBox(computeAABB());
+}
+
+AABBox GameObject::computeAABB()
+{
+	AABBox aabbox;
+
+	Mesh* meshComponent = GetComponent<Mesh>();
+	if (meshComponent != nullptr)
+	{
+		//aabbox = meshComponent->getAABB();
+		const auto obBox = GetComponent<Transform>()->_transformationMatrix * aabbox;
+		aabbox = obBox.AABB();
+	}
+	else
+	{
+		aabbox.min = vec3(0);
+		aabbox.max = vec3(0);
+	}
+
+	for (const auto& child : childs)
+	{
+		const auto child_aabb = child->computeAABB();
+		aabbox.min = glm::min(aabbox.min, child_aabb.min);
+		aabbox.max = glm::max(aabbox.max, child_aabb.max);
+	}
+
+	return aabbox;
 }

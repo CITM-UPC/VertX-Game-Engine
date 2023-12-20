@@ -9,6 +9,8 @@
 #include <vector>
 #include <array>
 
+#include <span>
+
 #include "GameObject.h"
 #include "ModuleRenderer3D_ENGINE.h"
 
@@ -69,12 +71,24 @@ Mesh::Mesh(GameObject* owner, const MeshInfo& meshinfo, Formats format) :
 	switch (_format) {
 	case Formats::F_V3:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(V3) * meshinfo._numVerts, meshinfo._vertex_data, GL_STATIC_DRAW);
+		for (const auto& v : span((V3*)meshinfo._vertex_data, meshinfo._numVerts)) {
+			_aabb.min = glm::min(_aabb.min, vec3(v.v));
+			_aabb.max = glm::max(_aabb.max, vec3(v.v));
+		}
 		break;
 	case Formats::F_V3C4:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(V3C4) * meshinfo._numVerts, meshinfo._vertex_data, GL_STATIC_DRAW);
+		for (const auto& v : span((V3C4*)meshinfo._vertex_data, meshinfo._numVerts)) {
+			_aabb.min = glm::min(_aabb.min, vec3(v.v));
+			_aabb.max = glm::max(_aabb.max, vec3(v.v));
+		}
 		break;
 	case Formats::F_V3T2:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(V3T2) * meshinfo._numVerts, meshinfo._vertex_data, GL_STATIC_DRAW);
+		for (const auto& v : span((V3T2*)meshinfo._vertex_data, meshinfo._numVerts)) {
+			_aabb.min = glm::min(_aabb.min, vec3(v.v));
+			_aabb.max = glm::max(_aabb.max, vec3(v.v));
+		}
 		break;
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -248,6 +262,10 @@ const unsigned int Mesh::getNumNormals() {
 
 const unsigned int Mesh::getNumFaces() {
 	return _numFaces;
+}
+
+AABBox Mesh::getAABB() {
+	return _aabb;
 }
 
 void Mesh::Update()

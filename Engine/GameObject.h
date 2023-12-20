@@ -49,7 +49,7 @@ public:
 	void RemoveComponent(Component::Type component);
 	void UpdateComponents();
 
-	AABBox aabb() const;
+	AABBox computeAABB();
 };
 
 //Expand Template Info for GetComponent Function --> Improves consistency & Usability with multiple data formats
