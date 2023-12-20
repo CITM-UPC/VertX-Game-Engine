@@ -72,7 +72,7 @@ void ModuleRenderer3D_ENGINE::HandleFileDrop(const char* filePath) {
 
 	if (extension) {
 		if (_stricmp(extension, ".fbx") == 0) {
-			std::string dirPath = "Assets/Library/Meshes/";
+			std::string dirPath = "Assets/Library/";
 			std::string filedropcomb = dirPath + filenamestore;
 			std::cout << filedropcomb;
 			game_engine->scene->addGameObject(filedropcomb);

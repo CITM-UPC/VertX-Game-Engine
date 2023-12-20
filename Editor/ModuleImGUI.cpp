@@ -35,7 +35,7 @@ void GoBack() {
 }
 
 void DoubleClickHandler(const std::string& folderName) {
-	currentFolderPath = "Assets" + folderName;
+	currentFolderPath = "Assets/" + folderName;
 }
 
 void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {
@@ -96,7 +96,7 @@ std::string openFileDialog() {
 // Function to copy a file to the "Assets/" folder
 bool copyFileToAssetsFolder(const std::string& sourcePath) {
 	// Adjust this path according to your project structure
-	const std::string assetsFolderPath = "Assets/Library/Imports/";
+	const std::string assetsFolderPath = "Assets/Library/";
 
 	try {
 		// Extract the file name from the source path

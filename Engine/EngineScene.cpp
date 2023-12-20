@@ -17,9 +17,7 @@ Engine_ModuleScene::~Engine_ModuleScene() = default;
 
 bool Engine_ModuleScene::Init()
 {
-	fs::create_directories("Assets/Library/Meshes/");
-	fs::create_directories("Assets/Library/Materials/");
-	fs::create_directories("Assets/Library/Imports/");
+	fs::create_directories("Assets/Library/");
 
 	addGameObject("Assets/Street_Environment.fbx");
 
@@ -91,7 +89,7 @@ void Engine_ModuleScene::addGameObject(const std::string & filePath)
 
 		gOparent->childs.push_back(std::move(gameObjectToAdd));
 
-		string folderName = "Assets/Library/Meshes/";
+		string folderName = "Assets/Library/";
 
 		ofstream oFile(folderName + meshName + ".fbx", ios::binary);
 		oFile << meshInfo;

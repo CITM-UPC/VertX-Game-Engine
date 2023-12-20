@@ -97,8 +97,8 @@ public:
 	std::list<GameObject> gameObjectList;
 
 	const char* parentDirectory = "Assets";
-	const char* fbxAssetsDirectory = "Assets\\Library\\Meshes";
-	const char* imageAssetsDirectory = "Assets\\Library\\Textures";
+	const char* fbxAssetsDirectory = "Assets\\Library";
+	const char* imageAssetsDirectory = "Assets\\Library";
 
 	bool vsync;
 
