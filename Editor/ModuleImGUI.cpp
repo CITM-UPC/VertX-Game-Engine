@@ -983,14 +983,14 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 							{
 								ImGui::PushItemWidth(60.0f);
 								ImGui::BulletText("Position");
-								ImGui::InputDouble("##PositionX", &transform->_position.x, 0.0, 0.0, "%.3f");
+								ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
 								ImGui::SameLine();
-								ImGui::InputDouble("##PositionY", &transform->_position.y, 0.0, 0.0, "%.3f");
+								ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
 								ImGui::SameLine();
-								ImGui::InputDouble("PositionZ", &transform->_position.z, 0.0, 0.0, "%.3f");
+								ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
 
 								ImGui::BulletText("Rotation");
-								ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f"); transform->RotateTo(transform->_rotation);
+								if(ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
 								ImGui::SameLine();
 								if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
 								ImGui::SameLine();
@@ -1003,6 +1003,16 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 								ImGui::SameLine();
 								if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
 
+								if (ImGui::Button("Reset Transforms")) 
+								{ 
+									transform->_position = vec3(0.0, 0.0, 0.0);
+
+									transform->_rotation = vec3(0.0, 0.0, 0.0);
+									transform->RotateTo(transform->_rotation);
+
+									transform->_scale = vec3(1.0, 1.0, 1.0);
+									transform->Scale(transform->_scale);
+								}
 								ImGui::PopItemWidth();
 							}
 						}
