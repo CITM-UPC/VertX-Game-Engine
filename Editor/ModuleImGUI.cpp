@@ -960,7 +960,6 @@ void ModuleImGUI::RenderImGUIInspectorWindow()
 								if (ImGui::Checkbox("Draw", &mesh->meshIsDrawed)) {
 									LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshIsDrawed ? "ACTIVE" : "INACTIVE");
 								}
-
 								ImGui::SameLine();
 								ImGui::Text("  File name:");
 								ImGui::SameLine();
@@ -1073,8 +1072,9 @@ void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 		// Delete button for all parent childs
 		if (ImGui::Button(" X "))
 		{
-			gameObjSelected = nullptr;
+			LOG("EDITOR: Deleting '%s' game object...", gO->name.c_str());
 
+			gameObjSelected = nullptr;
 			gO->childs.clear();
 			gO->name = "Empty Game Object";
 		}
@@ -1098,6 +1098,8 @@ void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 			// Delete button for childs
 			if (ImGui::Button(" X "))
 			{
+				LOG("EDITOR: Deleting '%s's' child...", gO->name.c_str());
+				
 				gameObjSelected = nullptr;
 
 				// Erase the corresponding child
@@ -1124,48 +1126,20 @@ void ModuleImGUI::RenderImGUIHierarchyWindow()
 	if (hierarchyWindow)
 	{
 		ImGui::Begin("Hierarchy", &hierarchyWindow);
+
+		if (ImGui::Button("Create Empty"))
+		{
+			App->game_engine->scene->addEmptyGameObject();
+		}
+		
+		ImGui::Separator();
+		
 		for (const auto& gOparentPtr : App->game_engine->scene->gameObjectList)
 		{
 			HierarchyRecursive(gOparentPtr.get());
 		}
 		ImGui::End();
 	}
-
-
-		//// Use iterator to keep track of the selected game object
-		//auto selectedGameObjectIter = App->game_engine->renderer3D_engine->gameObjectList.end();
-
-		//for (auto iter = App->game_engine->renderer3D_engine->gameObjectList.begin();
-		//	iter != App->game_engine->renderer3D_engine->gameObjectList.end(); ++iter) {
-		//	auto& gameObject = *iter;
-
-		//	ImGui::PushID(&gameObject);
-
-		//	// Display button to delete the game object
-		//	if (ImGui::Button("Delete")) {
-		//		selectedGameObjectIter = iter;
-		//	}
-
-		//	// Display selectable for the game object
-		//	ImGui::SameLine();
-		//	if (ImGui::Selectable(gameObject.name.c_str())) {
-		//		gameObjSelected = gameObject;
-		//	}
-
-		//	ImGui::PopID();
-		//}
-
-		//// Check if a game object is selected and delete it
-		//if (selectedGameObjectIter != App->game_engine->renderer3D_engine->gameObjectList.end()) {
-		//	App->game_engine->renderer3D_engine->gameObjectList.erase(selectedGameObjectIter);
-		//	
-		//	LOG("EDITOR: Deleting the selected game object from the scene...", NULL);
-
-		//	// Reset the selected game object to "null", so it isn't displayed anymore in the inspector.
-		//	gameObjSelected = GameObject();
-		//}
-
-		ImGui::End();
 }
 
 void ModuleImGUI::GeneratePrimitives()

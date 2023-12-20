@@ -19,7 +19,7 @@ public:
 	void LoadScene();
 
 public:
-	void addGameObject();
+	void addEmptyGameObject();
 
 	void addGameObject(const std::string& filePath);
 

@@ -45,7 +45,7 @@ engine_status Engine_ModuleScene::PostUpdate()
 
 bool Engine_ModuleScene::CleanUp() { return true; }
 
-void Engine_ModuleScene::addGameObject()
+void Engine_ModuleScene::addEmptyGameObject()
 {
 	std::unique_ptr<GameObject> gameObjectToAdd = std::make_unique<GameObject>();
 
@@ -62,7 +62,7 @@ void Engine_ModuleScene::addGameObject()
 void Engine_ModuleScene::addGameObject(const std::string & filePath)
 {
 
-	addGameObject();
+	addEmptyGameObject();
 
 	auto& gOparent = gameObjectList.back();
 
