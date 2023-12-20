@@ -61,7 +61,7 @@ You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out
 ### Asset Window
 - [x] **Functional -> Asset Visibility:** User is able to see Assets Folder in Project, Assets are displayed in grid similar to Unity and Unreal Stylizing. Drag&Drop from Asset Window is in development.
 - [x] **Functional -> Asset Import:** User is able to import their own local files to the Assets Folder in Project by clicking the "Import Local Files" button in the *Assets window*.
-- [x] **Functional -> Asset Deletion:** User is able to delete files from the Assets Folder in Project by left-clicking when hovering with the mouse the desired file and a popup window will appear.
+- [x] **Functional -> Asset Deletion:** User is able to delete files from the Assets Folder in Project by *right-clicking* when hovering with the mouse the desired file and a popup window will appear.
 
 ### Game Objects
 - [x] **Functional -> Game Object Rendering:** Pre-stored Game Objects rendering possible from *Top Menu: Game Object* window. These include primitives, &Textured FBX mesh files (Baker House, Medieval Bed, Obelisk)

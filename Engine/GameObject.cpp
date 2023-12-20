@@ -1,3 +1,4 @@
+#include "Mesh.h"
 #include "GameObject.h"
 #include <memory>
 #include <GL/glew.h>
@@ -27,6 +28,7 @@ std::list<std::unique_ptr<Component>>* GameObject::GetComponents()
 static inline void glVec3(const vec3& v) { glVertex3dv(&v.x); }
 
 static void drawAABBox(const AABBox& aabb) {
+	glColor3ub(0, 200, 255);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);
 
@@ -52,23 +54,6 @@ static void drawAABBox(const AABBox& aabb) {
 	glVec3(aabb.c());
 	glEnd();
 }
-
-//AABBox GameObject::aabb() const {
-//	AABBox aabbox;
-//	if (_graphic.get()) aabbox = _graphic->aabb;
-//	else if (children().empty()) {
-//		aabbox.min = vec3(0);
-//		aabbox.max = vec3(0);
-//	}
-//
-//	for (const auto& child : children()) {
-//		const auto child_aabb = (child.transform() * child.aabb()).AABB();
-//		aabbox.min = glm::min(aabbox.min, child_aabb.min);
-//		aabbox.max = glm::max(aabbox.max, child_aabb.max);
-//	}
-//
-//	return aabbox;
-//}
 
 void GameObject::Move(GameObject* newParent, std::list<unique_ptr<GameObject>>& listToCheck)
 {
@@ -135,7 +120,7 @@ AABBox GameObject::computeAABB()
 	Mesh* meshComponent = GetComponent<Mesh>();
 	if (meshComponent != nullptr)
 	{
-		//aabbox = meshComponent->getAABB();
+		aabbox = meshComponent->getAABB();
 		const auto obBox = GetComponent<Transform>()->_transformationMatrix * aabbox;
 		aabbox = obBox.AABB();
 	}
