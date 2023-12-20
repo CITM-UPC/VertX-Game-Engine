@@ -886,7 +886,7 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 			}
 		}
 
-			int assetsPerRow = 6.0f;
+			int assetsPerRow = 5.0f;
 			float assetWidth = 150.0f;
 			float assetHeight = 20.0f;
 			//std::string currentfolderPath = "Assets";
