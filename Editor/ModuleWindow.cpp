@@ -16,52 +16,55 @@ ModuleWindow::~ModuleWindow()
 // Called before render is available
 bool ModuleWindow::Init()
 {
-	LOG("EDITOR: Initializing SDL window & surface", NULL);
+	App->logHistory.push_back("[Editor] Init SDL window & surface");
+	/*LOG("Init SDL window & surface");*/
 	bool ret = true;
 
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		LOG("EDITOR: SDL_VIDEO could not initialize! ERROR: %s", SDL_GetError());
-
+		LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	else
 	{
 		//Create window
-		int width = SCREEN_WIDTH * SCREEN_SIZE;
-		int height = SCREEN_HEIGHT * SCREEN_SIZE;
+		width = SCREEN_WIDTH * SCREEN_SIZE;
+		height = SCREEN_HEIGHT * SCREEN_SIZE;
+
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 		//Use OpenGL 2.1
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if(WIN_FULLSCREEN == true)
+		fullscreen = WIN_FULLSCREEN;
+		if (WIN_FULLSCREEN == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(WIN_RESIZABLE == true)
+		resizable = WIN_RESIZABLE;
+		if (WIN_RESIZABLE == true)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(WIN_BORDERLESS == true)
+		borderless = WIN_BORDERLESS;
+		if (WIN_BORDERLESS == true)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(WIN_FULLSCREEN_DESKTOP == true)
+		if (WIN_FULLSCREEN_DESKTOP == true)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
 		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
-		if(window == NULL)
+		if (window == NULL)
 		{
-			LOG("EDITOR: Window could not be created! ERROR: %s", SDL_GetError());
-
+			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
@@ -78,54 +81,26 @@ bool ModuleWindow::Init()
 
 update_status ModuleWindow::Update()
 {
-	// Enable/Disable window fullscreen mode
-	if (fullscreenEnabled)
+	std::string title;
+	if (App->game_engine->scene->currentScene.name != "")
 	{
-		if (fullcreenDesktopEnabled)
-		{
-			SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-		}
-		else
-		{
-			SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN);
-		}
+		title = App->game_engine->scene->currentScene.name + " - " + TITLE;
 	}
 	else
 	{
-		SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_SHOWN);
+		title = TITLE;
 	}
-
-	// Enable/Disable window resizable mode
-	if (borderlessEnabled)
-	{
-		SDL_SetWindowBordered(App->window->window, SDL_FALSE);
-	}
-	else
-	{
-		SDL_SetWindowBordered(App->window->window, SDL_TRUE);
-	}
-
-	// Enable/Disable window resizable mode
-	if (resizableEnabled)
-	{
-		SDL_SetWindowResizable(App->window->window, SDL_TRUE);
-	}
-	else
-	{
-		SDL_SetWindowResizable(App->window->window, SDL_FALSE);
-	}
-
-
+	SetTitle(title.c_str());
 	return UPDATE_CONTINUE;
 }
 
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	LOG("EDITOR: Destroying SDL window and quitting all SDL systems!", NULL);
+	/*LOG("Destroying SDL window and quitting all SDL systems");*/
 
 	//Destroy window
-	if(window != NULL)
+	if (window != NULL)
 	{
 		SDL_DestroyWindow(window);
 	}

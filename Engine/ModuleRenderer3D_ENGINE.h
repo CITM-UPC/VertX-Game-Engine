@@ -4,17 +4,17 @@
 #include "SDL2/SDL.h"
 #include <glm/gtc/type_ptr.hpp>
 
-#include "GL/glew.h"
-#include <map>
-#include "SDL2/SDL_opengl.h"
-#include <string>
-#include <iostream>
-#include <vector>
+#include "GL/glew.h"//testing
 #include <list>
+#include <vector>
 #include "Mesh.h"
-#include <string>
 #include "MeshLoad.h"
 #include "GameObject.h"
+
+#include "Primitive.h"
+#include "Cube.h"
+#include "Pyramid.h"
+#include "Cone.h"
 
 class ModuleRenderer3D_ENGINE : public Engine_Module
 {
@@ -30,88 +30,109 @@ public:
 
 	void OnResize(int width, int height);
 
-	void DrawGrid(int size, int step, bool xzAxis = true);
+	void DrawGrid(int size, int step, bool xzAxis = true, bool xyAxis = false, bool zyAxis = false);
 
-	void DrawAxis(float lineWidth = 1.0f);
-
-	void SetTargetWindow(SDL_Window* target) { 
-		targetWindow = target; 
+	void SetTargetWindow(SDL_Window* target) {
+		targetWindow = target;
 	}
-	void SetScreenSize(int width, int height) { 
-		screen_width = width; 
+	void SetScreenSize(int width, int height) {
+		screen_width = width;
 		screen_height = height;
 	}
-	void SetVsync(bool active) { 
-		vsync = active; 
+	void SetVsync(bool active) {
+		vsync = active;
 	}
 
-
-	void deleteSubstring(std::string& mainString, const std::string& substringToDelete) {
-		size_t pos = mainString.find(substringToDelete);
-
-		// Iterate until all occurrences are removed
-		while (pos != std::string::npos) {
-			mainString.erase(pos, substringToDelete.length());
-			pos = mainString.find(substringToDelete, pos);
-		}
-	}
-
-	void eraseBeforeDelimiter(std::string& str) {
-		size_t found = str.find_last_of("\\/");
-		if (found != std::string::npos) {
-			str.erase(0, found + 1);
-		}
-	}
-
-	void detectAndIncrement(std::string mainString, const std::string& substring, int& counter) {
-		if (mainString.find(substring) != std::string::npos) {
-			counter++;
-		}
-	}
-
-	int checkNameAvailability(std::string name) {
-		int count = 0;
-
-		for (const auto& vector : gameObjectList) {
-			detectAndIncrement(vector.name, name, count);
-		}
-
-		return count;
-	}
-
-	void HandleFileDrop(const char* filePath);
-	bool RecursiveRemoveDirectory(const char* directory);
-	bool CleanUpAssets();
-	void CreateDirectoryIfNotExists(const char* directory);
-
-	
+	void SwapDepthTest();
+	void SwapCullFace();
+	void SwapLighting();
+	void SwapColorMaterial();
+	void SwapLineSmooth();
+	void SwapPolygonSmooth();
 
 public:
 
+	std::vector<vec3> origins, ends, camPos, nearPlanes; //temporary, only debug
+
 	SDL_GLContext context;
+	glm::mat3x3 NormalMatrix;
+	glm::mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
-	glm::mat3x3 normalMatrix;
-	glm::mat4x4 modelMatrix;
-	glm::mat4x4 viewMatrix;
-	glm::mat4x4 projectionMatrix;
-	std::list<GameObject> gameObjectList;
+	bool depth_test;
+	bool cull_face;
+	bool lighting;
 
-	const char* parentDirectory = "Assets";
-	const char* fbxAssetsDirectory = "Assets\\Library";
-	const char* imageAssetsDirectory = "Assets\\Library";
+	bool line_smooth;
 
-	bool vsync;
+	bool polygon_smooth;
 
-	int screen_width;
-	int screen_height;
+	bool color_material;
 
-	bool glDepthTestIsEnabled = true;
-	bool glCullFaceIsEnabled = true;
-	bool glColorMaterialIsEnabled = true;
-	bool glLightingIsEnabled = false;
+	bool debugRayCast;
 
 private:
 
 	SDL_Window* targetWindow;
+	bool vsync;
+	int screen_width;
+	int screen_height;
 
+	void drawQuadFaceTriangles(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d) {
+		glVertex3fv(&a.x);
+		glVertex3fv(&b.x);
+		glVertex3fv(&c.x);
+
+		glVertex3fv(&c.x);
+		glVertex3fv(&d.x);
+		glVertex3fv(&a.x);
+	}
+	void drawCubeTest() {
+		glm::vec3 a = glm::vec3(-1, -1, 1);
+		glm::vec3 b = glm::vec3(1, -1, 1);
+		glm::vec3 c = glm::vec3(1, 1, 1);
+		glm::vec3 d = glm::vec3(-1, 1, 1);
+		glm::vec3 e = glm::vec3(-1, -1, -1);
+		glm::vec3 f = glm::vec3(1, -1, -1);
+		glm::vec3 g = glm::vec3(1, 1, -1);
+		glm::vec3 h = glm::vec3(-1, 1, -1);
+
+		glBegin(GL_TRIANGLES);
+		//front
+		glColor3f(255, 0, 0);
+		drawQuadFaceTriangles(a, b, c, d);
+		//back
+		glColor3f(0, 255, 0);
+		drawQuadFaceTriangles(h, g, f, e);
+		//left
+		glColor3f(0, 0, 255);
+		drawQuadFaceTriangles(e, a, d, h);
+		//right
+		glColor3f(255, 255, 0);
+		drawQuadFaceTriangles(b, f, g, c);
+		//top
+		glColor3f(255, 255, 255);
+		drawQuadFaceTriangles(d, c, g, h);
+		//bottom
+		glColor3f(0, 0, 0);
+		drawQuadFaceTriangles(b, a, e, f);
+		glEnd();
+	}
+	void drawAxis()
+	{
+		glLineWidth(4.0);
+		glBegin(GL_LINES);
+		//Red
+		glColor3ub(255, 0, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0.8, 0, 0);
+		//Green
+		glColor3ub(0, 255, 0);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 0.8, 0);
+		//Blue
+		glColor3ub(0, 0, 255);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 0, 0.8);
+		glEnd();
+	}
 };

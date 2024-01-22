@@ -8,6 +8,7 @@ Application::Application()
 	input = new ModuleInput(this);
 	renderer = new ModuleRenderer(this);
 	imgui = new ModuleImGUI(this);
+	resources = new ModuleResources(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -17,6 +18,7 @@ Application::Application()
 	AddModule(window);
 	AddModule(input);
 	AddModule(renderer);
+	AddModule(resources);
 	AddModule(imgui);
 }
 
@@ -28,23 +30,24 @@ Application::~Application()
 
 bool Application::Init()
 {
-	LOG("EDITOR: Application Init ----------", NULL);
-
 	bool ret = true;
 
+	targetFPS = 360;
+	frameDurationTime = 1.0s / targetFPS;
+
 	// Call Init() in all modules
-	for (auto const& item:list_modules)
+	LOG("[Editor] Initializing Editor modules --------------", NULL);
+	for (auto const& item : list_modules)
 	{
 		item->Init();
 	}
 
-	// After all Init calls we call Start() in all modules
-	LOG("EDITOR: Application Start ----------", NULL);
+	LOG("Application Start --------------", NULL);
 	for (auto const& item : list_modules)
 	{
 		item->Start();
 	}
-	
+
 	return ret;
 }
 
@@ -63,6 +66,9 @@ void Application::FinishUpdate()
 update_status Application::Update()
 {
 	update_status ret = update_status::UPDATE_CONTINUE;
+
+	const auto frameStart = std::chrono::steady_clock::now();
+
 	PrepareUpdate();
 
 	for (auto const& item : list_modules)
@@ -84,6 +90,23 @@ update_status Application::Update()
 	}
 
 	FinishUpdate();
+
+	const auto frameEnd = std::chrono::steady_clock::now();
+	const auto frameDuration = frameEnd - frameStart;
+
+	if (frameDuration < frameDurationTime)
+		this_thread::sleep_for(frameDurationTime - frameDuration);
+
+	const auto frameEndAfterSleep = std::chrono::steady_clock::now();
+	const auto frameDurationAfterSleep = frameEndAfterSleep - frameStart;
+
+	float lastFPS = 1.0f / (frameDurationAfterSleep.count() * 0.000000001f);
+
+	fpsHistory.push_back(lastFPS);
+
+	// Replace oldest data in the history
+	if (fpsHistory.size() > 100) fpsHistory.erase(fpsHistory.begin());
+
 	return ret;
 }
 
@@ -94,7 +117,7 @@ bool Application::CleanUp()
 	bool ret = true;
 
 	//This seems to work, but I think it is doing it in the normal order, not reverse.
-	for (auto const& item: list_modules)
+	for (auto const& item : list_modules)
 	{
 		ret = item->CleanUp();
 		if (ret != true) return ret;

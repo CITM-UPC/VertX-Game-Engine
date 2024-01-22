@@ -6,13 +6,11 @@
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 
+#include <span>
 #include <vector>
 #include <array>
 
-#include <span>
-
 #include "GameObject.h"
-#include "ModuleRenderer3D_ENGINE.h"
 
 using namespace std;
 
@@ -118,7 +116,8 @@ Mesh::Mesh(Mesh&& b) noexcept :
 	mVertices(b.mVertices),
 	mNormals(b.mNormals),
 	mFaceCenters(b.mFaceCenters),
-	mFaceNormals(b.mFaceNormals)
+	mFaceNormals(b.mFaceNormals),
+	_aabb(b._aabb)
 {
 	b._vertex_buffer_id = 0;
 	b._indexs_buffer_id = 0;
@@ -139,44 +138,38 @@ Mesh::Mesh(const Mesh& cpy) :
 	mVertices(cpy.mVertices),
 	mNormals(cpy.mNormals),
 	mFaceCenters(cpy.mFaceCenters),
-	mFaceNormals(cpy.mFaceNormals)
+	mFaceNormals(cpy.mFaceNormals),
+	_aabb(cpy._aabb)
 {
 	const_cast<Mesh&>(cpy)._vertex_buffer_id = 0;
 	const_cast<Mesh&>(cpy)._indexs_buffer_id = 0;
 }
 
 void Mesh::draw() {
+	glColor4ub(255, 255, 255, 255);
 
-	glPushMatrix();
-	glMultMatrixd(&owner->GetComponent<Transform>()->_transformationMatrix[0].x);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
+	glEnableClientState(GL_VERTEX_ARRAY);
 
-	if (meshIsDrawed)
-	{
-		glColor4ub(255, 255, 255, 255);
+	switch (_format) {
+	case Formats::F_V3:
+		glVertexPointer(3, GL_FLOAT, 0, nullptr);
+		break;
+	case Formats::F_V3C4:
+		glEnableClientState(GL_COLOR_ARRAY);
+		glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
+		glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
+		break;
+	case Formats::F_V3T2:
+		glEnable(GL_TEXTURE_2D);
+		(texture) ? (useChecker) ? texture->checker()
+			: texture->bind()
+			: texture->unbind();
 
-		glBindBuffer(GL_ARRAY_BUFFER, _vertex_buffer_id);
-		glEnableClientState(GL_VERTEX_ARRAY);
-
-		switch (_format) {
-		case Formats::F_V3:
-			glVertexPointer(3, GL_FLOAT, 0, nullptr);
-			break;
-		case Formats::F_V3C4:
-			glEnableClientState(GL_COLOR_ARRAY);
-			glVertexPointer(3, GL_FLOAT, sizeof(V3C4), nullptr);
-			glColorPointer(4, GL_FLOAT, sizeof(V3C4), (void*)sizeof(V3));
-			break;
-		case Formats::F_V3T2:
-			glEnable(GL_TEXTURE_2D);
-			(texture) ? (useChecker) ? texture->checker()
-				: texture->bind()
-				: texture->unbind();
-
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
-			break;
-		}
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_FLOAT, sizeof(V3T2), nullptr);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(V3T2), (void*)sizeof(V3));
+		break;
 	}
 
 	if (_indexs_buffer_id) {
@@ -188,15 +181,15 @@ void Mesh::draw() {
 	}
 
 	if (drawVertexNormals) {
-		glLineWidth(2.0f);
+		glLineWidth(4.0f);
 		glBegin(GL_LINES);
 		glColor3f(0.0f, 1.0f, 0.0f);
 
 		for (int i = 0; i < _numVerts; i++) {
 			glVertex3f(mVertices[i].x, mVertices[i].y, mVertices[i].z);
-			glVertex3f(mVertices[i].x + mNormals[i].x * normalsLength,
-				mVertices[i].y + mNormals[i].y * normalsLength,
-				mVertices[i].z + mNormals[i].z * normalsLength);
+			glVertex3f(mVertices[i].x + mNormals[i].x * 0.1f,
+				mVertices[i].y + mNormals[i].y * 0.1f,
+				mVertices[i].z + mNormals[i].z * 0.1f);
 		}
 
 		glColor3f(0.0f, 1.0f, 0.0f);
@@ -204,17 +197,17 @@ void Mesh::draw() {
 	}
 
 	if (drawFaceNormals) {
-		glLineWidth(2.0f);
+		glLineWidth(4.0f);
 		glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f);
 
 		for (int i = 0; i < _numFaces; i++) {
-			glm::vec3 endPoint = mFaceCenters[i] + normalsLength * mFaceNormals[i];
+			glm::vec3 endPoint = mFaceCenters[i] + 0.1f * mFaceNormals[i];
 			glVertex3f(mFaceCenters[i].x, mFaceCenters[i].y, mFaceCenters[i].z);
 			glVertex3f(endPoint.x, endPoint.y, endPoint.z);
 		}
 
-		glColor3f(1.0f, 1.0f, 0.0f);
+		glColor3f(1.0f, 0.0f, 0.0f);
 		glEnd();
 	}
 
@@ -225,8 +218,6 @@ void Mesh::draw() {
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisable(GL_TEXTURE_2D);
-
-	glPopMatrix();
 }
 
 Mesh::~Mesh() {
@@ -268,7 +259,22 @@ AABBox Mesh::getAABB() {
 	return _aabb;
 }
 
-void Mesh::Update()
+void Mesh::Update() {}
+
+void Mesh::Render()
 {
 	draw();
 }
+
+//json Mesh::SaveInfo()
+//{
+//	json obj;
+//
+//	std::string bPath = "Library/Meshes/" + owner->name + ".mesh";
+//
+//	obj["Owner"] = owner->UUID;
+//	obj["Binary Path"] = bPath;
+//	obj["Type"] = static_cast<int>(getType());
+//
+//	return obj;
+//}

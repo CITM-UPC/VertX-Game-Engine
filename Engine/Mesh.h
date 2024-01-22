@@ -9,6 +9,7 @@
 #include "Graphic.h"
 #include "Texture2D.h"
 #include "MeshInfo.h"
+#include "BBox.hpp"
 
 class Mesh : public Graphic, public Component
 {
@@ -31,10 +32,6 @@ public:
 	std::vector<vec3f> mNormals;
 	std::vector<vec3f> mFaceCenters;
 	std::vector<vec3f> mFaceNormals;
-
-	float normalsLength = 1.0f;
-
-	bool meshIsDrawed = true;
 
 private:
 
@@ -87,12 +84,15 @@ public:
 
 	void Update() override;
 
+	void Render() override;
+
 	Type getType() const override {
 		return Type::MESH;
 	}
 
+	/*json SaveInfo();*/
+
 private:
 
 	Mesh& operator=(const Mesh&) = delete;
-
 };

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <chrono>
+#include <thread>
+#include <vector>
 #include <list>
 #include "Globals.h"
 #include "Module.h"
@@ -7,7 +10,11 @@
 #include "ModuleInput.h"
 #include "ModuleRenderer.h"
 #include "ModuleImGUI.h"
+#include "ModuleResources.h"
 #include "..\Engine\ModuleGameEngine.h"
+
+using namespace std;
+using namespace chrono;
 
 class Application
 {
@@ -15,8 +22,12 @@ public:
 	ModuleWindow* window;
 	ModuleInput* input;
 	ModuleRenderer* renderer;
+	ModuleResources* resources;
 	ModuleImGUI* imgui;
 	ModuleGameEngine* game_engine;
+	
+	int targetFPS;
+	duration<double> frameDurationTime;
 
 private:
 
@@ -31,6 +42,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	vector<float> fpsHistory;
+	list<string> logHistory;
+
 private:
 
 	void AddModule(Module* mod);
@@ -40,22 +54,6 @@ private:
 public:
 	
 	void OpenWebLink(const char *webLink);
-
-	int fps = FPS;
-	double deltaTime;
-	double frameDuration;
-
-	/*bool isSimulationRunning = false;
-	bool isSimulationPaused = false;
-	std::chrono::high_resolution_clock::time_point simulationTime;
-	std::chrono::high_resolution_clock::time_point lastSimulationTime;*/
-
-	// Timer variables
-	bool isPlaying = false;
-	bool isPaused = false;
-	double startTime = 0.0;
-	double elapsedTime = 0.0;
-
 
 private:
 

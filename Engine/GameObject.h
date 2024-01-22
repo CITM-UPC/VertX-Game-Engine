@@ -8,11 +8,7 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "Texture2D.h"
-#include "BBox.hpp"
-#include "Tree.hpp"
-#include "Graphic.h"
-#include "Shader.h"
-
+#include "Camera.h"
 
 class GameObject
 {
@@ -22,46 +18,52 @@ public:
 	bool isActive = true;
 	std::list<std::unique_ptr<Component>> components;
 
-	std::shared_ptr<Shader> _shader;
-
 	std::list<std::unique_ptr<GameObject>> childs;
 
 	GameObject* parent;
+
+	unsigned long UUID;
 
 public:
 
 	GameObject();
 	~GameObject();
-	
 
-	template <typename GOC> GOC* GetComponent();
+	template <typename T> T* GetComponent();
+	//std::shared_ptr<Component> GetComponent(Component::Type componentType);
 
 	std::list<std::unique_ptr<Component>>* GetComponents();
 
 	void Move(GameObject* newParent, std::list<unique_ptr<GameObject>>& listToCheck);
-
-	inline std::shared_ptr<Shader>& shaderPtr() { return _shader; }
-
-	std::shared_ptr<Graphic> _graphic;
+	void removeChild(GameObject* childToRemove);
 
 	void AddComponent(Component::Type component);
+	//void AddComponent(std::unique_ptr<Component>& component);
 
-	template <typename GOC>
-	void AddComponent(GOC& component);
+	template <typename T>
+	void AddComponent(T& component);
+
 	void RemoveComponent(Component::Type component);
+
 	void UpdateComponents();
 
-	
-	AABBox computeAABB();
+	void RenderComponents();
 
+	mat4 getGlobalTransform();
+
+	/*json SaveInfo();*/
+
+	//static GameObject* Find(std::string name, std::list<GameObject> gameObjectList);
+
+	AABBox computeAABB();
+	void drawAABBox(const AABBox& aabb);
 };
 
-//Expand Template Info for GetComponent Function --> Improves consistency & Usability with multiple data formats
-template<typename GOC>
-inline GOC* GameObject::GetComponent()
+template<typename T>
+inline T* GameObject::GetComponent()
 {
 	for (auto& component : components) {
-		GOC* returnComponent = dynamic_cast<GOC*>(component.get());
+		T* returnComponent = dynamic_cast<T*>(component.get());
 		if (returnComponent) {
 			return returnComponent;
 		}
@@ -69,9 +71,9 @@ inline GOC* GameObject::GetComponent()
 	return nullptr;
 }
 
-template<typename GOC>
-inline void GameObject::AddComponent(GOC& component)
+template<typename T>
+inline void GameObject::AddComponent(T& component)
 {
-	GOC copyOfComponent = component;
-	components.emplace_back(std::make_unique<GOC>(std::move(copyOfComponent)));
+	T copyOfComponent = component; // Make a copy of the component
+	components.emplace_back(std::make_unique<T>(std::move(copyOfComponent)));
 }

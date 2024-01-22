@@ -2,6 +2,8 @@
 #include "Module.h"
 #include "Globals.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "..\Engine\Physics.hpp"
+#include <map>
 
 class ModuleRenderer : public Module
 {
@@ -15,13 +17,25 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	void DoCameraInput();
+	void keysInputFPS();
+	void mouseInputFPS();
+	void mouseCamOrbit();
+	void mouseCameraPan();
+	void DoZoom();
+	void FocusCamera();
+
+	GameObject* DoClickRayCast();
+	Ray CalculateRay();
+	void DebugRay(Ray ray);
+	Triangle CalculateTriangle(GameObject* triObject, int iterator);
+	void CheckMeshCollisionRecursive(Ray& ray, GameObject* object, std::map<float, GameObject*>& hitObjects);
+
 public:
 
-	void FreeCameraMovement();
+	bool vsync;
 
-	void CameraOrbitation();
+private:
 
-	void CameraZoomIn();
-	void CameraZoomOut();
-
+	double camSpeed = 0.05;
 };

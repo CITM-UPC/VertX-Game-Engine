@@ -1,10 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "Component.h"
-#include <glm/vec3.hpp>
-
 
 class Camera : public Component
 {
@@ -13,7 +10,14 @@ public:
 	Camera(GameObject* owner);
 	Camera(const Camera& other);
 
+	Camera(GameObject* owner, double ifov, double ratio, double clipnear, double clipfar, double camoffset, glm::dvec3 lookatpos);
+
+	~Camera();
+
 	void Update() override;
+
+	void Render() override;
+
 	Type getType() const override {
 		return Type::CAMERA;
 	}
@@ -25,21 +29,6 @@ public:
 	double clippingPlaneViewNear;
 	double clippingPlaneViewFar;
 
-	glm::dvec3 worldPosVec;		
-	glm::dvec3 focusPosVec;		
-	glm::dvec3 upVec;			
-
-	double cameraSpeed;
-	float cameraSpeedMultiplier;
-
-	float cameraYaw;
-	float cameraPitch;	
-	float mouseSensitivity;
-
-	const float zoomSpeed;
-
 	glm::dvec3 lookAtPos;
 	double camOffset;
-
-	void ResetCameraParameters();
 };

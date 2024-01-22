@@ -2,21 +2,31 @@
 #include "Module.h"
 #include "Globals.h"
 #include <string>
-#include <IL/il.h>
-#include <vector>
+#include <cstring>
+#include "..\Engine\GameObject.h"
+#include "..\Engine\Component.h"
+#include "TextEditor.h"
 #include <filesystem>
-#include "../Engine/GameObject.h"
-#include "../Engine/Component.h"
-#include <map>    
-#include <unordered_map>
-#include <IL/il.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
 
 namespace fs = std::filesystem;
 
+struct InfrastructureInfo {
+	std::string sdl_version_compiled;
+	std::string sdl_version_linked;
+	std::string gl_version;
+	std::string devil_version;
+
+	std::string GpuVendor;
+	std::string Gpu;
+	std::string GpuDriver;
+
+	float vram_mb_budget = 0.f;
+	float vram_mb_usage = 0.f;
+	float vram_mb_available = 0.f;
+
+	uint cpu_count = 0;
+	uint l1_cachekb = 0;
+};
 
 class ModuleImGUI : public Module
 {
@@ -28,88 +38,72 @@ public:
 	update_status PreUpdate();
 	bool CleanUp();
 
-	std::vector<std::string> assetFiles;
-
-public:
-
-	void RenderImGUI();
+	void RenderUI();
 
 	vec3 GetSelectedObjectPos();
 	void SetSelectedObjectTexture(std::string filePath);
 
-	bool showContextMenu = false;
+private:
 
-	void RenderImGUIAssetsWindow();
-	void RenderImGUIAboutWindow();
-	void RenderImGUIConfigWindow();
-	void RenderImGUIHierarchyWindow();
+	update_status MainMenuBar();
+
+	void FPSGraphWindow();
+	void HierarchyWindow();
+	void InspectorWindow();
+	void LogConsoleWindow();
+	void OptionsWindow();
+	void CamDebugWindow();
+	void AboutWindow();
+	void FileExplorerWindow();
 	void HierarchyRecursive(GameObject* gO);
-	void RenderImGUIInspectorWindow();
-	void RenderImGUICameraInspectorWindow();
-	void RenderImGUIDebugLogWindow();
-	void RenderImGUIConsoleWindow();
-	void RenderImGUISimulationControlsWindow();
 	void GameObjectOptions();
 	void ReparentMenu();
-
-	void RenderFPSGraph();
-
-	// Function to display a Tool Tip message for any mouse hovered item. Call it AFTER the item creation.
-	void ToolTipMessage(const char* tip);
-
-	void GeneratePrimitives();
-
-
-	bool CreatedOnce = true;
-
-	std::string nameholder;
-	bool renamed = false;
-
-	bool g_IsDragging = false; // Boolean flag to indicate whether an asset is being dragged.
-	std::string g_DraggedAssetName;
+	void SaveAsMenu();
+	void LoadSceneMenu();
+	void GetInfrastructureInfo();
+	void ShowFolderContents(const fs::path& folderPath);
+	void EditScript();
+	void RenderImGUIAssetsWindow();
 
 private:
-	
-	bool aboutWindow = false;
-	bool configWindow = false;
+
+	const std::string assetFolderPath = "VertX/Assets";
+
+	bool dockSpaceEnabled = true;
+
+	bool hierarchy = true;
+	bool inspector = true;
+	bool logWindow = true;
 	bool assetsWindow = true;
-	bool cameraInspectorWindow = true;
-	bool consoleWindow = true;
-	bool hierarchyWindow = true;
-	bool inspectorWindow = true;
-	bool imGuiDebugLogWindow = false;
-	bool simulationButtonsWindow = true;
+	bool FPSgraph = false;
+	bool options = false;
+	bool camDebug = false;
+	bool about = false;
+	bool demo = false;
 	bool reparentMenu = false;
+	bool saveasMenu = false;
+	bool loadMenu = false;
+	bool fileExplorer = true;
+	bool editScript = false;
+
+	bool autoScrollLog = true;
+
 	bool reparentThis = true;
 	bool reparentTo = false;
 
-	bool TexEnabled = true;
+	std::string aboutContent;
+	std::string filePath;
+	std::string fileContent;
 
-	GameObject* orphan = nullptr;
-	GameObject* adopter = nullptr;
-
-	int numVerts;
-	int numIndexes;
-	std::string Name; 
-	std::string MeshFileName;
-	std::string MeshTexture;
-	
-
-	char Title[150] = "Write Text";
-	std::string name;
-
+	// Hardware information
+	InfrastructureInfo info;
 	GameObject* gameObjSelected = nullptr;
 
-	const std::string assetFolderPath = "Assets";
+	// Game Object which parent will be changed
+	GameObject* orphan = nullptr;
 
-	std::vector<std::string> GetAssetFiles(const std::string& assetFolderPath) {
-		std::vector<std::string> assetFiles;
-		for (const auto& entry : fs::directory_iterator(assetFolderPath)) {
-			if (fs::is_regular_file(entry.path())) {
-				assetFiles.push_back(entry.path().filename().string()); // Convert path to string
-			}
-		}
-		return assetFiles;
-	}
+	// Objective Parent that will adopt the child
+	GameObject* adopter = nullptr;
 
+	TextEditor editor;
 };

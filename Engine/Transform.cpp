@@ -23,7 +23,6 @@ Transform::Transform(GameObject* owner, mat4 transmat) : Component(owner)
 
 Transform::~Transform() {}
 
-//Moving GO to Space
 void Transform::MoveTo(vec3 position)
 {
 	_position = position;
@@ -37,8 +36,18 @@ void Transform::Move(vec3 displacement, Space referenceFrame)
 	if (referenceFrame == Space::GLOBAL)
 		vecInRefFrame = displacement * referenceFrameMat;
 
-	//Cut down on vector code by just creating a transform matrix, allowing for GLM rotation
 	_transformationMatrix = glm::translate(_transformationMatrix, vecInRefFrame);
+}
+
+void Transform::RotateTo(double angle, vec3 axis)
+{
+	vec3 normalizedVec = glm::normalize(axis);
+
+	_right = vec3(1 * _scale.x, 0, 0);
+	_up = vec3(0, 1 * _scale.y, 0);
+	_forward = vec3(0, 0, 1 * _scale.z);
+
+	_transformationMatrix = glm::rotate(_transformationMatrix, glm::radians(angle), normalizedVec);
 }
 
 void Transform::RotateTo(vec3 rotVector)
@@ -56,18 +65,6 @@ void Transform::RotateTo(vec3 rotVector)
 	_forward *= _scale.z;
 }
 
-//Rotate Game Object via set Axis
-void Transform::RotateTo(double angle, vec3 axis)
-{
-	vec3 normalizedVec = glm::normalize(axis);
-
-	_right = vec3(1, 0, 0);
-	_up = vec3(0, 1, 0);
-	_forward = vec3(0, 0, 1);
-
-	_transformationMatrix = glm::rotate(_transformationMatrix, glm::radians(angle), normalizedVec);
-}
-
 void Transform::Rotate(double angle, vec3 axis, Space referenceFrame)
 {
 	glm::mat3 referenceFrameMat = (glm::mat4)_transformationMatrix;
@@ -81,7 +78,36 @@ void Transform::Rotate(double angle, vec3 axis, Space referenceFrame)
 
 void Transform::Scale(vec3 scaleVector)
 {
+	/*_right.x = _right.x / _scale.x;
+	_up.y = _up.y / _up.y;
+	_forward.z = _forward.z / _scale.z;
+
+	_transformationMatrix = glm::scale(_transformationMatrix, scaleVector);*/
 	RotateTo(vec3(_rotation.x, _rotation.y, _rotation.z));
 }
 
 void Transform::Update() {}
+
+void Transform::Render() {}
+
+//json Transform::SaveInfo()
+//{
+//	json obj;
+//
+//	obj["Owner"] = owner->UUID;
+//	obj["Type"] = static_cast<int>(getType());
+//
+//	json transformationMatrixArray;
+//
+//	for (int i = 0; i < 4; i++)
+//	{
+//		for (int j = 0; j < 4; j++)
+//		{
+//			transformationMatrixArray.push_back(_transformationMatrix[i][j]);
+//		}
+//	}
+//
+//	obj["Transformation Matrix"] = transformationMatrixArray;
+//
+//	return obj;
+//}
