@@ -155,14 +155,10 @@ bool ModuleImGUI::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;		// Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;		// Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;			// IF using Docking Branch
-	io.Fonts->AddFontFromFileTTF("LatinModernMono_bold.ttf", 18);
+
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->game_engine->renderer3D_engine->context);
 	ImGui_ImplOpenGL3_Init();
-
-	// Setup ImGui colors style
-	ImGui::StyleColorsClassic();
-	//ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -439,7 +435,7 @@ update_status ModuleImGUI::MainMenuBar()
 		{
 			if (ImGui::MenuItem("About...")) about = true;
 			ImGui::Separator();
-			if (ImGui::MenuItem("Check releases...")) { OsOpenInShell("https://github.com/CITM-UPC/Kingdom/releases"); }
+			if (ImGui::MenuItem("Check releases...")) { OsOpenInShell("https://github.com/CITM-UPC/VertX-Game-Engine/releases"); }
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
@@ -711,8 +707,11 @@ void ModuleImGUI::InspectorWindow()
 	ImGui::Begin("Inspector", &inspector);
 	if (gameObjSelected != nullptr) {
 		if (gameObjSelected->name != "") {
+			char Title[256];
+			strncpy_s(Title, gameObjSelected->name.c_str(), sizeof(Title));
+			Title[sizeof(Title) - 1] = '\0';
 			ImGui::Checkbox("Active", &gameObjSelected->isActive);
-			ImGui::SameLine(); ImGui::Text("GameObject name: ");
+			ImGui::SameLine(); ImGui::InputText("Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::SameLine(); ImGui::TextColored({ 0.144f, 0.422f, 0.720f, 1.0f }, gameObjSelected->name.c_str());
 
 			ImGui::SetNextItemWidth(100.0f);
@@ -721,42 +720,51 @@ void ModuleImGUI::InspectorWindow()
 			ImGui::SetNextItemWidth(100.0f);
 			if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
+			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+				gameObjSelected->name = Title;
+			}
+
 			for (auto& component : *gameObjSelected->GetComponents()) {
 				if (component.get()->getType() == Component::Type::TRANSFORM) {
 					Transform* transform = dynamic_cast<Transform*>(component.get());
 					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 					{
-						if (ImGui::BeginTable("", 4))
+						ImGui::PushItemWidth(60.0f);
+						ImGui::BulletText("Position");
+						ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
+						ImGui::SameLine();
+						ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
+						ImGui::SameLine();
+						ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
+
+						ImGui::BulletText("Rotation");
+						if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+
+						ImGui::BulletText("Scale");
+						if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+
+						if (ImGui::Button("Reset Transforms"))
 						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-							ImGui::Text("");
-							ImGui::Text("Position");
-							ImGui::Text("Rotation");
-							ImGui::Text("Scale");
+							transform->_position = vec3(0.0, 0.0, 0.0);
 
-							ImGui::TableSetColumnIndex(1);
-							ImGui::Text("X");
-							ImGui::DragScalar("##posX", ImGuiDataType_Double, &transform->_position.x, 0.005, nullptr, nullptr, "%.3f");
-							if (ImGui::DragScalar("##rotX", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-							if (ImGui::DragScalar("##scX", ImGuiDataType_Double, &transform->_scale.x, 0.005, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+							transform->_rotation = vec3(0.0, 0.0, 0.0);
+							transform->RotateTo(transform->_rotation);
 
-							ImGui::TableSetColumnIndex(2);
-							ImGui::Text("Y");
-							ImGui::DragScalar("##posY", ImGuiDataType_Double, &transform->_position.y, 0.005, nullptr, nullptr, "%.3f");
-							if (ImGui::DragScalar("##rotY", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-							if (ImGui::DragScalar("##scY", ImGuiDataType_Double, &transform->_scale.y, 0.005, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-
-							ImGui::TableSetColumnIndex(3);
-							ImGui::Text("Z");
-							ImGui::DragScalar("##posZ", ImGuiDataType_Double, &transform->_position.z, 0.005, nullptr, nullptr, "%.3f");
-							if (ImGui::DragScalar("##rotZ", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-							if (ImGui::DragScalar("##scZ", ImGuiDataType_Double, &transform->_scale.z, 0.005, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-
-							ImGui::EndTable();
+							transform->_scale = vec3(1.0, 1.0, 1.0);
+							transform->Scale(transform->_scale);
+						}
+						ImGui::PopItemWidth();
 						}
 					}
-				}
+
 				if (component.get()->getType() == Component::Type::MESH) {
 					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
 					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
@@ -764,6 +772,10 @@ void ModuleImGUI::InspectorWindow()
 						ImGui::Checkbox("Active", &mesh->isActive);
 						ImGui::SameLine();  ImGui::Text("Filename: ");
 						ImGui::SameLine();  ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, mesh->getName().c_str());
+						ImGui::Separator();
+						ImGui::Text("File path: ");
+						ImGui::SameLine();
+						ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Library/Meshes/%s", mesh->getName().c_str());
 						ImGui::Separator();
 						ImGui::Text("Indexes: ");
 						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
@@ -1038,8 +1050,8 @@ void ModuleImGUI::CamDebugWindow()
 void ModuleImGUI::AboutWindow()
 {
 	ImGui::Begin("About...", &about, ImGuiWindowFlags_AlwaysAutoResize);
-	ImGui::Text("Kingdom v0.5\nA 3D Game Engine for the Game Engines subject.\nBy Jonathan Cacay & Ethan Martin.");
-	if (ImGui::Button("Repository Link")) { OsOpenInShell("https://github.com/CITM-UPC/Kingdom/"); }
+	ImGui::Text("Vertx Engine v0.3\nA 3D Game Engine for the Game Engines subject.\nBy Rylan Graham, Adria Pons, & Joel Chaves");
+	if (ImGui::Button("Repository Link")) { OsOpenInShell("https://github.com/CITM-UPC/VertX-Game-Engine/"); }
 	ImGui::Separator();
 	ImGui::Text("3rd Party Libraries used :");
 	ImGui::Bullet(); if (ImGui::Button("Assimp 5.2.5")) { OsOpenInShell("https://assimp-docs.readthedocs.io/"); }
@@ -1052,6 +1064,11 @@ void ModuleImGUI::AboutWindow()
 	ImGui::Bullet(); if (ImGui::Button("SDL2 2.28.3")) { OsOpenInShell("https://wiki.libsdl.org/"); }
 	ImGui::Bullet(); if (ImGui::Button("std:c++20")) { OsOpenInShell("https://en.cppreference.com/w/cpp/20"); }
 	ImGui::Separator();
+	ImGui::Text("MIT Licence\n");
+	ImGui::Text("Copyright (c) 2023 Adria Pons & Rylan Graham - VertX Game Engine\n");
+	ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the 'Software'), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n");
+	ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.");
+	ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n");
 	if (ImGui::CollapsingHeader("License")) { ImGui::Text(aboutContent.c_str()); }
 	ImGui::End();
 }

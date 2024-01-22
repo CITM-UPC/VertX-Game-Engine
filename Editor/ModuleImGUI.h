@@ -73,7 +73,7 @@ private:
 
 	bool hierarchy = true;
 	bool inspector = true;
-	bool logWindow = true;
+	bool logWindow = false;
 	bool assetsWindow = true;
 	bool FPSgraph = false;
 	bool options = false;
@@ -83,8 +83,10 @@ private:
 	bool reparentMenu = false;
 	bool saveasMenu = false;
 	bool loadMenu = false;
-	bool fileExplorer = true;
+	bool fileExplorer = false;
 	bool editScript = false;
+	char Title[150] = "Write Text";
+	std::string name;
 
 	bool autoScrollLog = true;
 

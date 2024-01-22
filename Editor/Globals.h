@@ -20,13 +20,12 @@ enum update_status
 };
 
 // Configuration -----------
-#define SCREEN_WIDTH 1600
-#define SCREEN_HEIGHT 900
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 #define SCREEN_SIZE 1
 #define WIN_FULLSCREEN false
-#define WIN_RESIZABLE false
+#define WIN_RESIZABLE true
 #define WIN_BORDERLESS false
-#define VSYNC false
+#define VSYNC true
 #define WIN_FULLSCREEN_DESKTOP false
-#define FPS 60
 #define TITLE "VertX Game Engine"
