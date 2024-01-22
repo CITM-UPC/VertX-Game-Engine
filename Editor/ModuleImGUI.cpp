@@ -39,7 +39,15 @@ void GoBack() {
 }
 
 void DoubleClickHandler(const std::string& folderName) {
-	currentFolderPath = "VertX/" + folderName;
+	if (currentFolderPath == "VertX/Assets") {
+		currentFolderPath = "VertX/Assets/" + folderName;
+	}
+	else if (currentFolderPath == "VertX") {
+		currentFolderPath = "VertX/" + folderName;
+	}
+	else if (currentFolderPath == "VertX/Library") {
+		currentFolderPath = "VertX/Library/" + folderName;
+	}
 }
 
 void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {

@@ -22,7 +22,7 @@ bool Engine_ModuleScene::Init()
 	fs::create_directories("VertX/Library/Materials/");
 	fs::create_directories("VertX/Library/Scripts/");
 
-	addGameObject("VertX/Assets/BakerHouse.fbx");
+	addGameObject("VertX/Assets/Street/StreetEnvironment.fbx");
 
 	return true;
 }
