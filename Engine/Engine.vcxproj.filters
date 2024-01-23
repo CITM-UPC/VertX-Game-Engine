@@ -102,9 +102,33 @@
       <Filter>Source Files\Engine Modules</Filter>
     </ClInclude>
     <ClInclude Include="MeshInfo.h">
-    <Filter>Source Files\Engine Modules</Filter>
+      <Filter>Source Files\Engine Modules</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.hpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cone.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Pyramid.h">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcg_random.hpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcg_extras.hpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcg_uint128.hpp">
       <Filter>Source Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>

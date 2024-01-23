@@ -1,14 +1,11 @@
 #pragma once
-#include "Globals_ENGINE.h"
-#include "glm/glm.hpp"
 #include "Component.h"
+#include "Globals_ENGINE.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 class Transform : public Component
 {
 public:
-
-	//Define Space between Local&Global - Mirrored from Unity Engine
 	enum class Space
 	{
 		LOCAL,
@@ -16,26 +13,28 @@ public:
 	};
 
 	Transform(GameObject* owner);
-	Transform(GameObject* owner, mat4 transmat);
 
+	Transform(GameObject* owner, mat4 transmat);
 	~Transform();
 
-	//positioning
+	//Moves the object to 'position'.
 	void MoveTo(vec3 position);
 
-	//displacement
+	//Moves the object in 'displacement' increments.
 	void Move(vec3 displacement, Space referenceFrame = Space::LOCAL);
 
-	//Rotates by axis
+	//Rotates the object for its rotation to be the one given by 'axis'.
 	void RotateTo(double angle, vec3 axis);
 	void RotateTo(vec3 axis);
 
-	//Rotates by axis increments
+	//Rotates the object in 'axis' increments.
 	void Rotate(double angle, vec3 axis, Space referenceFrame = Space::LOCAL);
 
 	void Scale(vec3 scaleVector);
 
 	void Update() override;
+
+	void Render() override;
 
 	Type getType() const override {
 		return Type::TRANSFORM;
@@ -61,9 +60,10 @@ public:
 
 	inline const mat4& transform() const { return _transformationMatrix; }
 	inline const vec3& position() const { return _position; }
-	inline const vec3& pos() const { return _position; }
 
 	inline const vec3& right() const { return _right; }
 	inline const vec3& up() const { return _up; }
 	inline const vec3& forward() const { return _forward; }
+
+	/*json SaveInfo();*/
 };

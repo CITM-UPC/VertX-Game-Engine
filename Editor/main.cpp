@@ -20,10 +20,7 @@ int main(int argc, char ** argv)
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
-	//Application* App = NULL;
-
-	// Start computing the game loop tick time
-	std::chrono::high_resolution_clock::time_point lastFrameTime = std::chrono::high_resolution_clock::now();
+	Application* App = NULL;
 
 	while (state != MAIN_EXIT)
 	{
@@ -56,21 +53,6 @@ int main(int argc, char ** argv)
 		case MAIN_UPDATE:
 		{
 			int update_return = App->Update();
-			
-			if (!App->game_engine->renderer3D_engine->vsync)
-			{
-				// Calculate the time taken to render the frame
-				std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
-				App->deltaTime = 1000 / App->fps; // Delta time in ms
-				App->frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
-				lastFrameTime = currentFrameTime;
-
-				// Implement a frame rate cap by sleeping if the frame took less time than the desired frame time
-				if (App->frameDuration < App->deltaTime) {
-					double sleepTime = App->deltaTime - App->frameDuration;
-					std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long long>(sleepTime)));
-				}
-			}
 
 			if (update_return == UPDATE_ERROR)
 			{

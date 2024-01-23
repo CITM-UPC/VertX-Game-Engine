@@ -1,69 +1,84 @@
 #include "Camera.h"
 #include "GameObject.h"
 
-Camera::Camera(GameObject* owner) : Component(owner), fov(60),
-aspectRatio(16.0 / 9.0f),
-clippingPlaneViewNear(0.1),
-clippingPlaneViewFar(150),
-worldPosVec(16.5f, 12.75f, 18.75f),
-focusPosVec(0.0f, 0.0f, 0.0f),
-upVec(0.0f, 1.0f, 0.0f),
-cameraSpeed(0.1),
-cameraSpeedMultiplier(3.0f),
-cameraYaw(-90.0f),
-cameraPitch(0.0f),
-mouseSensitivity(0.25f),
-zoomSpeed(0.5f) {
-	lookAtPos + glm::dvec3(0, 0, 0);
+#include <GL/glew.h>
+
+Camera::Camera(GameObject* owner) : Component(owner), fov(60), aspectRatio(4.0 / 3.0), clippingPlaneViewNear(0.1), clippingPlaneViewFar(300), camOffset(9.0)
+{
+	lookAtPos = vec3(0, 0, 0);
 }
 
 Camera::Camera(const Camera& other)
 	: Component(other.owner),
-	fov(60),
-	aspectRatio(16.0 / 9.0f),
-	clippingPlaneViewNear(0.1),
-	clippingPlaneViewFar(150),
-	worldPosVec(16.5f, 12.75f, 18.75f),
-	focusPosVec(0.0f, 0.0f, 0.0f),
-	upVec(0.0f, 1.0f, 0.0f),
-	cameraSpeed(0.1),
-	cameraSpeedMultiplier(3.0f),
-	cameraYaw(-90.0f),
-	cameraPitch(0.0f),
-	mouseSensitivity(0.25f),
-	zoomSpeed(0.5f)
+	fov(other.fov),
+	aspectRatio(other.aspectRatio),
+	clippingPlaneViewNear(other.clippingPlaneViewNear),
+	clippingPlaneViewFar(other.clippingPlaneViewFar),
+	lookAtPos(other.lookAtPos),
+	camOffset(other.camOffset)
 {
 }
 
-void Camera::ResetCameraParameters() 
+Camera::Camera(GameObject* owner, double ifov, double ratio, double clipnear, double clipfar, double camoffset, glm::dvec3 lookatpos) :
+	Component(owner),
+	fov(ifov),
+	aspectRatio(ratio),
+	clippingPlaneViewNear(clipnear),
+	clippingPlaneViewFar(clipfar),
+	camOffset(camoffset),
+	lookAtPos(lookatpos)
 {
-	fov = 60;
-	aspectRatio = 16.0 / 9.0;
-	clippingPlaneViewNear = 0.1;
-	clippingPlaneViewFar = 150;
-	
-	worldPosVec.x = 16.5f;
-	worldPosVec.y = 12.75f;
-	worldPosVec.z = 18.75f;
-
-	focusPosVec.x = 0.0f;
-	focusPosVec.y = 0.0f;
-	focusPosVec.z = 0.0f;
-
-	upVec.x = 0.0f;
-	upVec.y = 1.0f;
-	upVec.z = 0.0f;
-
-	cameraYaw = -90.0f;
-	cameraPitch = 0.0f;
-
-	cameraSpeed = 0.1;
-	cameraSpeedMultiplier = 3.0f;
-
-	mouseSensitivity = 0.25f;
 }
+
+Camera::~Camera() {}
 
 void Camera::Update()
 {
-	lookAtPos = this->owner->GetComponent<Transform>()->position() + this->owner->GetComponent<Transform>()->forward() * camOffset;
+	//lookAtPos = this->owner->GetComponent<Transform>()->position() + this->owner->GetComponent<Transform>()->forward() * camOffset;
+}
+
+static inline void glVec3(const vec3& v) { glVertex3dv(&v.x); }
+
+void Camera::Render()
+{
+	clippingPlaneViewNear;
+	clippingPlaneViewFar;
+	// Render Frustum
+
+	double verticalFovDistance = sin(glm::radians(fov / 2));
+
+	vec3 a = { clippingPlaneViewNear * -verticalFovDistance * aspectRatio, clippingPlaneViewNear * verticalFovDistance, clippingPlaneViewNear };
+	vec3 b = { clippingPlaneViewNear * verticalFovDistance * aspectRatio, clippingPlaneViewNear * verticalFovDistance, clippingPlaneViewNear };
+	vec3 c = { clippingPlaneViewNear * -verticalFovDistance * aspectRatio, clippingPlaneViewNear * -verticalFovDistance, clippingPlaneViewNear };
+	vec3 d = { clippingPlaneViewNear * verticalFovDistance * aspectRatio, clippingPlaneViewNear * -verticalFovDistance, clippingPlaneViewNear };
+
+	vec3 e = { clippingPlaneViewFar * -verticalFovDistance * aspectRatio, clippingPlaneViewFar * verticalFovDistance, clippingPlaneViewFar };
+	vec3 f = { clippingPlaneViewFar * verticalFovDistance * aspectRatio, clippingPlaneViewFar * verticalFovDistance, clippingPlaneViewFar };
+	vec3 g = { clippingPlaneViewFar * -verticalFovDistance * aspectRatio, clippingPlaneViewFar * -verticalFovDistance, clippingPlaneViewFar };
+	vec3 h = { clippingPlaneViewFar * verticalFovDistance * aspectRatio, clippingPlaneViewFar * -verticalFovDistance, clippingPlaneViewFar };
+
+	glLineWidth(2);
+	glBegin(GL_LINE_STRIP);
+
+	glVec3(a);
+	glVec3(b);
+	glVec3(d);
+	glVec3(c);
+	glVec3(a);
+
+	glVec3(e);
+	glVec3(f);
+	glVec3(h);
+	glVec3(g);
+	glVec3(e);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVec3(h);
+	glVec3(d);
+	glVec3(f);
+	glVec3(b);
+	glVec3(g);
+	glVec3(c);
+	glEnd();
 }

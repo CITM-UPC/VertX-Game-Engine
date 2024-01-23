@@ -1,10 +1,20 @@
 #pragma once
+
 #include <list>
 #include "Globals_ENGINE.h"
 #include "Engine_Module.h"
+
+//#include "ModuleInput.h"
 #include "ModuleRenderer3D_ENGINE.h"
-#include "Camera.h"
 #include "EngineScene.h"
+//#include "ModuleAudio.h"
+
+#include <IL/il.h>
+#include <random>
+#include "Camera.h"
+#include "pcg_random.hpp"
+
+using UUID32 = uint32_t;
 
 class ModuleGameEngine
 {
@@ -30,6 +40,14 @@ public:
 	engine_status Update();
 	engine_status PostUpdate();
 	bool CleanUp();
+
+	// Function to generate a random 32-bit UUID using PCG
+	UUID32 generateUUID32() {
+		pcg32 rng(std::random_device{}());
+
+		// Generate a random 32-bit UUID
+		return rng();
+	}
 
 private:
 

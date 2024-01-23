@@ -1,17 +1,14 @@
 #pragma once
-#include "Mesh.h"
-#include "Texture2D.h"
-#include "GameObject.h"
-#include "..\Editor\Globals.h"
-
-#include <assimp/postprocess.h>
-#include <assimp/cimport.h>
-#include <assimp/scene.h>
-
 #include <memory>
 #include <vector>
 #include <string>
+
+#include "GameObject.h"
 #include "MeshInfo.h"
+#include "Texture2D.h"
+#include <assimp/postprocess.h>
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
 
 class MeshLoader
 {
@@ -26,8 +23,8 @@ public:
 			auto mesh = scene->mMeshes[m];
 			auto faces = mesh->mFaces;
 
-			int numTexCoords = mesh->mNumVertices;
-			int numNormals = mesh->mNumVertices; 
+			int numTexCoords = mesh->mNumVertices; // Number of texture coordinates is same as the number of vertices
+			int numNormals = mesh->mNumVertices; // Number of normals is same as the number of vertices
 			int numFaces = mesh->mNumFaces;
 
 			vec3f* verts = (vec3f*)mesh->mVertices;
@@ -53,7 +50,9 @@ public:
 			unsigned int* index_data_ptr = new unsigned int[index_data.size()];
 			std::copy(index_data.begin(), index_data.end(), index_data_ptr);
 
-			auto meshInfo_ptr = MeshInfo(vertex_data_ptr, vertex_data.size(), index_data_ptr, index_data.size(), numTexCoords, numNormals, numFaces);
+			mat4 transformationMatrix = assimpTransMatToGLM(scene->mRootNode->mChildren[m]->mTransformation);
+
+			auto meshInfo_ptr = MeshInfo(vertex_data_ptr, vertex_data.size(), index_data_ptr, index_data.size(), numTexCoords, numNormals, numFaces, transformationMatrix);
 
 			for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 				aiVector3D normal = mesh->mNormals[i];
@@ -90,7 +89,6 @@ public:
 		return meshInfoVec;
 	}
 
-	//Assigning of Texture mapped to FBX file
 	static std::vector<std::string> loadTextureFromFile(const std::string& path)
 	{
 		std::vector<std::string> texture_paths;
@@ -114,5 +112,14 @@ public:
 		aiReleaseImport(scene);
 
 		return texture_paths;
+	}
+
+private:
+	static mat4 assimpTransMatToGLM(const aiMatrix4x4& matrix)
+	{
+		return mat4(matrix.a1, matrix.b1, matrix.c1, matrix.d1,
+			matrix.a2, matrix.b2, matrix.c2, matrix.d2,
+			matrix.a3, matrix.b3, matrix.c3, matrix.d3,
+			matrix.a4, matrix.b4, matrix.c4, matrix.d4);
 	}
 };

@@ -1,15 +1,19 @@
-﻿#include "Globals.h"
+﻿
 #include "Application.h"
 #include "ModuleImGUI.h"
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
-#include "ModuleInput.h" 
+#include "Globals.h"
+
+#include "ModuleInput.h" //All of this is testing
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-#include "ModuleWindow.h"
-#include "..\Engine\Mesh.h"
-#include "SDL2/SDL_cpuinfo.h"
+#include "imgui_stdlib.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <filesystem>
 #include <functional>
 #include <Windows.h>
@@ -19,7 +23,7 @@ namespace fs = std::filesystem;
 
 using DoubleClickCallback = std::function<void(const std::string&)>;
 
-std::string currentFolderPath = "Assets";
+std::string currentFolderPath = "VertX";
 
 struct Asset {
 	std::string name;
@@ -29,13 +33,21 @@ struct Asset {
 };
 
 void GoBack() {
-	if (currentFolderPath != "Assets") {
+	if (currentFolderPath != "VertX") {
 		currentFolderPath = std::filesystem::path(currentFolderPath).parent_path().string();
 	}
 }
 
 void DoubleClickHandler(const std::string& folderName) {
-	currentFolderPath = "Assets/" + folderName;
+	if (currentFolderPath == "VertX/Assets") {
+		currentFolderPath = "VertX/Assets/" + folderName;
+	}
+	else if (currentFolderPath == "VertX") {
+		currentFolderPath = "VertX/" + folderName;
+	}
+	else if (currentFolderPath == "VertX/Library") {
+		currentFolderPath = "VertX/Library/" + folderName;
+	}
 }
 
 void ShowFolderContents(const std::string& folderName, std::vector<Asset>& assets) {
@@ -43,32 +55,6 @@ void ShowFolderContents(const std::string& folderName, std::vector<Asset>& asset
 	assets.clear(); // Clear current asset list
 	for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
 		assets.push_back({ entry.path().filename().string(), entry.is_directory() });
-	}
-}
-
-vec3 ModuleImGUI::GetSelectedObjectPos()
-{
-	if (gameObjSelected != nullptr)
-		return gameObjSelected->GetComponent<Transform>()->position();
-
-	return vec3(0, 0, 0);
-}
-
-void ModuleImGUI::SetSelectedObjectTexture(string filePath)
-{
-	if (gameObjSelected != nullptr) {
-		if (gameObjSelected->GetComponent<Texture2D>() != nullptr)
-		{
-			gameObjSelected->RemoveComponent(Component::Type::TEXTURE2D);
-		}
-
-		Texture2D textureToPush(gameObjSelected, filePath);
-		gameObjSelected->AddComponent(textureToPush);
-
-		if (gameObjSelected->GetComponent<Mesh>()->texture)
-		{
-			gameObjSelected->GetComponent<Mesh>()->texture = gameObjSelected->GetComponent<Texture2D>();
-		}
 	}
 }
 
@@ -92,10 +78,39 @@ std::string openFileDialog() {
 	return "";
 }
 
+// Function to display a popup for deleting an asset
+void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
+	if (ImGui::BeginPopup("DeletePopup")) {
+		ImGui::Text("Delete asset: %s", assetName.c_str());
+		ImGui::Separator();
+
+		if (ImGui::Button("Delete")) {
+			deleteAsset = true; // Set the flag to delete the asset
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
+// Helper function to sanitize a filename.
+std::string SanitizeFilename(const std::string& filename) {
+	std::string sanitizedName = filename;
+
+	// Replace problematic characters, e.g., remove spaces or non-alphanumeric characters.
+	for (char& c : sanitizedName) {
+		if (!isalnum(c)) {
+			c = '_'; // Replace with an underscore or another valid character.
+		}
+	}
+
+	return sanitizedName;
+}
+
 // Function to copy a file to the "Assets/" folder
 bool copyFileToAssetsFolder(const std::string& sourcePath) {
 	// Adjust this path according to your project structure
-	const std::string assetsFolderPath = "Assets/Library/";
+	const std::string assetsFolderPath = "VertX/Assets/";
 
 	try {
 		// Extract the file name from the source path
@@ -116,68 +131,42 @@ bool copyFileToAssetsFolder(const std::string& sourcePath) {
 	}
 }
 
+ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled) {}
 
-// Function to display a popup for deleting an asset
-void ShowDeletePopup(bool& deleteAsset, const std::string& assetName) {
-	if (ImGui::BeginPopup("DeletePopup")) {
-		ImGui::Text("Delete asset: %s", assetName.c_str());
-		ImGui::Separator();
+// Destructor
+ModuleImGUI::~ModuleImGUI() {}
 
-		if (ImGui::Button("Delete")) {
-			deleteAsset = true; // Set the flag to delete the asset
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::EndPopup();
-	}
-}
-
-// Helper function to sanitize a filename.
-std::string SanitizeFilename(const std::string& filename) {
-    std::string sanitizedName = filename;
-
-    // Replace problematic characters, e.g., remove spaces or non-alphanumeric characters.
-    for (char& c : sanitizedName) {
-        if (!isalnum(c)) {
-            c = '_'; // Replace with an underscore or another valid character.
-        }
-    }
-
-    return sanitizedName;
-}
-
-ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled)
+void OsOpenInShell(const char* path)
 {
+#ifdef _WIN32
+	// Note: executable path must use backslashes!
+	::ShellExecuteA(NULL, "open", path, NULL, NULL, SW_SHOWDEFAULT);
+#else
+#if __APPLE__
+	const char* open_executable = "open";
+#else
+	const char* open_executable = "xdg-open";
+#endif
+	char command[256];
+	snprintf(command, 256, "%s \"%s\"", open_executable, path);
+	system(command);
+#endif
 }
-
-ModuleImGUI::~ModuleImGUI()
-{}
 
 bool ModuleImGUI::Init()
 {
-	LOG("EDITOR: Initializing ImGui Module -------", NULL);
+	//LOG("Creating UI");
 
-	// Setup ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); 
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;		// Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;		// Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;			// IF using Docking Branch
 
-	// Enable keyboard
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	// Enable gamepad
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-	// Enable docking
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	io.DeltaTime = 16;
-
-	// Setup Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->game_engine->renderer3D_engine->context);
 	ImGui_ImplOpenGL3_Init();
-
-	// Setup ImGui colors style
-	ImGui::StyleColorsClassic();
-	//ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -245,178 +234,68 @@ bool ModuleImGUI::Init()
 	// Set ImGui custom font
 	io.Fonts->AddFontFromFileTTF("LatinModernMono_bold.ttf", 18);
 
+	std::ifstream file("../LICENSE");
+	std::string line;
+	if (file.is_open()) {
+		while (std::getline(file, line)) {
+			aboutContent += line + "\n";
+		}
+		file.close();
+	}
+	else {
+		//LOG("Unable to open LICENSE file.");
+	}
+
 	return true;
 }
 
 update_status ModuleImGUI::PreUpdate()
 {
+	//This here does not work. Currently in Input.cpp
+	//ImGui_ImplSDL2_ProcessEvent(&pollevent);
+	GetInfrastructureInfo();
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	
-	// Enabling dockspace of ImGui windows
-	ImGuiDockNodeFlags flag = 0;
-	flag |= ImGuiDockNodeFlags_PassthruCentralNode;
-	ImGui::DockSpaceOverViewport(0, flag);
 
-	if (reparentMenu) 	ReparentMenu();
-	
-	if (ImGui::BeginMainMenuBar())
+	if (dockSpaceEnabled)
 	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("New", "(Ctrl + N)", false, false)) {}
-			if (ImGui::MenuItem("Open", "(Ctrl + O)", false, false)) {}
-
-			ImGui::Separator();
-			
-			if (ImGui::MenuItem("Save", "(Ctrl + S)", false, false)) {}
-			if (ImGui::MenuItem("Save As", "(Ctrl + LShift + S)", false, false)) {}
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("Undo", "(Ctrl + Z)", false, false)) {}
-			if (ImGui::MenuItem("Redo", "(Ctrl + Y)", false, false)) {}
-
-			ImGui::Separator();
-			
-			if (ImGui::MenuItem("Copy", "(Ctrl + C)", false, false)) {}
-			if (ImGui::MenuItem("Paste", "(Ctrl + V)", false, false)) {}
-			if (ImGui::MenuItem("Cut", "(Ctrl + X)", false, false)) {}
-			
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Options"))
-		{
-			if (ImGui::MenuItem("Configuration", NULL, configWindow, !configWindow))
-			{
-				LOG("EDITOR: Opening 'Configuration' window...", NULL);
-				configWindow = !configWindow;
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Windows"))
-		{
-			if (ImGui::MenuItem("Assets", NULL, assetsWindow, !assetsWindow)) 
-			{
-				LOG("EDITOR: Opening 'Assets' window...", NULL);
-				assetsWindow = !assetsWindow;
-			}
-			if (ImGui::MenuItem("Camera Inspector", NULL, cameraInspectorWindow, !cameraInspectorWindow))
-			{
-				LOG("EDITOR: Opening 'Camera Inspector' window...", NULL);
-				cameraInspectorWindow = !cameraInspectorWindow;
-			}
-			if (ImGui::MenuItem("Console", NULL, consoleWindow, !consoleWindow))
-			{
-				LOG("EDITOR: Opening 'Console' window...", NULL);
-				consoleWindow = !consoleWindow;
-			}
-			if (ImGui::MenuItem("Hierarchy", NULL, hierarchyWindow, !hierarchyWindow))
-			{
-				LOG("EDITOR: Opening 'Hierarchy' window...", NULL);
-				hierarchyWindow = !hierarchyWindow;
-			}
-			if (ImGui::MenuItem("ImGui Console Log", NULL, imGuiDebugLogWindow, !imGuiDebugLogWindow))
-			{
-				LOG("EDITOR: Opening 'ImGui Console Log' window...", NULL);
-				imGuiDebugLogWindow = !imGuiDebugLogWindow;
-			}
-			if (ImGui::MenuItem("Inspector", NULL, inspectorWindow, !inspectorWindow))
-			{
-				LOG("EDITOR: Opening 'Inspector' window...", NULL);
-				inspectorWindow = !inspectorWindow;
-			}
-			if (ImGui::MenuItem("Simulation Buttons", NULL, simulationButtonsWindow, !simulationButtonsWindow))
-			{
-				LOG("EDITOR: Opening 'Simulation Buttons' window...", NULL);
-				simulationButtonsWindow = !simulationButtonsWindow;
-			}
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Game Objects"))
-		{
-			GeneratePrimitives();
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Help"))
-		{
-			if (ImGui::MenuItem("About", NULL, aboutWindow, !aboutWindow))
-			{
-				LOG("EDITOR: Opening 'About' window...", NULL);
-				aboutWindow = !aboutWindow;
-			}
-			if (ImGui::MenuItem("Visit our GitHub Page!"))
-			{
-				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine");
-			}
-			if (ImGui::MenuItem("Report Bug / Suggestion"))
-			{
-				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine/issues");
-			}
-			if (ImGui::MenuItem("Download Latest Version"))
-			{
-				App->OpenWebLink("https://github.com/CITM-UPC/VertX-Game-Engine/releases");
-			}
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Quit"))
-		{
-			if (ImGui::MenuItem("Exit", "(Alt + F4)"))
-			{
-				LOG("--- EXITING VERTX GAME ENGINE ---", NULL);
-				return UPDATE_STOP;
-			}
-				
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
+		ImGuiDockNodeFlags dock_flags = 0;
+		dock_flags |= ImGuiDockNodeFlags_PassthruCentralNode;
+		ImGui::DockSpaceOverViewport(0, dock_flags);
 	}
 
-	
-	// Render the Config window
-	RenderImGUIConfigWindow();
+	if (FPSgraph)		FPSGraphWindow();
+	if (logWindow)		LogConsoleWindow();
 
-	// Render the About window
-	RenderImGUIAboutWindow();
+	if (options)		OptionsWindow();
+	if (camDebug)		CamDebugWindow();
+	if (about)      	AboutWindow();
+	if (inspector)		InspectorWindow();
+	if (hierarchy)		HierarchyWindow();
+	if (fileExplorer)	FileExplorerWindow();
+	if (demo)       	ImGui::ShowDemoWindow(&demo);
+	if (editScript)		EditScript();
 
-	// Render the Camera Inspector window
-	RenderImGUICameraInspectorWindow();
+	if (saveasMenu) 	SaveAsMenu();
+	if (loadMenu)		LoadSceneMenu();
+	if (reparentMenu) 	ReparentMenu();
 
-	// Render the Inspector window
-	RenderImGUIInspectorWindow();
+	ImGuiIO& io = ImGui::GetIO();
+	if (!io.WantCaptureMouse && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) return MainMenuBar();
 
-	// Render the ImGui Debug Log window
-	RenderImGUIDebugLogWindow();
-	
-	// Render the Assets window
-	RenderImGUIAssetsWindow();
+		gameObjSelected = App->renderer->DoClickRayCast();
+	}
 
-	// Render Hierarchy window
-	RenderImGUIHierarchyWindow();
-
-	// Render Console window
-	RenderImGUIConsoleWindow();
-
-	// Render Simulation Controls Window
-	RenderImGUISimulationControlsWindow();
-
-	/*ImGui::ShowDemoWindow();*/
-
-
-	return UPDATE_CONTINUE;
+	return MainMenuBar();
 }
 
 bool ModuleImGUI::CleanUp()
 {
-	LOG("EDITOR: Destroying ImGUI----", NULL);
-
-	App->ClearConsoleLogs();
+	//LOG("Destroying UI");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -425,17 +304,279 @@ bool ModuleImGUI::CleanUp()
 	return true;
 }
 
-void ModuleImGUI::RenderImGUI()
+void ModuleImGUI::RenderUI()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ModuleImGUI::ToolTipMessage(const char* tip)
+vec3 ModuleImGUI::GetSelectedObjectPos()
 {
-	if (ImGui::IsItemHovered()) {
-		ImGui::SetTooltip(tip);
+	if (gameObjSelected != nullptr)
+		return gameObjSelected->GetComponent<Transform>()->position();
+
+	return vec3(0, 0, 0);
+}
+
+void ModuleImGUI::SetSelectedObjectTexture(string filePath)
+{
+	if (gameObjSelected != nullptr) {
+		if (gameObjSelected->GetComponent<Texture2D>() != nullptr)
+		{
+			gameObjSelected->RemoveComponent(Component::Type::TEXTURE2D);
+		}
+
+		Texture2D textureToPush(gameObjSelected, filePath);
+		gameObjSelected->AddComponent(textureToPush);
+
+		if (gameObjSelected->GetComponent<Mesh>()->texture)
+		{
+			gameObjSelected->GetComponent<Mesh>()->texture = gameObjSelected->GetComponent<Texture2D>();
+		}
 	}
+}
+
+update_status ModuleImGUI::MainMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("New Scene", "Not implemented"))
+			{
+				App->game_engine->scene->NewScene();
+			}
+			if (ImGui::MenuItem("Open Scene", "Not implemented")) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Save"))
+			{
+				if (App->game_engine->scene->currentScene.fileName != "")
+				{
+					/*App->game_engine->scene->SaveScene();*/
+				}
+				else saveasMenu = true;
+			}
+			if (ImGui::MenuItem("Save As...", "", &saveasMenu)) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Load Scene", "", &loadMenu)) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Exit", "Alt+F4")) { return UPDATE_STOP; }
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Undo", "Not implemented")) {}
+			if (ImGui::MenuItem("Redo", "Not implemented")) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Select All", "Not implemented")) {}
+			if (ImGui::MenuItem("Deselect All", "Not implemented")) {}
+			if (ImGui::MenuItem("Select Children", "Not implemented")) {}
+			if (ImGui::MenuItem("Invert Children", "Not implemented")) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Duplicate", "Not implemented")) {}
+			if (ImGui::MenuItem("Delete", "Not implemented")) {}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Play", "Play Scene")) {
+				//App->AddConsoleLog("[Editor] 'Play' Scene");
+				App->game_engine->scene->paused = false;
+			}
+			if (ImGui::MenuItem("Pause", "Pause Scene")) {
+				//App->logHistory.push_back("[Editor] 'Pause' Scene");
+				App->game_engine->scene->paused = true;
+			}
+			if (ImGui::MenuItem("Step", "Step Scene")) {
+				//App->logHistory.push_back("[Editor] 'Step' Scene");
+				App->game_engine->scene->step = true;
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Settings", "Display, Controls, Renderer, System")) { options = true; }
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Debug"))
+		{
+			if (ImGui::MenuItem("Camera Debug")) camDebug = true;
+			if (ImGui::MenuItem("RayCast Debug")) App->game_engine->renderer3D_engine->debugRayCast = !App->game_engine->renderer3D_engine->debugRayCast;
+			if (ImGui::MenuItem("Bounding Boxes Debug")) App->game_engine->scene->bboxDebug = !App->game_engine->scene->bboxDebug;
+			if (ImGui::MenuItem("Demo window")) demo = true;
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Window")) {
+			if (ImGui::BeginMenu("Menus")) {
+				ImGui::MenuItem("Assets", "", &assetsWindow);
+				ImGui::MenuItem("Hierarchy", "", &hierarchy);
+				ImGui::MenuItem("Inspector", "", &inspector);
+				ImGui::MenuItem("File Explorer", "", &fileExplorer);
+				ImGui::MenuItem("Console Log", "", &logWindow);
+				ImGui::MenuItem("FPS Graph", "", &FPSgraph);
+				ImGui::EndMenu();
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Toggle DockSpace", "", &dockSpaceEnabled)) dockSpaceEnabled = !dockSpaceEnabled;
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("GameObjects")) {
+			if (ImGui::BeginMenu("Create...")) {
+				if (ImGui::MenuItem("Create Empty")) { App->game_engine->scene->addGameObject(); }
+				if (ImGui::MenuItem("Plane", "Not implemented")) {}
+				if (ImGui::MenuItem("Cube")) { Cube cube; App->game_engine->scene->addGameObject(&cube); }
+				if (ImGui::MenuItem("Pyramid")) { Pyramid pyramid; App->game_engine->scene->addGameObject(&pyramid); }
+				if (ImGui::MenuItem("Sphere", "Not implemented")) {}
+				if (ImGui::MenuItem("Cylinder", "Not implemented")) {}
+				if (ImGui::MenuItem("Cone")) { Cone cone(16); App->game_engine->scene->addGameObject(&cone); }
+				if (ImGui::MenuItem("Torus", "Not implemented")) {}
+				ImGui::EndMenu();
+			}
+			if (ImGui::MenuItem("Draw Mode")) {}
+			/*if (ImGui::MenuItem("Add Component Camera"))
+			{
+				if (gameObjSelected)
+				{
+					Camera newCam(gameObjSelected);
+					gameObjSelected->AddComponent<Camera>(newCam);
+					gameObjSelected->GetComponent<Camera>()->clippingPlaneViewFar = 10;
+				}
+			}*/
+			GameObjectOptions();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("About...")) about = true;
+			ImGui::Separator();
+			if (ImGui::MenuItem("Check releases...")) { OsOpenInShell("https://github.com/CITM-UPC/VertX-Game-Engine/releases"); }
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+
+	RenderImGUIAssetsWindow();
+
+	return UPDATE_CONTINUE;
+}
+
+void ModuleImGUI::RenderImGUIAssetsWindow()
+{
+	if (assetsWindow)
+	{
+		// Create Assets window
+		ImGui::Begin("Assets", &assetsWindow);
+
+		if (ImGui::Button("Import Local File")) {
+			std::string selectedFilePath = openFileDialog();
+
+			if (!selectedFilePath.empty()) {
+				if (copyFileToAssetsFolder(selectedFilePath)) {
+					// File import successful
+					LOG("EDITOR: File '%s' imported successfully!", selectedFilePath.c_str());
+				}
+				else {
+					// Handle the case where file import failed
+					LOG("EDITOR: ERROR while importing file '%s'", selectedFilePath);
+				}
+			}
+		}
+
+		int assetsPerRow = 5.0f;
+		float assetWidth = 150.0f;
+		float assetHeight = 20.0f;
+		//std::string currentfolderPath = "Assets";
+		float buttonPadding = 20.0f;
+		std::vector<Asset> assets;
+		DoubleClickCallback callback = DoubleClickHandler;
+
+		// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
+		std::vector<std::string> assetNames;
+
+		for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
+			assets.push_back({ entry.path().filename().string(), entry.is_directory(), false, false });
+		}
+
+		if (currentFolderPath != "Assets") {
+			if (ImGui::Button("Back")) {
+				GoBack();
+				assets.clear();
+				for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
+					assets.push_back({ entry.path().filename().string(), entry.is_directory() });
+				}
+			}
+		}
+
+		for (size_t i = 0; i < assets.size(); i++) {
+			if (i % assetsPerRow != 0) {
+				ImGui::SameLine();
+			}
+
+			ImGui::BeginGroup();
+
+			if (ImGui::Selectable(assets[i].name.c_str(), &assets[i].isSelected, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(assetWidth, assetHeight))) {
+				if (assets[i].isFolder && ImGui::IsMouseDoubleClicked(0)) {
+					callback(assets[i].name); // Trigger the callback function
+				}
+				if (!assets[i].isFolder && ImGui::IsMouseReleased(1)) {
+					assets[i].showDeletePopup = true;
+				}
+			}
+
+			if (assets[i].showDeletePopup) {
+				ImGui::OpenPopup(("DeletePopup##" + assets[i].name).c_str());
+			}
+
+			if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
+				if (ImGui::MenuItem("Delete"))
+				{
+					LOG("EDITOR: Deleting '%s' asset...", assets[i].name.c_str());
+					std::filesystem::remove(currentFolderPath + "/" + assets[i].name);
+					assets.erase(assets.begin() + i);
+					ImGui::CloseCurrentPopup();
+					break;
+				}
+				ImGui::EndPopup();
+			}
+
+			ImGui::EndGroup();
+		}
+
+		ImGui::End();
+	}
+}
+
+void ModuleImGUI::SaveAsMenu()
+{
+	ImGui::Begin("Save As", &saveasMenu);
+
+	static char nameRecipient[32];
+
+	ImGui::InputText("File Name", nameRecipient, IM_ARRAYSIZE(nameRecipient));
+
+	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && nameRecipient != "")
+	{
+		/*App->game_engine->scene->SaveAsScene(nameRecipient);
+		saveasMenu = false;*/
+	}
+
+	ImGui::End();
+}
+
+void ModuleImGUI::LoadSceneMenu()
+{
+	ImGui::Begin("Load", &loadMenu);
+
+	static char nameRecipient[32];
+
+	ImGui::InputText("File Name", nameRecipient, IM_ARRAYSIZE(nameRecipient));
+
+	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && nameRecipient != "")
+	{
+		gameObjSelected = nullptr;
+
+		string path = "Assets/";
+		path += nameRecipient;
+		path += ".mdng";
+
+		/*App->game_engine->scene->LoadScene(path);*/
+		loadMenu = false;
+	}
+	ImGui::End();
 }
 
 void ModuleImGUI::GameObjectOptions()
@@ -447,6 +588,20 @@ void ModuleImGUI::GameObjectOptions()
 	{
 		reparentThis = true;
 		reparentTo = false;
+	}
+	if (ImGui::MenuItem("Delete", "Remove GameObject", a, goIsSelected))
+	{
+		if (gameObjSelected->parent == nullptr)
+		{
+			App->game_engine->scene->removeGameObject(gameObjSelected);
+		}
+		else
+		{
+			auto parent = gameObjSelected->parent;
+			parent->removeChild(gameObjSelected);
+		}
+
+		gameObjSelected = nullptr;
 	}
 }
 
@@ -485,909 +640,565 @@ void ModuleImGUI::ReparentMenu()
 			if (adopter != nullptr && orphan != nullptr)
 			{
 				orphan->Move(adopter, orphan->parent->childs);
+				//App->logHistory.push_back("Moved " + orphan->name + " to " + adopter->name);
+			}
+			else
+			{
+				//App->logHistory.push_back("ERROR: Select both GameObjects in order to Reparent");
 			}
 		}
 		else
 		{
 			if (adopter != nullptr && orphan != nullptr)
 			{
-				orphan->Move(adopter, App->game_engine->scene->gameObjectList);
+				orphan->Move(adopter, App->game_engine->scene->currentScene.gameObjectList);
+				//App->logHistory.push_back("Moved " + orphan->name + " to " + adopter->name);
+			}
+			else
+			{
+				//App->logHistory.push_back("ERROR: Select both GameObjects in order to Reparent");
 			}
 		}
 	}
 	ImGui::End();
 }
 
-
-void ModuleImGUI::RenderFPSGraph()
+void ModuleImGUI::FPSGraphWindow()
 {
-	/* FPS GRAPH */
-	static float fps_values[100] = {}; // Store FPS values
-	static int fps_index = 0;
-	
-	if(App->game_engine->renderer3D_engine->vsync)
-		fps_values[fps_index] = ImGui::GetIO().Framerate; 
-	else
-		fps_values[fps_index] = (ImGui::GetIO().Framerate / 2);	 // Idk why but this function detects the frame rate x2, while the delta time is correct 
-
-	fps_index = (fps_index + 1) % 100;
-	// Plot FPS graph
-	ImGui::PlotHistogram("", fps_values, 100, fps_index, "FPS", 0.0f, 175.0f, ImVec2(300, 100));
-	
-	/* DT GRAPH */
-	static float dt_values[100] = {}; // Store dt values
-	static int dt_index = 0;
-	if(App->game_engine->renderer3D_engine->vsync)
-		dt_values[dt_index] = (1000/ ImGui::GetIO().Framerate);
-	else
-		dt_values[dt_index] = App->frameDuration;
-
-	dt_index = (dt_index + 1) % 100;
-	// Plot Delta Time graph
-	ImGui::PlotHistogram("", dt_values, 100, dt_index, "Delta Time (ms)", 0.0f, 100.0f, ImVec2(300, 100));
-}
-
-
-void ModuleImGUI::RenderImGUIAboutWindow()
-{
-	if (aboutWindow) 
-	{
-		ImGui::SetNextWindowSize(ImVec2(600, 545));
-		ImGui::Begin("About", &aboutWindow);
-
-		ImGui::Text("VertX Game Engine v0.1\n");
-		ImGui::Text("Made by Rylan Graham & Adria Pons\n");
-
-		ImGui::Text("\nThese are the 3rd party libraries used to make this project:");
-		ImGui::BulletText("SDL 2.28.4");
-		ImGui::BulletText("OpenGL 3.3.0");
-		ImGui::BulletText("Glew 2.2.0");
-		ImGui::BulletText("GLM 0.9.8");
-		ImGui::BulletText("Dear ImGui 1.89.9");
-		ImGui::BulletText("Assimp 5.3.1");
-		ImGui::BulletText("DevIL 1.8.0");
-		ImGui::BulletText("JsonCPP 1.9.5");
-
-		ImGui::Text("\nLICENCE:\n");
-
-		ImGui::Text("MIT Licence\n");
-
-		ImGui::Text("Copyright (c) 2023 Adria Pons & Rylan Graham - VertX Game Engine\n");
-		ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the 'Software'), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n");
-		ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.");
-		ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n");
-
-		ImGui::End();
-	}
-}
-
-void ModuleImGUI::RenderImGUIConfigWindow()
-{
-	if (configWindow)
-	{
-		ImGui::Begin("Configuration", &configWindow);
-
-		if (ImGui::CollapsingHeader("Application"))
-		{
-			ImGui::SeparatorText("Application name:");
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), TITLE);
-			
-			ImGui::SeparatorText("Organization:");
-			ImGui::TextColored(ImVec4(0, 1, 1, 1), "UPC CITM");
-
-			ImGui::SeparatorText("Developers:");
-			ImGui::TextColored(ImVec4(1, 0, 1, 1), "Adria Pons & Rylan Graham");
-
-		}
-
-		if (ImGui::CollapsingHeader("Window"))
-		{
-			// Window parameters sliders
-			if (ImGui::Checkbox("Fullscreen", &App->window->fullscreenEnabled))
-				LOG("EDITOR: Fullscreen option is [ %s ]", App->window->fullscreenEnabled ? "ON" : "OFF");
-			ImGui::SameLine();
-			if(ImGui::Checkbox("Fullcreen Desktop", &App->window->fullcreenDesktopEnabled))
-				LOG("EDITOR: Fullscreen Desktop option is [ %s ]", App->window->fullcreenDesktopEnabled ? "ON" : "OFF");
-			
-			if(ImGui::Checkbox("Borderless", &App->window->borderlessEnabled))
-				LOG("EDITOR: Borderless option is [ %s ]", App->window->borderlessEnabled ? "ON" : "OFF");
-			ImGui::SameLine();
-			if(ImGui::Checkbox("Resizeable", &App->window->resizableEnabled))
-				LOG("EDITOR: Resizeable option is [ %s ]", App->window->resizableEnabled ? "ON" : "OFF");
-
-			// Vsync toggle checkbox
-			if (ImGui::Checkbox("Vertical Syncronization", &App->game_engine->renderer3D_engine->vsync))
-				LOG("EDITOR: VSync is [ %s ]", App->game_engine->renderer3D_engine->vsync ? "ON" : "OFF");
-
-			ImGui::Separator();
-
-			// Window Size Sliders (width)
-			if (ImGui::SliderInt("Window width", &App->game_engine->renderer3D_engine->screen_width, 1, 1600))
-			{
-				SDL_SetWindowSize(App->window->window, App->game_engine->renderer3D_engine->screen_width, App->game_engine->renderer3D_engine->screen_height);
-			}
-			ToolTipMessage("CTRL+Click to input a value");
-
-			// Window Size Sliders (height)
-			if (ImGui::SliderInt("Window height", &App->game_engine->renderer3D_engine->screen_height, 1, 900))
-			{
-				SDL_SetWindowSize(App->window->window, App->game_engine->renderer3D_engine->screen_width, App->game_engine->renderer3D_engine->screen_height);
-			}
-			ToolTipMessage("CTRL+Click to input a value");
-
-			// Brightness slider
-			if (ImGui::SliderFloat("Window Brightness", &App->window->windowBrightness, 0.0f, 1.0f))
-			{
-				SDL_SetWindowBrightness(App->window->window, App->window->windowBrightness);
-			}
-			ToolTipMessage("CTRL+Click to input a value");
-
-			ImGui::Separator();
-
-			// FPS slider
-			if (!App->game_engine->renderer3D_engine->vsync)
-			{
-				ImGui::SliderInt("Frame Rate cap", &App->fps, 1, 144);
-				ToolTipMessage("CTRL+Click to input a value");
-			}
-
-			// FPS graph
-			RenderFPSGraph();
-		}
-		
-		if (ImGui::CollapsingHeader("Renderer"))
-		{
-			ImGui::BulletText("OpenGL Renderer Parameters:");
-
-			if (ImGui::Checkbox("Depth Test", &App->game_engine->renderer3D_engine->glDepthTestIsEnabled))
-			{
-				LOG("ENGINE: 'Depth Test' render option is [ %s ]", App->game_engine->renderer3D_engine->glDepthTestIsEnabled ? "ON" : "OFF");
-			}
-			if (ImGui::Checkbox("Cull Face", &App->game_engine->renderer3D_engine->glCullFaceIsEnabled))
-			{
-				LOG("ENGINE: 'Cull Face' render option is [ %s ]", App->game_engine->renderer3D_engine->glCullFaceIsEnabled ? "ON" : "OFF");
-			}
-			if (ImGui::Checkbox("Color Material", &App->game_engine->renderer3D_engine->glColorMaterialIsEnabled))
-			{
-				LOG("ENGINE: 'Color Material' render option is [ %s ]", App->game_engine->renderer3D_engine->glColorMaterialIsEnabled ? "ON" : "OFF");
-			}
-			if (ImGui::Checkbox("Lighting", &App->game_engine->renderer3D_engine->glLightingIsEnabled)) 
-			{
-				LOG("ENGINE: 'Lighting' render option is [ %s ]", App->game_engine->renderer3D_engine->glLightingIsEnabled ? "ON" : "OFF");
-			}
-		}
-
-		if (ImGui::CollapsingHeader("Hardware"))
-		{
-			/* CPU Info*/
-			// Display System's CPU cores
-			ImGui::Text("CPUs: ");
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%d cores", SDL_GetCPUCount());
-
-			ImGui::Text("CPU Cache Line Size: ");
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%d bytes", SDL_GetCPUCacheLineSize());
-
-			// Display System's RAM
-			ImGui::Text("System RAM: ");
-			ImGui::SameLine();
-			float systemRAM = (SDL_GetSystemRAM() / 1000);	// Get system RAM (in gb)
-			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%.2f GB", systemRAM);
-
-			ImGui::Separator();
-
-			/* GPU Info */
-			const GLubyte* gpuName = glGetString(GL_RENDERER);
-			ImGui::Text("GPU Name: ");
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", gpuName);
-			
-			const GLubyte* gpuVendor = glGetString(GL_VENDOR);
-			ImGui::Text("GPU Vendor: ");
-			ImGui::SameLine();
-			ImGui::TextColored(ImVec4(1, 1, 0, 0.75), "%s", gpuVendor);
-
-		}
-
-		ImGui::End();
-	}
-}
-
-void ModuleImGUI::RenderImGUICameraInspectorWindow()
-{
-	if (cameraInspectorWindow)
-	{
-		// Create Camera Inspector window
-		ImGui::Begin("Camera Inspector", &cameraInspectorWindow);
-
-		// Camera Speed slider
-		ImGui::Text("Camera Speed: ");
-		float cameraSpeedChanger = App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeed;
-		if (ImGui::SliderFloat("##CamSpeed", &cameraSpeedChanger, 0.01, 2.0f, "%.2f"))
-		{
-			App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeed = cameraSpeedChanger;
-		}
-		ToolTipMessage("CTRL+Click to input a value");
-
-		// Camera Speed Multiplier slider
-		ImGui::Text("Camera Speed Multiplier: ");
-		ImGui::SliderFloat("##CamSpeedMult", &App->game_engine->cameraGO.GetComponent<Camera>()->cameraSpeedMultiplier, 1.0f, 5.0f, "%.2f");
-		ToolTipMessage("CTRL+Click to input a value");
-
-		//--------------------------------------------
-
-		// Camera Mouse Sensitivity slider
-		ImGui::Separator();
-		ImGui::Text("Camera Mouse Sensitivity: ");
-		ImGui::SliderFloat("##CamMouseSens", &App->game_engine->cameraGO.GetComponent<Camera>()->mouseSensitivity, 0.01f, 1.0f, "%.2f");
-		ToolTipMessage("CTRL+Click to input a value");
-
-		ImGui::SeparatorText("Mouse Parameters");
-		ImGui::BulletText("X Position: %d", App->input->GetMouseX());	ImGui::SameLine();	ImGui::BulletText("X Motion: %d", App->input->GetMouseXMotion());
-		ImGui::BulletText("Y Position: %d", App->input->GetMouseY());	ImGui::SameLine();	ImGui::BulletText("Y Motion: %d", App->input->GetMouseYMotion());
-		
-		//--------------------------------------------
-
-		ImGui::Separator();
-		ImGui::SeparatorText("Camera Parameters");
-		ImGui::PushItemWidth(60.0f);	// Make components text width shorter
-
-		// Camera World Position X 
-		ImGui::BulletText("Position vector:");
-		float p1 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.x;
-		ImGui::InputFloat("##CamPosX", &p1);
-		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.x = p1;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera World Position Y
-		float p2 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.y;
-		ImGui::InputFloat("##CamPosY", &p2);
-		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.y = p2;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera World Position Z
-		float p3 = App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.z;
-		ImGui::InputFloat("##CamPosZ", &p3);
-		App->game_engine->cameraGO.GetComponent<Camera>()->worldPosVec.z = p3;
-		ToolTipMessage("Click to input a value");
-
-		//--------------------------------------------
-
-		// Camera Focus Point X 
-		ImGui::BulletText("Reference vector:");
-		float r1 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.x;
-		ImGui::InputFloat("##CamFocusX", &r1);
-		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.x = r1;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera Focus Point Y 
-		float r2 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.y;
-		ImGui::InputFloat("##CamFocusY", &r2);
-		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.y = r2;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera Focus Point Z
-		float r3 = App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.z;
-		ImGui::InputFloat("##CamFocusZ", &r3);
-		App->game_engine->cameraGO.GetComponent<Camera>()->focusPosVec.z = r3;
-		ToolTipMessage("Click to input a value");
-
-		//--------------------------------------------
-
-		// Camera Up Vector X
-		ImGui::BulletText("Up vector :");
-		float u1 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.x;
-		ImGui::InputFloat("##CamUpX", &u1);
-		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.x = u1;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera Focus Point Y 
-		float u2 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.y;
-		ImGui::InputFloat("##CamUpY", &u2);
-		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.y = u2;
-		ToolTipMessage("Click to input a value");
-
-		ImGui::SameLine();
-
-		// Camera Focus Point Z
-		float u3 = App->game_engine->cameraGO.GetComponent<Camera>()->upVec.z;
-		ImGui::InputFloat("##CamUpZ", &u3);
-		App->game_engine->cameraGO.GetComponent<Camera>()->upVec.z = u3;
-		ToolTipMessage("Click to input a value");
-
-		//--------------------------------------------
-
-		ImGui::PopItemWidth();
-
-		/* --- Camera Frustum Culling parameters --- */
-		ImGui::SeparatorText("Camera Frustum Culling");
-
-		// FOV slider
-		ImGui::Text("Field Of View (FOV): ");
-		float fov = App->game_engine->cameraGO.GetComponent<Camera>()->fov;
-		if (ImGui::SliderFloat("##fov", &fov, 30.0f, 120.0f, "%.0f"))
-		{
-			App->game_engine->cameraGO.GetComponent<Camera>()->fov = fov;
-		}
-		ToolTipMessage("CTRL+Click to input a value");
-
-		// zNear Clipping View Plane slider
-		ImGui::Text("Z-Near Clipping Plane distance: ");
-		float zNear = App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear;
-		if (ImGui::SliderFloat("##zNear", &zNear, 0.1f, 1000.0f, "%.1f"))
-		{
-			App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear = zNear;
-		}
-		ToolTipMessage("CTRL+Click to input a value");
-
-		// zFar Clipping View Plane slider
-		ImGui::Text("Z-Far Clipping Plane distance: ");
-		float zFar = App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewFar;
-		if (ImGui::SliderFloat("##zFar", &zFar, 0.1f, 1000.0f, "%.1f"))
-		{
-			App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewFar = zFar;
-		}
-		ToolTipMessage("CTRL+Click to input a value");
-
-		// Display Camera Yaw value
-		ImGui::BulletText("Camera Yaw:");
-		ImGui::SameLine();
-		ImGui::TextWrapped("%.1f", App->game_engine->cameraGO.GetComponent<Camera>()->cameraYaw);
-
-		ImGui::SameLine();
-
-		// Display Camera Pitch value
-		ImGui::BulletText("Camera Pitch:");
-		ImGui::SameLine();
-		ImGui::TextWrapped("%.1f", App->game_engine->cameraGO.GetComponent<Camera>()->cameraPitch);
-
-		// ------------------------------
-
-		// Button to reset camera to initial position
-		if (ImGui::Button("RESET CAMERA PARAMETERS", ImVec2(175, 25)))
-			App->game_engine->cameraGO.GetComponent<Camera>()->ResetCameraParameters();
-	}
-}
-
-
-void ModuleImGUI::RenderImGUIAssetsWindow()
-{
-	if (assetsWindow)
-	{
-		// Create Assets window
-		ImGui::Begin("Assets", &assetsWindow);
-		
-		if (ImGui::Button("Import Local File")) {
-			std::string selectedFilePath = openFileDialog();
-
-			if (!selectedFilePath.empty()) {
-				if (copyFileToAssetsFolder(selectedFilePath)) {
-					// File import successful
-					LOG("EDITOR: File '%s' imported successfully!", selectedFilePath.c_str());
-				}
-				else {
-					// Handle the case where file import failed
-					LOG("EDITOR: ERROR while importing file '%s'", selectedFilePath);
-				}
-			}
-		}
-
-			int assetsPerRow = 5.0f;
-			float assetWidth = 150.0f;
-			float assetHeight = 20.0f;
-			//std::string currentfolderPath = "Assets";
-			float buttonPadding = 20.0f;
-			std::vector<Asset> assets;
-			DoubleClickCallback callback = DoubleClickHandler;
-
-			// Use std::filesystem (C++17 and later) or std::experimental::filesystem (C++14) to list files.
-			std::vector<std::string> assetNames;
-
-			for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
-				assets.push_back({ entry.path().filename().string(), entry.is_directory(), false, false });
-			}
-
-			if (currentFolderPath != "Assets") {
-				if (ImGui::Button("Back")) {
-					GoBack();
-					assets.clear();
-					for (const auto& entry : std::filesystem::directory_iterator(currentFolderPath)) {
-						assets.push_back({ entry.path().filename().string(), entry.is_directory() });
-					}
-				}
-			}
-
-			for (size_t i = 0; i < assets.size(); i++) {
-            if (i % assetsPerRow != 0) {
-                ImGui::SameLine();
-            }
-
-            ImGui::BeginGroup();
-
-            if (ImGui::Selectable(assets[i].name.c_str(), &assets[i].isSelected, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(assetWidth, assetHeight))) {
-				if (assets[i].isFolder && ImGui::IsMouseDoubleClicked(0)) {
-					callback(assets[i].name); // Trigger the callback function
-				}
-                if (!assets[i].isFolder && ImGui::IsMouseReleased(1)) {
-                    assets[i].showDeletePopup = true;
-                }
-            }
-
-            if (assets[i].showDeletePopup) {
-                ImGui::OpenPopup(("DeletePopup##" + assets[i].name).c_str());
-            }
-
-            if (ImGui::BeginPopupContextItem(("DeletePopup##" + assets[i].name).c_str())) {
-                if (ImGui::MenuItem("Delete")) 
-				{
-					LOG("EDITOR: Deleting '%s' asset...", assets[i].name.c_str());
-                    std::filesystem::remove(currentFolderPath + "/" + assets[i].name);
-                    assets.erase(assets.begin() + i);
-                    ImGui::CloseCurrentPopup();
-                    break;
-                }
-                ImGui::EndPopup();
-            }
-
-            ImGui::EndGroup();
-        }
-
-        ImGui::End();
-	}
-}
-
-void ModuleImGUI::RenderImGUIInspectorWindow()
-{
-	if (inspectorWindow)
-	{
-		if (ImGui::Begin("Inspector", &inspectorWindow)) {
-			if (gameObjSelected != nullptr) {
-				if (gameObjSelected->name != "") {
-					ImGui::Checkbox("Active", &gameObjSelected->isActive);
-					ImGui::SameLine(); ImGui::Text("Game Object: ");
-					ImGui::SameLine(); ImGui::Text(gameObjSelected->name.c_str());
-					ImGui::SetNextItemWidth(150.0f);
-					if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-					ImGui::SameLine();
-					ImGui::SetNextItemWidth(100.0f);
-					if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-
-					ImGui::InputText("GO Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-					if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-						gameObjSelected->name = Title;
-						/*gameObject.name.push_back(Title);*/
-					}
-
-					//Grab Components and set in for allows for constant polling 
-					//Mesh Menu - Creation of Mesh pointer to component to call Texture methods etc
-					for (auto& component : *gameObjSelected->GetComponents()) {
-						bool deleteButtonPressed = false;
-						if (component.get()->getType() == Component::Type::TRANSFORM) {
-							Transform* transform = dynamic_cast<Transform*>(component.get());
-							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-							if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
-							{
-								ImGui::PushItemWidth(60.0f);
-								ImGui::BulletText("Position");
-								ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
-								ImGui::SameLine();
-								ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
-								ImGui::SameLine();
-								ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
-
-								ImGui::BulletText("Rotation");
-								if(ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-								ImGui::SameLine();
-								if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-								ImGui::SameLine();
-								if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-
-								ImGui::BulletText("Scale");
-								if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-								ImGui::SameLine();
-								if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-								ImGui::SameLine();
-								if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-
-								if (ImGui::Button("Reset Transforms")) 
-								{ 
-									transform->_position = vec3(0.0, 0.0, 0.0);
-
-									transform->_rotation = vec3(0.0, 0.0, 0.0);
-									transform->RotateTo(transform->_rotation);
-
-									transform->_scale = vec3(1.0, 1.0, 1.0);
-									transform->Scale(transform->_scale);
-								}
-								ImGui::PopItemWidth();
-							}
-						}
-						//Mesh Menu - Creation of  pointer to component to call Mesh methods etc
-						if (component.get()->getType() == Component::Type::MESH) {
-							Mesh* mesh = dynamic_cast<Mesh*>(component.get());
-							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-							if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
-							{
-								if (ImGui::Checkbox("Draw", &mesh->meshIsDrawed)) {
-									LOG("ENGINE: '%s' mesh is [ %s ]", mesh->getName().c_str(), mesh->meshIsDrawed ? "ACTIVE" : "INACTIVE");
-								}
-								ImGui::SameLine();
-								ImGui::Text("  File name:");
-								ImGui::SameLine();
-								ImGui::TextColored(ImVec4(1, 1, 0, 1), mesh->getName().c_str());
-								ImGui::Separator();
-
-								ImGui::Text("File path: ");
-								ImGui::SameLine();
-								ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Assets/%s", mesh->getName().c_str());
-
-								ImGui::Separator();
-								ImGui::Text("Indexes: ");
-								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
-								ImGui::SameLine();
-								ImGui::Text("Vertexs: ");
-								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
-
-								ImGui::Text("Normals: ");
-								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
-								ImGui::SameLine();
-								ImGui::Text("Faces: ");
-								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
-								ImGui::Text("Tex coords: ");
-								ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumTexCoords()).c_str());
-								ImGui::Separator();
-								if (ImGui::Checkbox("Use Texture", &mesh->usingTexture)) {
-									(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
-								}
-								ImGui::Checkbox("Use Checker Texture", &mesh->useChecker);
-								ImGui::SameLine(); ImGui::TextColored({ 0.5f, 0.5f, 0.5f, 1.0f }, "(?)");
-								if (ImGui::IsItemHovered()) {
-									ImGui::SetTooltip("Use Texture must be checked in order to see the checker texture.");
-								}
-								ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-								if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_None)) {
-									if (ImGui::Checkbox("View Vertex Normals", &mesh->drawVertexNormals))
-										LOG("ENGINE: '%s' vertex normals are [ %s ]", mesh->getName().c_str(), mesh->drawVertexNormals ? "ON" : "OFF");
-										ImGui::SameLine();
-									if (ImGui::Checkbox("View Face Normals", &mesh->drawFaceNormals))
-										LOG("ENGINE: '%s' face normals are [ %s ]", mesh->getName().c_str(), mesh->drawFaceNormals ? "ON" : "OFF");
-
-										ImGui::SliderFloat("Normals Lenghts", &mesh->normalsLength, 0.1f, 20.0f);
-								}
-							}
-						}
-						//Texture Menu - Creation of Texture pointer to component to call Texture methods etc
-						if (component.get()->getType() == Component::Type::TEXTURE2D) {
-							ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-							Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
-							if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
-							{
-								//ImGui::Checkbox("Active", &texture2D->isActive);
-								if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-								if (ImGui::BeginCombo("Rendering Mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-								ImGui::Separator();
-								ImGui::Text("File path: ");
-								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
-								ImGui::Text("Texture size");
-								ImGui::BulletText("Height: ");
-								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
-								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, "px");
-								ImGui::BulletText("Width: ");
-								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
-								ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, "px");
-							}
-						}
-
-					}
-				}
-			}
-			ImGui::End();
-		}
-	}
-}
-
-void ModuleImGUI::RenderImGUIDebugLogWindow()
-{
-	if (imGuiDebugLogWindow)
-	{
-		ImGui::ShowDebugLogWindow(&imGuiDebugLogWindow);
-	}
+	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGui::Begin("FPS Graph", &FPSgraph, flags);
+
+	std::stringstream sStream;
+	sStream << "Average FPS: " << App->fpsHistory[App->fpsHistory.size() - 1];
+	string title = sStream.str();
+
+	ImGui::Text("FPS lines graph");
+	ImGui::PlotLines("", &App->fpsHistory[0], App->fpsHistory.size(), 0, title.c_str(), 1.0f, 100.0f, { 325, 100 });
+	ImGui::Separator();
+	ImGui::Text("FPS histogram");
+	ImGui::PlotHistogram("", &App->fpsHistory[0], App->fpsHistory.size(), 0, title.c_str(), 1.0f, 100.0f, { 325, 100 });
+	ImGui::End();
 }
 
 void ModuleImGUI::HierarchyRecursive(GameObject* gO)
 {
 	ImGuiTreeNodeFlags TreeNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
-	if (gO->childs.empty()) TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
-	if (gameObjSelected == gO) TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
-
-	ImGui::PushID(gO); // Push a unique identifier for this TreeNode
-
-	// Add a delete button for parent objects with children
-	if (!gO->parent && !gO->childs.empty())
-	{
-		// Delete button for all parent childs
-		if (ImGui::Button(" X "))
-		{
-			LOG("EDITOR: Deleting '%s' game object...", gO->name.c_str());
-
-			gameObjSelected = nullptr;
-			gO->childs.clear();
-			gO->name = "GameObject";
-		}
-		ImGui::SameLine(); // Move the cursor to the same line as the button
-	}
+	if (gO->childs.empty())		TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
+	if (gameObjSelected == gO)	TreeNodeFlags |= ImGuiTreeNodeFlags_Selected;
 
 	bool isOpen = ImGui::TreeNodeEx(gO->name.c_str(), TreeNodeFlags);
 
-	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-	{
-		gameObjSelected = gO;
-	}
+	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())	gameObjSelected = gO;
 
 	if (isOpen)
 	{
-		auto childIt = gO->childs.begin();
-		while (childIt != gO->childs.end())
+		for (auto& child : gO->childs)
 		{
-			ImGui::PushID((*childIt).get()); // Push a unique identifier for this child
-
-			// Delete button for childs
-			if (ImGui::Button(" X "))
-			{
-				LOG("EDITOR: Deleting '%s's' child...", gO->name.c_str());
-				
-				gameObjSelected = nullptr;
-
-				// Erase the corresponding child
-				childIt = gO->childs.erase(childIt);
-				continue; // Skip the rendering of this child since it's erased
-			}
-
-			ImGui::SameLine(); // Move the cursor to the same line as the button
-			HierarchyRecursive((*childIt).get());
-
-			ImGui::PopID(); // Pop the unique identifier for this child
-			++childIt;
+			HierarchyRecursive(child.get());
 		}
 		ImGui::TreePop();
 	}
-
-	ImGui::PopID(); // Pop the unique identifier for this TreeNode
 }
 
-
-
-void ModuleImGUI::RenderImGUIHierarchyWindow()
+void ModuleImGUI::HierarchyWindow()
 {
-	if (hierarchyWindow)
+	ImGui::Begin("Hierarchy", &hierarchy);
+	for (const auto& gOparentPtr : App->game_engine->scene->currentScene.gameObjectList)
 	{
-		ImGui::Begin("Hierarchy", &hierarchyWindow);
-
-		if (ImGui::Button("Create Empty"))
-		{
-			App->game_engine->scene->addEmptyGameObject();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Delete All GameObjects"))
-		{
-			gameObjSelected = nullptr;
-			App->game_engine->scene->gameObjectList.clear();
-		}
-
-		ImGui::Separator();
-		
-		for (const auto& gOparentPtr : App->game_engine->scene->gameObjectList)
-		{
-			HierarchyRecursive(gOparentPtr.get());
-		}
-		ImGui::End();
+		HierarchyRecursive(gOparentPtr.get());
 	}
+	ImGui::EndMenu();
 }
 
-void ModuleImGUI::GeneratePrimitives()
+void ModuleImGUI::InspectorWindow()
 {
-	if (ImGui::BeginMenu("GameObject"))
-	{
-		if (ImGui::Button("Import Local File")) {
-			std::string selectedFilePath = openFileDialog();
+	ImGui::Begin("Inspector", &inspector);
+	if (gameObjSelected != nullptr) {
+		if (gameObjSelected->name != "") {
+			char Title[256];
+			strncpy_s(Title, gameObjSelected->name.c_str(), sizeof(Title));
+			Title[sizeof(Title) - 1] = '\0';
+			ImGui::Checkbox("Active", &gameObjSelected->isActive);
+			ImGui::SameLine(); ImGui::InputText("Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::SameLine(); ImGui::TextColored({ 0.144f, 0.422f, 0.720f, 1.0f }, gameObjSelected->name.c_str());
 
-			if (!selectedFilePath.empty()) {
-				if (copyFileToAssetsFolder(selectedFilePath)) {
-					// File import successful
-					LOG("EDITOR: File '%s' imported successfully!", selectedFilePath.c_str());
+			ImGui::SetNextItemWidth(100.0f);
+			if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+
+			ImGui::SetNextItemWidth(100.0f);
+			if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+
+			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+				gameObjSelected->name = Title;
+			}
+
+			for (auto& component : *gameObjSelected->GetComponents()) {
+				if (component.get()->getType() == Component::Type::TRANSFORM) {
+					Transform* transform = dynamic_cast<Transform*>(component.get());
+					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
+					{
+						ImGui::PushItemWidth(60.0f);
+						ImGui::BulletText("Position");
+						ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
+						ImGui::SameLine();
+						ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
+						ImGui::SameLine();
+						ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
+
+						ImGui::BulletText("Rotation");
+						if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+
+						ImGui::BulletText("Scale");
+						if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+						ImGui::SameLine();
+						if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+
+						if (ImGui::Button("Reset Transforms"))
+						{
+							transform->_position = vec3(0.0, 0.0, 0.0);
+
+							transform->_rotation = vec3(0.0, 0.0, 0.0);
+							transform->RotateTo(transform->_rotation);
+
+							transform->_scale = vec3(1.0, 1.0, 1.0);
+							transform->Scale(transform->_scale);
+						}
+						ImGui::PopItemWidth();
+						}
+					}
+
+				if (component.get()->getType() == Component::Type::MESH) {
+					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
+					{
+						ImGui::Checkbox("Active", &mesh->isActive);
+						ImGui::SameLine();  ImGui::Text("Filename: ");
+						ImGui::SameLine();  ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, mesh->getName().c_str());
+						ImGui::Separator();
+						ImGui::Text("File path: ");
+						ImGui::SameLine();
+						ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Library/Meshes/%s", mesh->getName().c_str());
+						ImGui::Separator();
+						ImGui::Text("Indexes: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+						ImGui::Text("Normals: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+						ImGui::Text("Vertexs: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+						ImGui::Text("Faces: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+						ImGui::Text("Tex coords: ");
+						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumTexCoords()).c_str());
+						ImGui::Separator();
+						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture)) {
+							(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
+						}
+						ImGui::Checkbox("Use Checker Texture", &mesh->useChecker);
+						ImGui::SameLine(); ImGui::TextColored({ 0.5f, 0.5f, 0.5f, 1.0f }, "(?)");
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("Use Texture must be checked in order to see the checker texture.");
+						}
+						if (mesh->getName().find("Cube") == std::string::npos &&
+							mesh->getName().find("Pyramid") == std::string::npos &&
+							mesh->getName().find("Cone") == std::string::npos)
+						{
+							ImGui::Checkbox("Draw vertex normals", &mesh->drawVertexNormals);
+							ImGui::Checkbox("Draw face normals", &mesh->drawFaceNormals);
+						}
+					}
 				}
-				else {
-					// Handle the case where file import failed
-					LOG("EDITOR: ERROR while importing file '%s'", selectedFilePath);
+				if (component.get()->getType() == Component::Type::TEXTURE2D) {
+					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+					{
+						ImGui::Checkbox("Active", &texture2D->isActive);
+						if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+						if (ImGui::BeginCombo("Rendering mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+						ImGui::Separator();
+						ImGui::Text("File path: ");
+						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
+						ImGui::Text("Texture size");
+						ImGui::Text("Height: ");
+						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
+						ImGui::Text("Width: ");
+						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
+					}
+				}
+				if (component.get()->getType() == Component::Type::CAMERA) {
+					if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_None))
+					{
+						Camera* cam = dynamic_cast<Camera*>(component.get());
+						if (ImGui::BeginTable("", 4))
+						{
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text("");
+							ImGui::Text("Look at Position");
+
+							ImGui::TableSetColumnIndex(1);
+							ImGui::Text("X");
+							ImGui::Text(std::to_string(cam->lookAtPos.x).c_str());
+
+							ImGui::TableSetColumnIndex(2);
+							ImGui::Text("Y");
+							ImGui::Text(std::to_string(cam->lookAtPos.y).c_str());
+
+							ImGui::TableSetColumnIndex(3);
+							ImGui::Text("Z");
+							ImGui::Text(std::to_string(cam->lookAtPos.z).c_str());
+
+							ImGui::EndTable();
+						}
+						ImGui::Text("");
+						ImGui::Text("Fov: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->fov).c_str());
+						ImGui::Text("Aspect Ratio: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->aspectRatio).c_str());
+						ImGui::Text("Clipping Plane View Near: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewNear).c_str());
+						ImGui::Text("Clipping Plane View Far: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewFar).c_str());
+						ImGui::Text("Camera Offset: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->camOffset).c_str());
+					}
 				}
 			}
 		}
-
-		ImGui::SeparatorText("Primitives:");
-
-		if (ImGui::Button("Generate Cube")) {
-			LOG("EDITOR: Adding CUBE Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Cube.fbx");
-		}
-
-		if (ImGui::Button("Generate Plane")) {
-			LOG("EDITOR: Adding PLANE Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Plane.fbx");
-		}
-
-		if (ImGui::Button("Generate Pyramid")) {
-			LOG("EDITOR: Adding PYRAMID Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Pyramid.fbx");
-		}
-
-		if (ImGui::Button("Generate Sphere")) {
-			LOG("EDITOR: Adding SPHERE Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Sphere.fbx");
-		}
-
-		if (ImGui::Button("Generate Cylinder")) {
-			LOG("EDITOR: Adding CYLINDER Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Cylinder.fbx");
-		}
-
-		if (ImGui::Button("Generate Torus")) {
-			LOG("EDITOR: Adding TORUS Primitive...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Torus.fbx");
-		}
-
-		ImGui::Separator();
-
-		ImGui::SeparatorText("Prefabs:");
-
-		if (ImGui::Button("Baker House")) {
-			LOG("EDITOR: Adding BAKER HOUSE prefab...", NULL);
-			App->game_engine->scene->addGameObject("Assets/BakerHouse.fbx");
-		}
-
-		if (ImGui::Button("Medieval Bed")) {
-			LOG("EDITOR: Adding MEDIEVAL BED prefab...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Medieval_Bed.fbx");
-		}
-
-		if (ImGui::Button("Obelisque")) {
-			LOG("EDITOR: Adding OBELISQUE prefab...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Obelisque.fbx");
-		}
-
-		if (ImGui::Button("Street Environment")) {
-			LOG("EDITOR: Adding STREET ENVIRONMENT prefab...", NULL);
-			App->game_engine->scene->addGameObject("Assets/Street_Environment.fbx");
-		}
-
 		ImGui::EndMenu();
 	}
 }
 
-void ModuleImGUI::RenderImGUIConsoleWindow()
+void ModuleImGUI::LogConsoleWindow()
 {
-	if (consoleWindow)
+	ImGuiTextFilter filter;
+	ImGui::Begin("Log Console", &logWindow);
+	if (ImGui::Button("Clear")) {
+		// App->logHistory.clear(); 
+	}
+	ImGui::SameLine();
+	bool copy = ImGui::Button("Copy");
+	ImGui::SameLine(); filter.Draw("Filter", -100.0f);
+	ImGui::Separator();
+	if (ImGui::BeginPopup("Options"))
 	{
-		// Buffer to store the search query
-		static char filterInput[256] = "";
+		ImGui::Checkbox("Auto-scroll", &autoScrollLog);
+		ImGui::EndPopup();
+	}
+	if (ImGui::Button("Options")) ImGui::OpenPopup("Options");
+	ImGui::Separator();
 
-		ImGui::Begin("Console", &consoleWindow);
+	if (ImGui::BeginChild("", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
+		if (copy) ImGui::LogToClipboard();
 
-		// Display the Clear Logs button
-		if (ImGui::Button("Clear Console Logs"))
+		if (autoScrollLog && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+			ImGui::SetScrollHereY(1.0f);
+		ImGui::GetClipboardText();
+	}
+	ImGui::EndChild();
+	ImGui::End();
+}
+
+void ModuleImGUI::OptionsWindow()
+{
+	ImGui::Begin("Options Window", &options, ImGuiWindowFlags_AlwaysAutoResize);
+
+	if (ImGui::BeginTabBar("", ImGuiTabBarFlags_None))
+	{
+		if (ImGui::BeginTabItem("Display"))
 		{
-			App->ClearConsoleLogs();
+			if (ImGui::CollapsingHeader("Window")) {
+				ImGui::Text("Window size");
+				ImGui::SliderInt("Width", &App->window->width, 640, 4096, "%d");
+				ImGui::SliderInt("Height", &App->window->height, 360, 2160, "%d");
+				ImGui::Separator();
+				SDL_SetWindowSize(App->window->window, App->window->width, App->window->height);
+				ImGui::Text("Window flags");
+				ImGui::Checkbox("Fullscreen", &App->window->fullscreen);
+				ImGui::Checkbox("Borderless", &App->window->borderless);
+				ImGui::Checkbox("Resizable", &App->window->resizable);
+				SDL_SetWindowFullscreen(App->window->window, App->window->fullscreen);
+				(App->window->borderless) ? SDL_SetWindowBordered(App->window->window, SDL_FALSE) : SDL_SetWindowBordered(App->window->window, SDL_TRUE);
+				(App->window->resizable) ? SDL_SetWindowResizable(App->window->window, SDL_TRUE) : SDL_SetWindowResizable(App->window->window, SDL_FALSE);
+			}
+			if (ImGui::CollapsingHeader("Framerate")) {
+				ImGui::Checkbox("VSync", &App->renderer->vsync);
+				SDL_GL_SetSwapInterval(App->renderer->vsync);
+				string textToShow = "Resfresh rate: " + to_string(App->fpsHistory[0]);
+				ImGui::Text(textToShow.c_str());
+				ImGui::SliderInt("Target FPS", &App->targetFPS, 30, 240, "%d");
+				App->frameDurationTime = 1.0s / App->targetFPS;
+			}
+
+			ImGui::EndTabItem();
 		}
-
-		ImGui::SameLine();
-
-		// Search bar for filtering logs
-		ImGui::InputText("Search", filterInput, IM_ARRAYSIZE(filterInput));
-
-		ImGui::Separator();
-
-		ImGui::BeginChild("Logs Region", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-		std::vector<std::string> logs = App->GetConsoleLogs();
-
-		// Convert the search query to lowercase for case-insensitive comparison
-		std::string filterQuery = filterInput;
-		std::transform(filterQuery.begin(), filterQuery.end(), filterQuery.begin(), ::tolower);
-
-		for (auto i = logs.begin(); i != logs.end(); ++i)
+		if (ImGui::BeginTabItem("Controls"))
 		{
-			// Convert the log text to lowercase for case-insensitive comparison
-			std::string logText = *i;
-			std::transform(logText.begin(), logText.end(), logText.begin(), ::tolower);
+			if (ImGui::CollapsingHeader("Mouse information")) {
+				ImGui::Text("Mouse X position: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.720f, 0.691f, 0.144f, 1.0f }, to_string(App->input->GetMouseX()).c_str());
 
-			// If the search string is empty or the log contains the search string, display it
-			if (filterQuery.empty() || logText.find(filterQuery) != std::string::npos)
-			{
-				ImGui::TextUnformatted((*i).c_str());
+				ImGui::Text("Mouse Y position: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.720f, 0.691f, 0.144f, 1.0f }, to_string(App->input->GetMouseY()).c_str());
+
+				ImGui::Text("Mouse X motion: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.720f, 0.691f, 0.144f, 1.0f }, to_string(App->input->GetMouseXMotion()).c_str());
+
+				ImGui::Text("Mouse Y motion: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.720f, 0.691f, 0.144f, 1.0f }, to_string(App->input->GetMouseYMotion()).c_str());
+			}
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Renderer"))
+		{
+			ImGui::Text("OpenGL flags:");
+
+			ImGui::Bullet(); ImGui::Text("General:");
+			if (ImGui::Checkbox("Depth Test", &App->game_engine->renderer3D_engine->depth_test)) {
+				App->game_engine->renderer3D_engine->SwapDepthTest();
+			};
+			ImGui::SameLine(); if (ImGui::Checkbox("Cull Face", &App->game_engine->renderer3D_engine->cull_face)) {
+				App->game_engine->renderer3D_engine->SwapCullFace();
+			};
+			ImGui::SameLine(); if (ImGui::Checkbox("Lighting", &App->game_engine->renderer3D_engine->lighting)) {
+				App->game_engine->renderer3D_engine->SwapLighting();
+			};
+
+			ImGui::Bullet(); ImGui::Text("Points & lines:");
+			if (ImGui::Checkbox("Line Smooth", &App->game_engine->renderer3D_engine->line_smooth)) {
+				App->game_engine->renderer3D_engine->SwapLineSmooth();
+			};
+
+			ImGui::Bullet(); ImGui::Text("Polygon:");
+			if (ImGui::Checkbox("Polygon Smooth", &App->game_engine->renderer3D_engine->polygon_smooth)) {
+				App->game_engine->renderer3D_engine->SwapPolygonSmooth();
+			};
+
+			ImGui::Bullet(); ImGui::Text("Color:");
+			if (ImGui::Checkbox("Color Material", &App->game_engine->renderer3D_engine->color_material)) {
+				App->game_engine->renderer3D_engine->SwapColorMaterial();
+			};
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("System"))
+		{
+			if (ImGui::CollapsingHeader("Software")) {
+				ImGui::Text("SDL:");
+				ImGui::Bullet(); ImGui::Text("Compiled: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.352f, 0.386f, 0.750f, 1.0f }, info.sdl_version_compiled.c_str());
+				ImGui::Bullet(); ImGui::Text("Linked: ");
+				ImGui::SameLine(); ImGui::TextColored({ 0.352f, 0.386f, 0.750f, 1.0f }, info.sdl_version_linked.c_str());
+				ImGui::Text("OpenGL:");
+				ImGui::Bullet(); ImGui::TextColored({ 0.719f, 0.735f, 0.910f, 1.0f }, info.gl_version.c_str());
+				ImGui::Text("DevIL:");
+				ImGui::Bullet(); ImGui::TextColored({ 0.610f, 0.0488f, 0.142f, 1.0f }, info.devil_version.c_str());
+			}
+			if (ImGui::CollapsingHeader("Hardware")) {
+				ImGui::Text("GPU Information:");
+				std::string textToShow = "GPU: " + info.Gpu;
+				ImGui::Bullet(); ImGui::TextColored({ 0.2f, 1.0f, 0.0f, 1.0f }, textToShow.c_str());
+
+				textToShow = "Vendor: " + info.GpuVendor;
+				ImGui::Bullet(); ImGui::TextColored({ 0.2f, 1.0f, 0.0f, 1.0f }, textToShow.c_str());
+
+				textToShow = "Driver: " + info.GpuDriver;
+				ImGui::Bullet(); ImGui::TextColored({ 0.2f, 1.0f, 0.0f, 1.0f }, textToShow.c_str());
+
+				ImGui::Separator();
+
+				ImGui::Text("VRAM Information:");
+				textToShow = "Budget: " + std::to_string(info.vram_mb_budget) + " mb";
+				ImGui::Bullet(); ImGui::TextColored({ 0.0504f, 0.720f, 0.642f, 1.0f }, textToShow.c_str());
+
+				textToShow = "Usage: " + std::to_string(info.vram_mb_usage) + " mb";
+				ImGui::Bullet(); ImGui::TextColored({ 0.0504f, 0.720f, 0.642f, 1.0f }, textToShow.c_str());
+
+				textToShow = "Available: " + std::to_string(info.vram_mb_available) + " mb";
+				ImGui::Bullet(); ImGui::TextColored({ 0.0504f, 0.720f, 0.642f, 1.0f }, textToShow.c_str());
+
+				ImGui::Separator();
+
+				ImGui::Text("CPU Information:");
+
+				textToShow = "CPU Cores: " + std::to_string(info.cpu_count);
+				ImGui::Bullet(); ImGui::TextColored({ 0.890f, 0.876f, 0.0356f, 1.0f }, textToShow.c_str());
+
+				textToShow = "CPU cache line size: " + std::to_string(info.l1_cachekb);
+				ImGui::Bullet(); ImGui::TextColored({ 0.890f, 0.876f, 0.0356f, 1.0f }, textToShow.c_str());
 			}
 		}
+		ImGui::EndTabBar();
+	}
 
-		// Scroll to the bottom to display the latest logs
-		ImGui::SetScrollHereY(1.0f);
+	ImGui::End();
+}
 
-		ImGui::EndChild();
-		ImGui::End();
+void ModuleImGUI::CamDebugWindow()
+{
+	ImGui::Begin("Cam Debug", &camDebug);
+	ImGui::Text("Camera Position x: %f", App->game_engine->cameraGO.GetComponent<Transform>()->position().x);
+	ImGui::Text("Camera Position y: %f", App->game_engine->cameraGO.GetComponent<Transform>()->position().y);
+	ImGui::Text("Camera Position z: %f", App->game_engine->cameraGO.GetComponent<Transform>()->position().z);
+	ImGui::Separator();
+	ImGui::Text("LookAt Pos x: %f", App->game_engine->cameraGO.GetComponent<Camera>()->lookAtPos.x);
+	ImGui::Text("LookAt Pos y: %f", App->game_engine->cameraGO.GetComponent<Camera>()->lookAtPos.y);
+	ImGui::Text("LookAt Pos z: %f", App->game_engine->cameraGO.GetComponent<Camera>()->lookAtPos.z);
+	ImGui::Separator();
+	ImGui::Text("Forward: %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->forward().x, App->game_engine->cameraGO.GetComponent<Transform>()->forward().y, App->game_engine->cameraGO.GetComponent<Transform>()->forward().z);
+	ImGui::Text("Right: %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->right().x, App->game_engine->cameraGO.GetComponent<Transform>()->right().y, App->game_engine->cameraGO.GetComponent<Transform>()->right().z);
+	ImGui::Text("Up: %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->up().x, App->game_engine->cameraGO.GetComponent<Transform>()->up().y, App->game_engine->cameraGO.GetComponent<Transform>()->up().z);
+	ImGui::Separator();
+	ImGui::Text("RotMat: %f, %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[0][0], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[0][1], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[0][2], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[0][3]);
+	ImGui::Text("RotMat: %f, %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[1][0], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[1][1], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[1][2], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[1][3]);
+	ImGui::Text("RotMat: %f, %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[2][0], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[2][1], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[2][2], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[2][3]);
+	ImGui::Text("RotMat: %f, %f, %f, %f", App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[3][0], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[3][1], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[3][2], App->game_engine->cameraGO.GetComponent<Transform>()->_transformationMatrix[3][3]);
+	ImGui::End();
+}
+
+void ModuleImGUI::AboutWindow()
+{
+	ImGui::Begin("About...", &about, ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Text("Vertx Engine v0.3\nA 3D Game Engine for the Game Engines subject.\nBy Rylan Graham, Adria Pons, & Joel Chaves");
+	if (ImGui::Button("Repository Link")) { OsOpenInShell("https://github.com/CITM-UPC/VertX-Game-Engine/"); }
+	ImGui::Separator();
+	ImGui::Text("3rd Party Libraries used :");
+	ImGui::Bullet(); if (ImGui::Button("Assimp 5.2.5")) { OsOpenInShell("https://assimp-docs.readthedocs.io/"); }
+	ImGui::Bullet(); if (ImGui::Button("DevIL 1.8.0#11")) { OsOpenInShell("https://openil.sourceforge.net/"); }
+	ImGui::Bullet(); if (ImGui::Button("GLEW 2.2.0#3")) { OsOpenInShell("https://glew.sourceforge.net/"); }
+	ImGui::Bullet(); if (ImGui::Button("GLM 2023-06-08")) { OsOpenInShell("https://glm.g-truc.net/0.9.5/index.html"); }
+	ImGui::Bullet(); if (ImGui::Button("ImGUI 1.89.9")) { OsOpenInShell("https://imgui-test.readthedocs.io/"); }
+	ImGui::Bullet(); if (ImGui::Button("nlohmann-json")) { OsOpenInShell("https://github.com/nlohmann/json"); }
+	ImGui::Bullet(); if (ImGui::Button("OpenGL 2022-12-04#3")) { OsOpenInShell("https://www.opengl.org/"); }
+	ImGui::Bullet(); if (ImGui::Button("SDL2 2.28.3")) { OsOpenInShell("https://wiki.libsdl.org/"); }
+	ImGui::Bullet(); if (ImGui::Button("std:c++20")) { OsOpenInShell("https://en.cppreference.com/w/cpp/20"); }
+	ImGui::Separator();
+	ImGui::Text("MIT Licence\n");
+	ImGui::Text("Copyright (c) 2023 Adria Pons & Rylan Graham - VertX Game Engine\n");
+	ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the 'Software'), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n");
+	ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.");
+	ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n");
+	if (ImGui::CollapsingHeader("License")) { ImGui::Text(aboutContent.c_str()); }
+	ImGui::End();
+}
+
+std::string loadTextFile(const std::string& filePath) {
+	std::ifstream file(filePath);
+	if (file.is_open()) {
+		std::string content((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+		file.close();
+		return content;
+	}
+	return "";
+}
+
+void saveTextFile(const std::string& filePath, const std::string& content) {
+	std::ofstream file(filePath);
+	if (file.is_open()) {
+		file << content;
+		file.close();
 	}
 }
 
-void ModuleImGUI::RenderImGUISimulationControlsWindow()
-{
-	if (simulationButtonsWindow)
-	{
-		ImGui::Begin("Simulation Controls", &simulationButtonsWindow);
-
-		// Play button
-		if (!App->isPlaying) {
-			if (ImGui::Button("Play"))
-			{
-				LOG("EDITOR: Starting the simulation...", NULL);
-				App->isPlaying = true;
-				App->isPaused = false;
-				App->startTime = SDL_GetTicks() / 1000.0;
-
-				App->game_engine->cameraGO.GetComponent<Camera>()->ResetCameraParameters();
+void ModuleImGUI::ShowFolderContents(const fs::path& folderPath) {
+	if (ImGui::CollapsingHeader(folderPath.filename().string().c_str())) {
+		for (const auto& entry : fs::directory_iterator(folderPath)) {
+			if (fs::is_directory(entry.path())) {
+				ShowFolderContents(entry.path());
 			}
-		}
-		else
-		{
-			ImGui::TextWrapped("Play");
-		}
-		ImGui::SameLine();
-		// Pause button
-		if (App->isPlaying) {
-			if (ImGui::Button("Pause"))
-			{
-				App->isPaused = !App->isPaused;
-				if (App->isPaused) {
-					// Paused, calculate elapsed time so far
-					LOG("EDITOR: Pausing the simulation...", NULL);
-					App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
+			else if (fs::is_regular_file(entry.path())) {
+				ImGui::Text("%s", entry.path().filename().string().c_str());
+				ImGui::SameLine();
+				if (entry.path().filename().string().substr(entry.path().filename().string().find_last_of(".") + 1) == "cs") {
+					if (ImGui::Button("Edit")) {
+						editScript = true;
+						filePath = "Library/" + folderPath.filename().string() + "/" + entry.path().filename().string();
+						fileContent = loadTextFile(entry.path().string());
+						editor.SetText(fileContent);
+					}
+					ImGui::SameLine();
 				}
-				else {
-					// Resumed, update start time
-					LOG("EDITOR: Resuming the simulation...", NULL);
-					App->startTime = SDL_GetTicks() / 1000.0;
-				}
+
+				if (ImGui::Button(("Delete##" + entry.path().string()).c_str())) fs::remove(entry.path());
+
 			}
 		}
-		else
-		{
-			ImGui::TextWrapped("Pause");
-		}
-		ImGui::SameLine();
-		// Stop button
-		if (App->isPlaying) {
-			if (ImGui::Button("Stop"))
-			{
-				LOG("EDITOR: Stopping the simulation...", NULL);
-				App->isPlaying = false;
-				App->isPaused = false;
-				App->elapsedTime += SDL_GetTicks() / 1000.0 - App->startTime;
-
-				LOG("TOTAL SIMULATION TIME: %.3f seconds", App->elapsedTime);
-				App->elapsedTime = 0.0;
-			}
-		}
-		else
-		{
-			ImGui::TextWrapped("Stop");
-		}
-
-		ImGui::End();
 	}
+}
+
+void ModuleImGUI::EditScript()
+{
+	ImGui::OpenPopup("Edit Script");
+	if (ImGui::BeginPopupModal("Edit Script", NULL, ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("Save"))
+			{
+				fileContent = editor.GetText();
+				saveTextFile(filePath, fileContent);
+				ImGui::CloseCurrentPopup();
+				editScript = false;
+				//App->logHistory.push_back("[Editor] File edited and saved: " + filePath);
+			}
+			if (ImGui::BeginMenu("Close"))
+			{
+				ImGui::CloseCurrentPopup();
+				editScript = false;
+			}
+			ImGui::EndMenuBar();
+		}
+
+		editor.Render("CodeEditor");
+		ImGui::EndPopup();
+	}
+}
+
+void ModuleImGUI::FileExplorerWindow()
+{
+	ImGui::Begin("File Explorer", &fileExplorer);
+
+	const fs::path assetsPath = "Assets";
+	ShowFolderContents(assetsPath);
+	ImGui::Separator();
+
+	const fs::path libraryPath = "Library";
+	ShowFolderContents(libraryPath);
+	ImGui::Separator();
+
+	ImGui::End();
+}
+
+void ModuleImGUI::GetInfrastructureInfo()
+{
+	SDL_version compiled;
+	SDL_version linked;
+
+	SDL_VERSION(&compiled);
+	SDL_GetVersion(&linked);
+
+	info.sdl_version_compiled = std::to_string(compiled.major) + "." + std::to_string(compiled.minor) + "." + std::to_string(compiled.patch);
+	info.sdl_version_linked = std::to_string(linked.major) + "." + std::to_string(linked.minor) + "." + std::to_string(linked.patch);
+
+	//info.gl_version = App->game_engine->getOpenGLVersion();
+	//info.devil_version = App->game_engine->getDevILVersion();
+
+	info.GpuVendor.assign((const char*)glGetString(GL_VENDOR));
+	info.Gpu.assign((const char*)glGetString(GL_RENDERER));
+	info.GpuDriver.assign((const char*)glGetString(GL_VERSION));
+
+	GLint vmem_budget = 0;
+	GLint vmem_available = 0;
+	GLint vmem_usage = 0;
+
+	glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &vmem_budget);
+	glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &vmem_available);
+
+	vmem_usage = vmem_budget - vmem_available;
+
+	info.vram_mb_budget = float(vmem_budget) / 1024.0f;
+	info.vram_mb_usage = float(vmem_usage) / 1024.f;
+	info.vram_mb_available = float(vmem_available) / 1024.f;
+
+	info.cpu_count = SDL_GetCPUCount();
+	info.l1_cachekb = SDL_GetCPUCacheLineSize();
 }

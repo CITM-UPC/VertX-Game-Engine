@@ -42,6 +42,18 @@
     <ClCompile Include="Log.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleResources.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="TextEditor.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -67,6 +79,18 @@
     </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleResources.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="TextEditor.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceTexture.h">
+      <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

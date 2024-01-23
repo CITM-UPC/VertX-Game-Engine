@@ -1,4 +1,5 @@
 #include "Texture2D.h"
+#include "GameObject.h"
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <iostream>
@@ -7,10 +8,13 @@
 using namespace std;
 
 Texture2D::Texture2D(GameObject* owner, const std::string& path) : Component(owner) {
-
 	//load image data using devil
+
 	auto img = ilGenImage();
 	ilBindImage(img);
+
+	// if path ends with .dds, [ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);]
+
 	ilLoadImage(path.c_str());
 	this->path = path;
 	auto width = ilGetInteger(IL_IMAGE_WIDTH);
@@ -32,16 +36,13 @@ Texture2D::Texture2D(GameObject* owner, const std::string& path) : Component(own
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	size_t lastOf = path.find_last_of('/');
-	std::string fileName = path.substr(lastOf + 1);
-	lastOf = fileName.find_last_of('.');
-	fileName = fileName.substr(0, lastOf);
-
-	//AttachingPNG extension as Assets window renders png file types only due to sorting
-	fileName = "Library/Materials/" + fileName + ".PNG";
-
+	this->fileName = path.substr(lastOf + 1);
+	lastOf = this->fileName.find_last_of('.');
+	this->fileName = this->fileName.substr(0, lastOf);
+	this->fileName = "Library/Materials/" + this->fileName + ".dds";
 
 	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
-	ilSave(IL_DDS, fileName.c_str());
+	ilSave(IL_DDS, this->fileName.c_str());
 
 	//now we can delete image from RAM
 	ilDeleteImage(img);
@@ -76,7 +77,8 @@ Texture2D::Texture2D(Texture2D&& tex) noexcept :
 	_id_checker(tex._id_checker),
 	path(tex.path),
 	width(tex.width),
-	height(tex.height)
+	height(tex.height),
+	fileName(tex.fileName)
 {
 	tex._id = 0;
 	tex._id_checker = 0;
@@ -88,7 +90,8 @@ Texture2D::Texture2D(const Texture2D& cpy) :
 	_id_checker(cpy._id_checker),
 	path(cpy.path),
 	width(cpy.width),
-	height(cpy.height)
+	height(cpy.height),
+	fileName(cpy.fileName)
 {
 	const_cast<Texture2D&>(cpy)._id = 0;
 	const_cast<Texture2D&>(cpy)._id_checker = 0;
@@ -100,20 +103,30 @@ Texture2D::~Texture2D() {
 	if (_id) glDeleteTextures(1, &_id);
 }
 
+void Texture2D::Update() {}
 
-void Texture2D::Update()
-{
-}
+void Texture2D::Render() {}
 
 void Texture2D::bind() const {
-    glBindTexture(GL_TEXTURE_2D, _id);
+	glBindTexture(GL_TEXTURE_2D, _id);
 }
 
 void Texture2D::unbind() const {
-    glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture2D::checker() const
 {
-    glBindTexture(GL_TEXTURE_2D, _id_checker);
+	glBindTexture(GL_TEXTURE_2D, _id_checker);
 }
+
+//json Texture2D::SaveInfo()
+//{
+//	json obj;
+//
+//	obj["Owner"] = owner->UUID;
+//	obj["Binary Path"] = fileName;
+//	obj["Type"] = static_cast<int>(getType());
+//
+//	return obj;
+//}
