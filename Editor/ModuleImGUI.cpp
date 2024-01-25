@@ -262,7 +262,11 @@ update_status ModuleImGUI::PreUpdate()
 
 	if (musicplaying) {
 		Uint32 currentTicks = SDL_GetTicks();
-		Uint32 elapsedTicks = currentTicks - musicCycleStart;
+		if (snapshot == false) {
+			set = currentTicks;
+			snapshot = true;
+		}
+		Uint32 elapsedTicks = currentTicks - set;
 
 		// Assuming each track should play for 30 seconds (30000 milliseconds)
 		Uint32 trackDuration = 30000;
@@ -285,6 +289,7 @@ update_status ModuleImGUI::PreUpdate()
 				// Toggle the flag to indicate that music has been played and alternate tracks
 				musicPlayedThisCycle = true;
 				alternateTracks = !alternateTracks;
+				snapshot != snapshot;
 			}
 		}
 		else {
@@ -423,6 +428,7 @@ update_status ModuleImGUI::MainMenuBar()
 			ImGui::Separator();
 			if (ImGui::MenuItem("Play", "Play Scene")) {
 				musicplaying = true;
+				musicCycleStart = 0;
 				App->game_engine->scene->paused = false;
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
@@ -764,155 +770,156 @@ void ModuleImGUI::InspectorWindow()
 			char Title[256];
 			strncpy_s(Title, gameObjSelected->name.c_str(), sizeof(Title));
 			Title[sizeof(Title) - 1] = '\0';
-			ImGui::Checkbox("Active", &gameObjSelected->isActive);
-			ImGui::SameLine(); ImGui::InputText("Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
-			ImGui::SameLine(); ImGui::TextColored({ 0.144f, 0.422f, 0.720f, 1.0f }, gameObjSelected->name.c_str());
+				ImGui::Checkbox("Active", &gameObjSelected->isActive);
+				ImGui::SameLine(); ImGui::InputText("Name", Title, IM_ARRAYSIZE(Title), ImGuiInputTextFlags_EnterReturnsTrue);
+				ImGui::SameLine(); ImGui::TextColored({ 0.144f, 0.422f, 0.720f, 1.0f }, gameObjSelected->name.c_str());
 
-			ImGui::SetNextItemWidth(100.0f);
-			if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+				ImGui::SetNextItemWidth(100.0f);
+				if (ImGui::BeginCombo("Tag", "Untagged", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
-			ImGui::SetNextItemWidth(100.0f);
-			if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+				ImGui::SetNextItemWidth(100.0f);
+				if (ImGui::BeginCombo("Layer", "Default", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
 
-			if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
-				gameObjSelected->name = Title;
-			}
-
-			for (auto& component : *gameObjSelected->GetComponents()) {
-				if (component.get()->getType() == Component::Type::TRANSFORM) {
-					Transform* transform = dynamic_cast<Transform*>(component.get());
-					if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::PushItemWidth(60.0f);
-						ImGui::BulletText("Position");
-						ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
-						ImGui::SameLine();
-						ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
-						ImGui::SameLine();
-						ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
-
-						ImGui::BulletText("Rotation");
-						if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-						ImGui::SameLine();
-						if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-						ImGui::SameLine();
-						if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
-
-						ImGui::BulletText("Scale");
-						if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-						ImGui::SameLine();
-						if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-						ImGui::SameLine();
-						if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
-
-						if (ImGui::Button("Reset Transforms"))
-						{
-							transform->_position = vec3(0.0, 0.0, 0.0);
-
-							transform->_rotation = vec3(0.0, 0.0, 0.0);
-							transform->RotateTo(transform->_rotation);
-
-							transform->_scale = vec3(1.0, 1.0, 1.0);
-							transform->Scale(transform->_scale);
-						}
-						ImGui::PopItemWidth();
-						}
-					}
-
-				if (component.get()->getType() == Component::Type::MESH) {
-					Mesh* mesh = dynamic_cast<Mesh*>(component.get());
-					if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::Checkbox("Active", &mesh->isActive);
-						ImGui::SameLine();  ImGui::Text("Filename: ");
-						ImGui::SameLine();  ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, mesh->getName().c_str());
-						ImGui::Separator();
-						ImGui::Text("File path: ");
-						ImGui::SameLine();
-						ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Library/Meshes/%s", mesh->getName().c_str());
-						ImGui::Separator();
-						ImGui::Text("Indexes: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
-						ImGui::Text("Normals: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
-						ImGui::Text("Vertexs: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
-						ImGui::Text("Faces: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
-						ImGui::Text("Tex coords: ");
-						ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumTexCoords()).c_str());
-						ImGui::Separator();
-						if (ImGui::Checkbox("Use Texture", &mesh->usingTexture)) {
-							(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
-						}
-						ImGui::Checkbox("Use Checker Texture", &mesh->useChecker);
-						ImGui::SameLine(); ImGui::TextColored({ 0.5f, 0.5f, 0.5f, 1.0f }, "(?)");
-						if (ImGui::IsItemHovered()) {
-							ImGui::SetTooltip("Use Texture must be checked in order to see the checker texture.");
-						}
-						if (mesh->getName().find("Cube") == std::string::npos &&
-							mesh->getName().find("Pyramid") == std::string::npos &&
-							mesh->getName().find("Cone") == std::string::npos)
-						{
-							ImGui::Checkbox("Draw vertex normals", &mesh->drawVertexNormals);
-							ImGui::Checkbox("Draw face normals", &mesh->drawFaceNormals);
-						}
-					}
+				if (ImGui::IsKeyDown(ImGuiKey_Enter)) {
+					gameObjSelected->name = Title;
 				}
-				if (component.get()->getType() == Component::Type::TEXTURE2D) {
-					Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
-					if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
-					{
-						ImGui::Checkbox("Active", &texture2D->isActive);
-						if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-						if (ImGui::BeginCombo("Rendering mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
-						ImGui::Separator();
-						ImGui::Text("File path: ");
-						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
-						ImGui::Text("Texture size");
-						ImGui::Text("Height: ");
-						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
-						ImGui::Text("Width: ");
-						ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
-					}
-				}
-				if (component.get()->getType() == Component::Type::CAMERA) {
-					if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_None))
-					{
-						Camera* cam = dynamic_cast<Camera*>(component.get());
-						if (ImGui::BeginTable("", 4))
+
+				for (auto& component : *gameObjSelected->GetComponents()) {
+					if (component.get()->getType() == Component::Type::TRANSFORM) {
+						Transform* transform = dynamic_cast<Transform*>(component.get());
+						if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
+							ImGui::PushItemWidth(60.0f);
+							ImGui::BulletText("Position");
+							ImGui::DragScalar("X-p", ImGuiDataType_Double, &transform->_position.x, 0.5, nullptr, nullptr, "%.3f");
+							ImGui::SameLine();
+							ImGui::DragScalar("Y-p", ImGuiDataType_Double, &transform->_position.y, 0.5, nullptr, nullptr, "%.3f");
+							ImGui::SameLine();
+							ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
+
+							ImGui::BulletText("Rotation");
+							if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+							ImGui::SameLine();
+							if (ImGui::DragScalar("Y-r", ImGuiDataType_Double, &transform->_rotation.y, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+							ImGui::SameLine();
+							if (ImGui::DragScalar("Z-r", ImGuiDataType_Double, &transform->_rotation.z, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
+
+							ImGui::BulletText("Scale");
+							if (ImGui::DragScalar("X-s", ImGuiDataType_Double, &transform->_scale.x, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+							ImGui::SameLine();
+							if (ImGui::DragScalar("Y-s", ImGuiDataType_Double, &transform->_scale.y, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+							ImGui::SameLine();
+							if (ImGui::DragScalar("Z-s", ImGuiDataType_Double, &transform->_scale.z, 0.2, nullptr, nullptr, "%.3f")) transform->Scale(transform->_scale);
+
+							if (ImGui::Button("Reset Transforms"))
+							{
+								transform->_position = vec3(0.0, 0.0, 0.0);
+
+								transform->_rotation = vec3(0.0, 0.0, 0.0);
+								transform->RotateTo(transform->_rotation);
+
+								transform->_scale = vec3(1.0, 1.0, 1.0);
+								transform->Scale(transform->_scale);
+							}
+							ImGui::PopItemWidth();
+						}
+					}
+
+					if (component.get()->getType() == Component::Type::MESH) {
+						Mesh* mesh = dynamic_cast<Mesh*>(component.get());
+						if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_None))
+						{
+							ImGui::Checkbox("Active", &mesh->isActive);
+							ImGui::SameLine();  ImGui::Text("Filename: ");
+							ImGui::SameLine();  ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, mesh->getName().c_str());
+							ImGui::Separator();
+							ImGui::Text("File path: ");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(0.5, 0.5, 0.5, 1), "Library/Meshes/%s", mesh->getName().c_str());
+							ImGui::Separator();
+							ImGui::Text("Indexes: ");
+							ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumIndexs()).c_str());
+							ImGui::Text("Normals: ");
+							ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumNormals()).c_str());
+							ImGui::Text("Vertexs: ");
+							ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumVerts()).c_str());
+							ImGui::Text("Faces: ");
+							ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumFaces()).c_str());
+							ImGui::Text("Tex coords: ");
+							ImGui::SameLine();  ImGui::Text(std::to_string(mesh->getNumTexCoords()).c_str());
+							ImGui::Separator();
+							if (ImGui::Checkbox("Use Texture", &mesh->usingTexture)) {
+								(mesh->usingTexture) ? mesh->texture = gameObjSelected->GetComponent<Texture2D>() : mesh->texture = nullptr;
+							}
+							ImGui::Checkbox("Use Checker Texture", &mesh->useChecker);
+							ImGui::SameLine(); ImGui::TextColored({ 0.5f, 0.5f, 0.5f, 1.0f }, "(?)");
+							if (ImGui::IsItemHovered()) {
+								ImGui::SetTooltip("Use Texture must be checked in order to see the checker texture.");
+							}
+							if (mesh->getName().find("Cube") == std::string::npos &&
+								mesh->getName().find("Pyramid") == std::string::npos &&
+								mesh->getName().find("Cone") == std::string::npos)
+							{
+								ImGui::Checkbox("Draw vertex normals", &mesh->drawVertexNormals);
+								ImGui::Checkbox("Draw face normals", &mesh->drawFaceNormals);
+							}
+						}
+					}
+					if (component.get()->getType() == Component::Type::TEXTURE2D) {
+						Texture2D* texture2D = dynamic_cast<Texture2D*>(component.get());
+						if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_None))
+						{
+							ImGui::Checkbox("Active", &texture2D->isActive);
+							if (ImGui::BeginCombo("Shader", "Standard", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+							if (ImGui::BeginCombo("Rendering mode", "Opaque", ImGuiComboFlags_HeightSmall)) { ImGui::EndCombo(); }
+							ImGui::Separator();
+							ImGui::Text("File path: ");
+							ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, texture2D->path.c_str());
+							ImGui::Text("Texture size");
+							ImGui::Text("Height: ");
+							ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->height).c_str());
+							ImGui::Text("Width: ");
+							ImGui::SameLine(); ImGui::TextColored({ 0.920f, 0.845f, 0.0184f, 1.0f }, to_string(texture2D->width).c_str());
+						}
+					}
+					if (component.get()->getType() == Component::Type::CAMERA) {
+						if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_None))
+						{
+							Camera* cam = dynamic_cast<Camera*>(component.get());
+							if (ImGui::BeginTable("", 4))
+							{
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								ImGui::Text("");
+								ImGui::Text("Look at Position");
+
+								ImGui::TableSetColumnIndex(1);
+								ImGui::Text("X");
+								ImGui::Text(std::to_string(cam->lookAtPos.x).c_str());
+
+								ImGui::TableSetColumnIndex(2);
+								ImGui::Text("Y");
+								ImGui::Text(std::to_string(cam->lookAtPos.y).c_str());
+
+								ImGui::TableSetColumnIndex(3);
+								ImGui::Text("Z");
+								ImGui::Text(std::to_string(cam->lookAtPos.z).c_str());
+
+								ImGui::EndTable();
+							}
 							ImGui::Text("");
-							ImGui::Text("Look at Position");
-
-							ImGui::TableSetColumnIndex(1);
-							ImGui::Text("X");
-							ImGui::Text(std::to_string(cam->lookAtPos.x).c_str());
-
-							ImGui::TableSetColumnIndex(2);
-							ImGui::Text("Y");
-							ImGui::Text(std::to_string(cam->lookAtPos.y).c_str());
-
-							ImGui::TableSetColumnIndex(3);
-							ImGui::Text("Z");
-							ImGui::Text(std::to_string(cam->lookAtPos.z).c_str());
-
-							ImGui::EndTable();
+							ImGui::Text("Fov: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->fov).c_str());
+							ImGui::Text("Aspect Ratio: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->aspectRatio).c_str());
+							ImGui::Text("Clipping Plane View Near: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewNear).c_str());
+							ImGui::Text("Clipping Plane View Far: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewFar).c_str());
+							ImGui::Text("Camera Offset: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->camOffset).c_str());
 						}
-						ImGui::Text("");
-						ImGui::Text("Fov: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->fov).c_str());
-						ImGui::Text("Aspect Ratio: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->aspectRatio).c_str());
-						ImGui::Text("Clipping Plane View Near: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewNear).c_str());
-						ImGui::Text("Clipping Plane View Far: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewFar).c_str());
-						ImGui::Text("Camera Offset: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->camOffset).c_str());
 					}
 				}
 			}
+			
 		}
 		ImGui::EndMenu();
-	}
 }
 
 void ModuleImGUI::LogConsoleWindow()

@@ -33,6 +33,8 @@ public:
 
 private:
 	Mix_Music* music;
+
+	Mix_Chunk* soundEffect;
 	
 	p2List<Mix_Chunk*>	fx;
 };

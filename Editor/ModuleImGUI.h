@@ -43,11 +43,10 @@ public:
 	vec3 GetSelectedObjectPos();
 	void SetSelectedObjectTexture(std::string filePath);
 
+	Uint32 musicCycleStart = 0;
 	bool musicplaying = false;
 	bool musicPlayedThisCycle = false;
 	bool alternateTracks = false;
-
-	Uint32 musicCycleStart = SDL_GetTicks();
 
 private:
 
@@ -94,7 +93,11 @@ private:
 	char Title[150] = "Write Text";
 	std::string name;
 
+	bool snapshot = false;
+
 	bool autoScrollLog = true;
+
+	Uint32 set = 0;
 
 	int ticks = 0;
 	bool switchsong = false;

@@ -25,6 +25,8 @@ bool Engine_ModuleScene::Init()
 
 	addGameObject("VertX/Assets/Street/StreetEnvironment.fbx");
 
+	
+
 	return true;
 }
 
