@@ -43,6 +43,12 @@ public:
 	vec3 GetSelectedObjectPos();
 	void SetSelectedObjectTexture(std::string filePath);
 
+	bool musicplaying = false;
+	bool musicPlayedThisCycle = false;
+	bool alternateTracks = false;
+
+	Uint32 musicCycleStart = SDL_GetTicks();
+
 private:
 
 	update_status MainMenuBar();
@@ -89,6 +95,9 @@ private:
 	std::string name;
 
 	bool autoScrollLog = true;
+
+	int ticks = 0;
+	bool switchsong = false;
 
 	bool reparentThis = true;
 	bool reparentTo = false;

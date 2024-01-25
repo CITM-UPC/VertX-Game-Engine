@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
 #include "Globals.h"
+#include "ModuleAudio.h"
 
 #include "ModuleInput.h" //All of this is testing
 #include "imgui.h"
@@ -259,6 +260,49 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
+	if (musicplaying) {
+		Uint32 currentTicks = SDL_GetTicks();
+		Uint32 elapsedTicks = currentTicks - musicCycleStart;
+
+		// Assuming each track should play for 30 seconds (30000 milliseconds)
+		Uint32 trackDuration = 30000;
+
+		if (elapsedTicks < trackDuration) {
+			// Check if music has been played in this cycle
+			if (!musicPlayedThisCycle) {
+				// Stop all previous audio before playing the new track
+				Mix_HaltMusic();
+				Mix_HaltChannel(-1);
+
+				// Play the track based on the alternating flag
+				if (alternateTracks) {
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Mario.ogg", 2.0f);
+				}
+				else {
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Zelda.ogg", 2.0f);
+				}
+
+				// Toggle the flag to indicate that music has been played and alternate tracks
+				musicPlayedThisCycle = true;
+				alternateTracks = !alternateTracks;
+			}
+		}
+		else {
+			// Reset the start time and the flags for the next cycle
+			musicCycleStart = currentTicks;
+			musicPlayedThisCycle = false;
+		}
+	}
+	else {
+		// Stop all audio immediately if musicplaying is false
+		Mix_HaltMusic();
+		Mix_HaltChannel(-1);
+
+		// Reset flags when music is stopped
+		musicPlayedThisCycle = false;
+		alternateTracks = false;
+	}
+
 	if (dockSpaceEnabled)
 	{
 		ImGuiDockNodeFlags dock_flags = 0;
@@ -338,6 +382,7 @@ void ModuleImGUI::SetSelectedObjectTexture(string filePath)
 
 update_status ModuleImGUI::MainMenuBar()
 {
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -377,11 +422,12 @@ update_status ModuleImGUI::MainMenuBar()
 			if (ImGui::MenuItem("Delete", "Not implemented")) {}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Play", "Play Scene")) {
-				//App->AddConsoleLog("[Editor] 'Play' Scene");
+				musicplaying = true;
 				App->game_engine->scene->paused = false;
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
 				//App->logHistory.push_back("[Editor] 'Pause' Scene");
+				musicplaying = false;
 				App->game_engine->scene->paused = true;
 			}
 			if (ImGui::MenuItem("Step", "Step Scene")) {

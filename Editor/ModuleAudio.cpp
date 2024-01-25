@@ -69,6 +69,41 @@ bool ModuleAudio::CleanUp()
 	return true;
 }
 
+
+void ModuleAudio::playFirstSong(const char* filePath, int durationInSeconds) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+		// handle error
+		return;
+	}
+
+	Mix_Music* music = Mix_LoadMUS(filePath);
+	if (!music) {
+		// handle error
+		return;
+	}
+
+	// Start playing the first song
+	if (Mix_PlayMusic(music, 0) == -1) {
+		// handle error
+		Mix_FreeMusic(music);
+		return;
+	}
+
+	// Record the start time
+	Uint32 startTime = SDL_GetTicks();
+
+	// Wait for the specified duration
+	while (SDL_GetTicks() - startTime < durationInSeconds * 1000) {
+		SDL_Delay(100);  // Adjust this delay as needed
+	}
+
+	// Stop playing the first song
+	Mix_HaltMusic();
+	Mix_FreeMusic(music);
+
+	Mix_Quit();
+}
+
 // Play a music file
 bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 {
