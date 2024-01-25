@@ -9,6 +9,7 @@ Application::Application()
 	renderer = new ModuleRenderer(this);
 	imgui = new ModuleImGUI(this);
 	resources = new ModuleResources(this);
+	audio = new ModuleAudio(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -20,6 +21,7 @@ Application::Application()
 	AddModule(renderer);
 	AddModule(resources);
 	AddModule(imgui);
+	AddModule(audio);
 }
 
 Application::~Application()

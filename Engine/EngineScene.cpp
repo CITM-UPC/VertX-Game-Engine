@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include "../Editor/Application.h"
 
 
 namespace fs = std::filesystem;

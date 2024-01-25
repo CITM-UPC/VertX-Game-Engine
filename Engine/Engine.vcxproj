@@ -133,7 +133,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glu32.lib;opengl32.lib;sdl2.lib;sdl2main.lib;assimp-vc142-mt.lib;DevIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glu32.lib;opengl32.lib;sdl2.lib;sdl2main.lib;assimp-vc142-mt.lib;DevIL.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\vcpkg\installed\x64-windows\lib\;..\vcpkg\installed\x64-windows\lib\manual-link;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -203,6 +203,7 @@ copy "..\vcpkg\installed\x64-windows\bin\*.*" "$(OutDir)"</Command>
     <ClInclude Include="Graphic.h" />
     <ClInclude Include="JSONParser.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="p2List.h" />
     <ClInclude Include="pcg_extras.hpp" />
     <ClInclude Include="pcg_random.hpp" />
     <ClInclude Include="pcg_uint128.hpp" />

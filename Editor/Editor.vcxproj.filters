@@ -54,6 +54,9 @@
     <ClCompile Include="ResourceTexture.cpp">
       <Filter>Source Files\Editor Modules</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleAudio.cpp">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -90,6 +93,9 @@
       <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
     <ClInclude Include="ResourceTexture.h">
+      <Filter>Source Files\Editor Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleAudio.h">
       <Filter>Source Files\Editor Modules</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,7 @@
 #include "ModuleImGUI.h"
 #include "ModuleResources.h"
 #include "..\Engine\ModuleGameEngine.h"
+#include "ModuleAudio.h"
 
 using namespace std;
 using namespace chrono;
@@ -24,6 +25,7 @@ public:
 	ModuleRenderer* renderer;
 	ModuleResources* resources;
 	ModuleImGUI* imgui;
+	ModuleAudio* audio;
 	ModuleGameEngine* game_engine;
 	
 	int targetFPS;
