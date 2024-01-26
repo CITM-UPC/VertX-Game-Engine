@@ -111,8 +111,15 @@ private:
 	int ticks = 0;
 	bool switchsong = false;
 
+	double volumeLevel;
+	bool fxplaying = false;
+
 	bool reparentThis = true;
 	bool reparentTo = false;
+
+	glm::vec3 cameraPosition;
+
+	int volume;
 
 	int movingTicks = 0;
 	bool increasing = true;

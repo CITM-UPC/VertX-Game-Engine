@@ -38,7 +38,6 @@ public:
 
 		if (effect == NULL)
 		{
-			LOG("Cannot load effect music %s. Mix_GetError(): %s\n", path, Mix_GetError());
 			return false;
 		}
 
@@ -46,14 +45,11 @@ public:
 		Mix_Volume(channel, volume);
 
 		// Play the effect on the specified channel
-		if (Mix_PlayChannel(channel, effect, -1) == -1)
+		if (Mix_PlayChannel(channel, effect, 1) == -1)
 		{
-			LOG("Cannot play effect music %s. Mix_GetError(): %s\n", path, Mix_GetError());
 			Mix_FreeChunk(effect);
 			return false;
 		}
-
-		LOG("Successfully playing effect music %s on channel %d", path, channel);
 		return true;
 	}
 

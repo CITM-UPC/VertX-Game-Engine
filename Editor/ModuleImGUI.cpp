@@ -263,29 +263,36 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	double distancex = App->game_engine->cameraGO.GetComponent<Transform>()->position().x;
-	double distancey = App->game_engine->cameraGO.GetComponent<Transform>()->position().y;
-	double distancez = App->game_engine->cameraGO.GetComponent<Transform>()->position().z;
+	//const glm::mat4& cameraGlobalTransform = App->game_engine->cameraGO.getGlobalTransform();
+
+	// Get the constant camera position vector
+	const glm::vec3& cameraPosition = App->game_engine->cameraGO.GetComponent<Transform>()->position();
 
 	// Calculate Euclidean distance from (0, 0, 0)
-	distanceFromOrigin = std::sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
+	double distanceFromOrigin = glm::length(cameraPosition);
 
 	// Set a threshold distance, beyond which the sound is not heard
-	double thresholdDistance = 20.0f;
+	double thresholdDistance = 20;
 
 	// Map the distance to a volume level (adjust the mapping as needed)
 	double volumeLevel = 1.0 - std::min(distanceFromOrigin / thresholdDistance, 1.0);
 
 	// Adjust the volume level to the desired range for SDL_mixer (0-128)
-	int volume = static_cast<int>(volumeLevel * 128.0);
+	int volume = int(volumeLevel * 128.0);
+
+	// Log debug information
+	LOG("Camera Position: (%f, %f, %f)", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	LOG("Distance from Origin: %f", distanceFromOrigin);
+	LOG("Volume Level: %f", volumeLevel);
+	LOG("Mapped Volume: %d", volume);
+
+
+	if (fxplaying) {
+		App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volume, -1);
+		effectMusicPlayed = false;
+	}
 
 	if (musicplaying) {
-
-		if (effectMusicPlayed) {
-			SDL_Delay(10);
-			App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volume, 3);
-			effectMusicPlayed = false;
-		}
 
 		Uint32 currentTicks = SDL_GetTicks();
 		Uint32 elapsedTicks = currentTicks - musicCycleStart;
@@ -442,7 +449,9 @@ update_status ModuleImGUI::MainMenuBar()
 			ImGui::Separator();
 			if (ImGui::MenuItem("Play", "Play Scene")) {
 				effectMusicPlayed = true;
+				fxplaying = true;
 				musicplaying = true;
+				LOG("Successfully playing effect music %s on channel %d", "VertX/Assets/Music/Audio/FX/engineSFX.wav", -1);
 				
 				musicCycleStart = 0;
 				// Handle initialization error
@@ -452,6 +461,8 @@ update_status ModuleImGUI::MainMenuBar()
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
 				//App->logHistory.push_back("[Editor] 'Pause' Scene");
 				musicplaying = false;
+				fxplaying = false;
+				effectMusicPlayed = false;
 				App->game_engine->scene->paused = true;
 				canMoveGO = false;
 			}
