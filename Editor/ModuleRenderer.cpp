@@ -14,7 +14,7 @@ ModuleRenderer::~ModuleRenderer()
 bool ModuleRenderer::Init()
 {
 	App->logHistory.push_back("[Editor] Creating Renderer context");
-	//LOG("Creating Renderer context");
+	
 
 	bool ret = true;
 
@@ -79,7 +79,7 @@ update_status ModuleRenderer::PostUpdate()
 // Called before quitting
 bool ModuleRenderer::CleanUp()
 {
-	//LOG("Destroying Renderer");
+	
 
 	App->game_engine->scene->CleanUp();
 	App->game_engine->renderer3D_engine->CleanUp();
@@ -244,7 +244,7 @@ GameObject* ModuleRenderer::DoClickRayCast()
 		return hitObjectsMap[closestHitPoint];
 	}
 
-	//LOG("Hit nothing");
+	
 	return nullptr;
 }
 
@@ -276,32 +276,6 @@ void ModuleRenderer::DebugRay(Ray ray)
 	App->game_engine->renderer3D_engine->ends.push_back((vec3)ray.origin + (vec3)ray.direction * 100.0);	//Debug only
 	App->game_engine->renderer3D_engine->camPos.push_back(App->game_engine->cameraGO.GetComponent<Transform>()->position());	//Debug only
 
-	/*
-	vec3 frame1 = App->game_engine->cameraGO.GetComponent<Transform>()->position() +
-		App->game_engine->cameraGO.GetComponent<Transform>()->forward() * App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear +
-		-App->game_engine->cameraGO.GetComponent<Transform>()->right() * nearPlaneSize.x +
-		App->game_engine->cameraGO.GetComponent<Transform>()->up() * nearPlaneSize.y;	//Debug only
-
-	vec3 frame2 = App->game_engine->cameraGO.GetComponent<Transform>()->position() +
-		App->game_engine->cameraGO.GetComponent<Transform>()->forward() * App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear +
-		App->game_engine->cameraGO.GetComponent<Transform>()->right() * nearPlaneSize.x +
-		App->game_engine->cameraGO.GetComponent<Transform>()->up() * nearPlaneSize.y;	//Debug only
-
-	vec3 frame3 = App->game_engine->cameraGO.GetComponent<Transform>()->position() +
-		App->game_engine->cameraGO.GetComponent<Transform>()->forward() * App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear +
-		App->game_engine->cameraGO.GetComponent<Transform>()->right() * nearPlaneSize.x +
-		-App->game_engine->cameraGO.GetComponent<Transform>()->up() * nearPlaneSize.y;	//Debug only
-
-	vec3 frame4 = App->game_engine->cameraGO.GetComponent<Transform>()->position() +
-		App->game_engine->cameraGO.GetComponent<Transform>()->forward() * App->game_engine->cameraGO.GetComponent<Camera>()->clippingPlaneViewNear +
-		-App->game_engine->cameraGO.GetComponent<Transform>()->right() * nearPlaneSize.x +
-		-App->game_engine->cameraGO.GetComponent<Transform>()->up() * nearPlaneSize.y;	//Debug only
-
-	App->game_engine->renderer3D_engine->nearPlanes.push_back(frame1);	//Debug only
-	App->game_engine->renderer3D_engine->nearPlanes.push_back(frame2);	//Debug only
-	App->game_engine->renderer3D_engine->nearPlanes.push_back(frame3);	//Debug only
-	App->game_engine->renderer3D_engine->nearPlanes.push_back(frame4);	//Debug only
-	*/
 }
 
 Triangle ModuleRenderer::CalculateTriangle(GameObject* triObject, int iterator)
@@ -344,7 +318,6 @@ void ModuleRenderer::CheckMeshCollisionRecursive(Ray& ray, GameObject* object, s
 
 		if (closestIntersection != std::numeric_limits<float>::infinity())
 		{
-			//LOG("Hit %s", object->name.c_str());
 			hitObjects[closestIntersection] = object;  //Adding to the map an entry which has the distance as an accessor and the GO as the object
 		}
 	}

@@ -8,10 +8,6 @@ public:
 	enum Type {
 		TEXTURE,
 		MESH,
-		//AUDIO,
-		//SCENE,
-		//BONE,
-		//ANIMATION,
 		UNKNOWN
 	};
 

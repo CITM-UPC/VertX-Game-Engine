@@ -222,7 +222,7 @@ void TextEditor::DeleteRange(const Coordinates& aStart, const Coordinates& aEnd)
 	assert(aEnd >= aStart);
 	assert(!mReadOnly);
 
-	//printf("D(%d.%d)-(%d.%d)\n", aStart.mLine, aStart.mColumn, aEnd.mLine, aEnd.mColumn);
+	
 
 	if (aEnd == aStart)
 		return;
@@ -309,12 +309,6 @@ int TextEditor::InsertTextAt(Coordinates& /* inout */ aWhere, const char* aValue
 void TextEditor::AddUndo(UndoRecord& aValue)
 {
 	assert(!mReadOnly);
-	//printf("AddUndo: (@%d.%d) +\'%s' [%d.%d .. %d.%d], -\'%s', [%d.%d .. %d.%d] (@%d.%d)\n",
-	//	aValue.mBefore.mCursorPosition.mLine, aValue.mBefore.mCursorPosition.mColumn,
-	//	aValue.mAdded.c_str(), aValue.mAddedStart.mLine, aValue.mAddedStart.mColumn, aValue.mAddedEnd.mLine, aValue.mAddedEnd.mColumn,
-	//	aValue.mRemoved.c_str(), aValue.mRemovedStart.mLine, aValue.mRemovedStart.mColumn, aValue.mRemovedEnd.mLine, aValue.mRemovedEnd.mColumn,
-	//	aValue.mAfter.mCursorPosition.mLine, aValue.mAfter.mCursorPosition.mColumn
-	//	);
 
 	mUndoBuffer.resize((size_t)(mUndoIndex + 1));
 	mUndoBuffer.back() = aValue;
@@ -1229,15 +1223,14 @@ void TextEditor::EnterCharacter(ImWchar aChar, bool aShift)
 			if (start > end)
 				std::swap(start, end);
 			start.mColumn = 0;
-			//			end.mColumn = end.mLine < mLines.size() ? mLines[end.mLine].size() : 0;
+			
 			if (end.mColumn == 0 && end.mLine > 0)
 				--end.mLine;
 			if (end.mLine >= (int)mLines.size())
 				end.mLine = mLines.empty() ? 0 : (int)mLines.size() - 1;
 			end.mColumn = GetLineMaxColumn(end.mLine);
 
-			//if (end.mColumn >= GetLineMaxColumn(end.mLine))
-			//	end.mColumn = GetLineMaxColumn(end.mLine) - 1;
+			
 
 			u.mRemovedStart = start;
 			u.mRemovedEnd = end;
@@ -1865,8 +1858,7 @@ void TextEditor::Backspace()
 			while (cindex > 0 && IsUTFSequence(line[cindex].mChar))
 				--cindex;
 
-			//if (cindex > 0 && UTF8CharLength(line[cindex].mChar) > 1)
-			//	--cindex;
+			
 
 			u.mRemovedStart = u.mRemovedEnd = GetActualCursorCoordinates();
 			--u.mRemovedStart.mColumn;
@@ -2184,8 +2176,7 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 
 			if (hasTokenizeResult == false)
 			{
-				// todo : remove
-				//printf("using regex for %.*s\n", first + 10 < last ? 10 : int(last - first), first);
+				
 
 				for (auto& p : mRegexList)
 				{
@@ -2214,7 +2205,7 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 				{
 					id.assign(token_begin, token_end);
 
-					// todo : allmost all language definitions use lower case to specify keywords, so shouldn't this use ::tolower ?
+					
 					if (!mLanguageDefinition.mCaseSensitive)
 						std::transform(id.begin(), id.end(), id.begin(), ::toupper);
 

@@ -23,10 +23,7 @@ bool ModuleGameEngine::Init()
 {
 	bool ret = true;
 
-	//for (auto const& item : list_modules)
-	//{
-	//	ret = item->Init();
-	//}
+	
 
 	return ret;
 }
@@ -37,10 +34,7 @@ bool ModuleGameEngine::Start()
 	
 	LOG("ENGINE: Game Engine Start --------------", NULL);
 	
-	//for (auto const& item : list_modules)
-	//{
-	//	ret = item->Start();
-	//}
+
 
 	return ret;
 }

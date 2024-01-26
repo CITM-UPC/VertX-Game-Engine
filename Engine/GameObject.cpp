@@ -14,18 +14,6 @@ GameObject::~GameObject()
 	components.clear();
 };
 
-//std::shared_ptr<Component> GameObject::GetComponent(Component::Type componentType)
-//{
-//	for (auto& comp : components)
-//	{
-//		if (comp->getType() == componentType)
-//		{
-//			return comp;
-//		}
-//	}
-//
-//	return nullptr;
-//}
 
 std::list<std::unique_ptr<Component>>* GameObject::GetComponents()
 {
@@ -65,17 +53,6 @@ void GameObject::RemoveComponent(Component::Type component)
 	}
 }
 
-//GameObject* GameObject::Find(std::string name, std::list<GameObject> gameObjectList)
-//{
-//	for (auto& go : gameObjectList)
-//	{
-//		if (go.name == name)
-//		{
-//			return &go;
-//		}
-//	}
-//	return nullptr;
-//}
 
 static inline void glVec3(const vec3& v) { glVertex3dv(&v.x); }
 

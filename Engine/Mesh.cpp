@@ -265,16 +265,3 @@ void Mesh::Render()
 {
 	draw();
 }
-
-//json Mesh::SaveInfo()
-//{
-//	json obj;
-//
-//	std::string bPath = "Library/Meshes/" + owner->name + ".mesh";
-//
-//	obj["Owner"] = owner->UUID;
-//	obj["Binary Path"] = bPath;
-//	obj["Type"] = static_cast<int>(getType());
-//
-//	return obj;
-//}

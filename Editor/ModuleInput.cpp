@@ -24,14 +24,13 @@ ModuleInput::~ModuleInput()
 // Called before render is available
 bool ModuleInput::Init()
 {
-	//App->logHistory.push_back("[Editor] Init SDL input event system");
-	//LOG("Init SDL input event system");
+
 	bool ret = true;
 	SDL_Init(0);
 
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
-		//LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
+		
 		ret = false;
 	}
 
@@ -118,42 +117,36 @@ update_status ModuleInput::PreUpdate()
 
 			// Check if the dropped file has the .dds extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "dds") {
-				//App->logHistory.push_back("[Editor] .dds detected with path " + filePath + ". Added it in Library/Materials/");
-				//LOG(".dds file detected");
+				
 				const fs::path sourcePath(filePath);
 				const fs::path destinationPath = "VertX/Library/Materials/" + sourcePath.filename().string();
 				fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
 			}
 			// Check if the dropped file has the .mesh extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "mesh") {
-				//App->logHistory.push_back("[Editor] .mesh detected with path " + filePath + ". Added it in Library/Meshes/");
-				//LOG(".mesh file detected");
+				
 				const fs::path sourcePath(filePath);
 				const fs::path destinationPath = "VertX/Library/Meshes/" + sourcePath.filename().string();
 				fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
 			}
 			// Check if the dropped file has the .fbx extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "fbx" || (filePath.substr(filePath.find_last_of(".") + 1) == "FBX")) {
-				//App->logHistory.push_back("[Editor] .fbx detected with path " + filePath);
-				//LOG(".fbx file detected");
+				
 				App->game_engine->scene->addGameObject(filePath);
 			}
 			// Check if the dropped file has the .png extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "png") {
-				//App->logHistory.push_back("[Editor] .png detected with path " + filePath);
-				//LOG(".png file detected");
+				
 				App->imgui->SetSelectedObjectTexture(filePath);
 			}
 			// Check if the dropped file has the .dds extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "dds") {
-				//LOG(".dds file detected", NULL);
+				
 				App->imgui->SetSelectedObjectTexture(filePath);
 			}
 			// Check if the dropped file has the .mdng extension
 			if (filePath.substr(filePath.find_last_of(".") + 1) == "mdng") {
-				//App->logHistory.push_back("[Editor] .mdng detected with path " + filePath);
-				//LOG(".mdng file detected");
-				/*App->game_engine->scene->LoadScene(filePath);*/
+				
 			}
 			SDL_free(e.drop.file);  // Free dropped file's memory
 
@@ -181,7 +174,7 @@ update_status ModuleInput::PreUpdate()
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	//LOG("Quitting SDL input event subsystem");
+	
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }

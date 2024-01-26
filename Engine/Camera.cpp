@@ -35,7 +35,6 @@ Camera::~Camera() {}
 void Camera::Update()
 {
 
-	//lookAtPos = this->owner->GetComponent<Transform>()->position() + this->owner->GetComponent<Transform>()->forward() * camOffset;
 }
 
 static inline void glVec3(const vec3& v) { glVertex3dv(&v.x); }

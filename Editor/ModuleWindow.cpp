@@ -17,7 +17,7 @@ ModuleWindow::~ModuleWindow()
 bool ModuleWindow::Init()
 {
 	App->logHistory.push_back("[Editor] Init SDL window & surface");
-	/*LOG("Init SDL window & surface");*/
+	
 	bool ret = true;
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -97,7 +97,7 @@ update_status ModuleWindow::Update()
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	/*LOG("Destroying SDL window and quitting all SDL systems");*/
+	
 
 	//Destroy window
 	if (window != NULL)

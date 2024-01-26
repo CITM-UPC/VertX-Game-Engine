@@ -16,7 +16,6 @@ Transform::Transform(GameObject* owner, mat4 transmat) : Component(owner)
 		}
 	}
 
-	//_transformationMatrix = transmat;
 	_rotation = vec3(0);
 	_scale = vec3(1);
 }
@@ -78,11 +77,6 @@ void Transform::Rotate(double angle, vec3 axis, Space referenceFrame)
 
 void Transform::Scale(vec3 scaleVector)
 {
-	/*_right.x = _right.x / _scale.x;
-	_up.y = _up.y / _up.y;
-	_forward.z = _forward.z / _scale.z;
-
-	_transformationMatrix = glm::scale(_transformationMatrix, scaleVector);*/
 	RotateTo(vec3(_rotation.x, _rotation.y, _rotation.z));
 }
 

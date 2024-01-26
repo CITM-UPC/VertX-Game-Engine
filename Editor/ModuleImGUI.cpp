@@ -255,8 +255,6 @@ bool ModuleImGUI::Init()
 
 update_status ModuleImGUI::PreUpdate()
 {
-	//This here does not work. Currently in Input.cpp
-	//ImGui_ImplSDL2_ProcessEvent(&pollevent);
 	GetInfrastructureInfo();
 
 	ImGui_ImplOpenGL3_NewFrame();
@@ -371,7 +369,6 @@ update_status ModuleImGUI::PreUpdate()
 
 bool ModuleImGUI::CleanUp()
 {
-	//LOG("Destroying UI");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -429,7 +426,7 @@ update_status ModuleImGUI::MainMenuBar()
 			{
 				if (App->game_engine->scene->currentScene.fileName != "")
 				{
-					/*App->game_engine->scene->SaveScene();*/
+					
 				}
 				else saveasMenu = true;
 			}
@@ -472,7 +469,7 @@ update_status ModuleImGUI::MainMenuBar()
 
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
-				//App->logHistory.push_back("[Editor] 'Pause' Scene");
+				
 				musicplaying = false;
 				fxplaying = false;
 				effectMusicPlayed = false;
@@ -485,7 +482,7 @@ update_status ModuleImGUI::MainMenuBar()
 				assetsWindow = true;
 			}
 			if (ImGui::MenuItem("Step", "Step Scene")) {
-				//App->logHistory.push_back("[Editor] 'Step' Scene");
+				
 				App->game_engine->scene->step = true;
 			}
 			ImGui::Separator();
@@ -527,15 +524,7 @@ update_status ModuleImGUI::MainMenuBar()
 				ImGui::EndMenu();
 			}
 			if (ImGui::MenuItem("Draw Mode")) {}
-			/*if (ImGui::MenuItem("Add Component Camera"))
-			{
-				if (gameObjSelected)
-				{
-					Camera newCam(gameObjSelected);
-					gameObjSelected->AddComponent<Camera>(newCam);
-					gameObjSelected->GetComponent<Camera>()->clippingPlaneViewFar = 10;
-				}
-			}*/
+			
 			GameObjectOptions();
 			ImGui::EndMenu();
 		}
@@ -716,8 +705,7 @@ void ModuleImGUI::SaveAsMenu()
 
 	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && nameRecipient != "")
 	{
-		/*App->game_engine->scene->SaveAsScene(nameRecipient);
-		saveasMenu = false;*/
+		
 	}
 
 	ImGui::End();
@@ -739,7 +727,6 @@ void ModuleImGUI::LoadSceneMenu()
 		path += nameRecipient;
 		path += ".mdng";
 
-		/*App->game_engine->scene->LoadScene(path);*/
 		loadMenu = false;
 	}
 	ImGui::End();
@@ -806,11 +793,11 @@ void ModuleImGUI::ReparentMenu()
 			if (adopter != nullptr && orphan != nullptr)
 			{
 				orphan->Move(adopter, orphan->parent->childs);
-				//App->logHistory.push_back("Moved " + orphan->name + " to " + adopter->name);
+				
 			}
 			else
 			{
-				//App->logHistory.push_back("ERROR: Select both GameObjects in order to Reparent");
+				
 			}
 		}
 		else
@@ -818,11 +805,11 @@ void ModuleImGUI::ReparentMenu()
 			if (adopter != nullptr && orphan != nullptr)
 			{
 				orphan->Move(adopter, App->game_engine->scene->currentScene.gameObjectList);
-				//App->logHistory.push_back("Moved " + orphan->name + " to " + adopter->name);
+				
 			}
 			else
 			{
-				//App->logHistory.push_back("ERROR: Select both GameObjects in order to Reparent");
+				
 			}
 		}
 	}
@@ -1043,7 +1030,7 @@ void ModuleImGUI::LogConsoleWindow()
 	ImGuiTextFilter filter;
 	ImGui::Begin("Log Console", &logWindow);
 	if (ImGui::Button("Clear")) {
-		// App->logHistory.clear(); 
+		
 	}
 	ImGui::SameLine();
 	bool copy = ImGui::Button("Copy");
@@ -1319,8 +1306,6 @@ void ModuleImGUI::GetInfrastructureInfo()
 	info.sdl_version_compiled = std::to_string(compiled.major) + "." + std::to_string(compiled.minor) + "." + std::to_string(compiled.patch);
 	info.sdl_version_linked = std::to_string(linked.major) + "." + std::to_string(linked.minor) + "." + std::to_string(linked.patch);
 
-	//info.gl_version = App->game_engine->getOpenGLVersion();
-	//info.devil_version = App->game_engine->getDevILVersion();
 
 	info.GpuVendor.assign((const char*)glGetString(GL_VENDOR));
 	info.Gpu.assign((const char*)glGetString(GL_RENDERER));

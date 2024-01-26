@@ -12,7 +12,7 @@ ModuleResources::~ModuleResources()
 
 bool ModuleResources::Init()
 {
-	//LOG("Creating Resources context");
+	
 	bool ret = true;
 
 	return ret;
@@ -35,7 +35,7 @@ update_status ModuleResources::PostUpdate()
 
 bool ModuleResources::CleanUp()
 {
-	//LOG("Destroying Resources");
+	
 
 	return true;
 }

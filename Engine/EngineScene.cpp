@@ -25,7 +25,7 @@ bool Engine_ModuleScene::Init()
 
 	addGameObject("VertX/Assets/Street/StreetEnvironment.fbx");
 	addGameObject("VertX/Assets/Ambulance_LowPoly.fbx");
-	//addGameObject("VertX/Assets/waterfountain.fbx");
+
 	
 
 	return true;
@@ -114,12 +114,12 @@ void Engine_ModuleScene::addGameObject()
 
 	currentScene.gameObjectList.push_back(std::move(gameObjectToAdd));
 
-	/*gEngine->logHistory.push_back("[Engine] Add GameObject");*/
+	
 }
 
 void Engine_ModuleScene::addGameObject(const std::string & filePath)
 {
-	/*gEngine->logHistory.push_back("[Engine] Add GameObject with path " + filePath);*/
+	
 
 	addGameObject();
 
@@ -155,7 +155,7 @@ void Engine_ModuleScene::addGameObject(const std::string & filePath)
 		oFile << meshInfo;
 		oFile.close();
 
-		/*gEngine->logHistory.push_back("[Engine] Mesh file created as " + meshName + ".mesh in " + folderName);*/
+		
 
 		gOparent->childs.back().get()->GetComponent<Transform>()->_transformationMatrix = meshInfo._transformationMatrix;
 
@@ -169,11 +169,7 @@ void Engine_ModuleScene::addGameObject(const std::string & filePath)
 		gOparent->childs.back().get()->GetComponent<Mesh>()->texture = gOparent->childs.back().get()->GetComponent<Texture2D>();
 		i++;
 
-		/*gEngine->logHistory.push_back("[Engine] Mesh loaded with " + std::to_string(meshInfo._numFaces) + " faces, "
-			+ std::to_string(meshInfo._numIndexs) + " indexs, "
-			+ std::to_string(meshInfo._numNormals) + " normals, "
-			+ std::to_string(meshInfo._numTexCoords) + " tex coords, and "
-			+ std::to_string(meshInfo._numVerts) + " vertexs.");*/
+		
 	}
 }
 
@@ -197,11 +193,7 @@ void Engine_ModuleScene::addGameObject(Primitive * shape)
 	currentScene.gameObjectList.back().get()->AddComponent<Mesh>(meshToPush);
 	currentScene.gameObjectList.back().get()->GetComponent<Mesh>()->setName(meshName);
 
-	/*gEngine->logHistory.push_back("[Engine] Mesh (" + meshName + ") loaded with " + std::to_string(meshInfo._numFaces) + " faces, "
-		+ std::to_string(meshInfo._numIndexs) + " indexs, "
-		+ std::to_string(meshInfo._numNormals) + " normals, "
-		+ std::to_string(meshInfo._numTexCoords) + " tex coords, and "
-		+ std::to_string(meshInfo._numVerts) + " vertexs.");*/
+	
 }
 
 void Engine_ModuleScene::removeGameObject(GameObject * GOtoDelete)
@@ -268,7 +260,7 @@ void Engine_ModuleScene::LoadComponentMesh(GameObject * owner, string path)
 		owner->AddComponent<Mesh>(newMesh);
 	}
 	else
-		/*gEngine->logHistory.push_back("Mesh Binary File could not be open");*/
+		
 
 	meshfile.close();
 }

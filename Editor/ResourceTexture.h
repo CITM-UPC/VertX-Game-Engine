@@ -13,8 +13,6 @@ public:
 	//ResourceTexture(UID id);
 	virtual ~ResourceTexture();
 	bool LoadInMemory() override;
-	/*void Save(Config& config) const override;
-	void Load(const Config& config) override;*/
 
 public:
 

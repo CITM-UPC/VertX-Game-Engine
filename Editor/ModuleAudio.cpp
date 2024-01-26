@@ -63,7 +63,6 @@ update_status ModuleAudio::Update()
 // Called before quitting
 bool ModuleAudio::CleanUp()
 {
-	/*LOG("Freeing sound FX, closing Mixer and Audio subsystem");*/
 
 	if (music != NULL)
 	{
