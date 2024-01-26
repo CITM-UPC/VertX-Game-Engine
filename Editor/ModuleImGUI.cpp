@@ -283,14 +283,11 @@ update_status ModuleImGUI::PreUpdate()
 		}
 
 		Uint32 currentTicks = SDL_GetTicks();
-		if (snapshot == false) {
-			set = currentTicks;
-			snapshot = true;
-		}
-		Uint32 elapsedTicks = currentTicks - set;
+		Uint32 elapsedTicks = currentTicks - musicCycleStart;
 
 		// Assuming each track should play for 30 seconds (30000 milliseconds)
 		Uint32 trackDuration = 30000;
+		
 
 		if (elapsedTicks < trackDuration) {
 			// Check if music has been played in this cycle
@@ -310,7 +307,6 @@ update_status ModuleImGUI::PreUpdate()
 				// Toggle the flag to indicate that music has been played and alternate tracks
 				musicPlayedThisCycle = true;
 				alternateTracks = !alternateTracks;
-				snapshot != snapshot;
 			}
 		}
 		else {
@@ -820,6 +816,25 @@ void ModuleImGUI::InspectorWindow()
 							ImGui::SameLine();
 							ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
 
+							// -------------------------- //
+
+							// Move selected GO back and forward 
+							if (increasing) {
+								movingTicks++;
+								if (movingTicks >= 30) {
+									increasing = false;
+								}
+							}
+							else {
+								movingTicks--;
+								if (movingTicks <= -30) {
+									increasing = true;
+								}
+							}
+							transform->_position.x = transform->_position.x + movingTicks * 0.01;
+
+							// -------------------------- //
+
 							ImGui::BulletText("Rotation");
 							if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
 							ImGui::SameLine();
@@ -1278,3 +1293,4 @@ void ModuleImGUI::GetInfrastructureInfo()
 	info.cpu_count = SDL_GetCPUCount();
 	info.l1_cachekb = SDL_GetCPUCacheLineSize();
 }
+

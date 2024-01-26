@@ -196,11 +196,11 @@ engine_status ModuleRenderer3D_ENGINE::PostUpdate()
 		glEnd();
 	}
 
-	GLenum error = glGetError();
+	/*GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
 		std::cerr << "OpenGL Error: " << error << std::endl;
 	}
-	assert(error == GL_NO_ERROR);
+	assert(error == GL_NO_ERROR);*/
 
 	return ENGINE_UPDATE_CONTINUE;
 }

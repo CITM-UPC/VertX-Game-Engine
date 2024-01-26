@@ -69,6 +69,7 @@ private:
 	void ShowFolderContents(const fs::path& folderPath);
 	void EditScript();
 	void RenderImGUIAssetsWindow();
+	void MoveGOBackAndForward(int meters);
 
 private:
 
@@ -112,6 +113,9 @@ private:
 
 	bool reparentThis = true;
 	bool reparentTo = false;
+
+	int movingTicks = 0;
+	bool increasing = true;
 
 	std::string aboutContent;
 	std::string filePath;
