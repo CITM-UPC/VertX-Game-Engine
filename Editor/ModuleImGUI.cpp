@@ -248,6 +248,8 @@ bool ModuleImGUI::Init()
 		//LOG("Unable to open LICENSE file.");
 	}
 
+	effectMusicPlayed = false;
+
 	return true;
 }
 
@@ -260,67 +262,62 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	
+
 	double distancex = App->game_engine->cameraGO.GetComponent<Transform>()->position().x;
-
 	double distancey = App->game_engine->cameraGO.GetComponent<Transform>()->position().y;
-
 	double distancez = App->game_engine->cameraGO.GetComponent<Transform>()->position().z;
 
 	// Calculate Euclidean distance from (0, 0, 0)
-	double distanceFromOrigin = std::sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
+	distanceFromOrigin = std::sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
 
 	// Set a threshold distance, beyond which the sound is not heard
+	double thresholdDistance = 20.0f;
 
 	// Map the distance to a volume level (adjust the mapping as needed)
-	volumeLevel = 1.0 - std::min(distanceFromOrigin / thresholdDistance, 1.0);
+	double volumeLevel = 1.0 - std::min(distanceFromOrigin / thresholdDistance, 1.0);
+
+	// Adjust the volume level to the desired range for SDL_mixer (0-128)
+	int volume = static_cast<int>(volumeLevel * 128.0);
 
 	if (musicplaying) {
 
-		if (soundeffectplayed == false) {
-			App->audio->PlayFx(engineFX, 2);
-			soundeffectplayed = true;
+		if (effectMusicPlayed) {
+			SDL_Delay(10);
+			App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volume, 3);
+			effectMusicPlayed = false;
 		}
 
 		Uint32 currentTicks = SDL_GetTicks();
 		Uint32 elapsedTicks = currentTicks - musicCycleStart;
 
-		// Assuming each track should play for 30 seconds (30000 milliseconds)
 		Uint32 trackDuration = 30000;
-		
 
 		if (elapsedTicks < trackDuration) {
-			// Check if music has been played in this cycle
 			if (!musicPlayedThisCycle) {
-				// Stop all previous audio before playing the new track
-				Mix_HaltMusic();
-				Mix_HaltChannel(-1);
 
-				// Play the track based on the alternating flag
+				// Introduce a small delay before starting music
+				SDL_Delay(10);
+
 				if (alternateTracks) {
-					App->audio->PlayMusic("VertX/Assets/Audio/Music/Mario.ogg", 2.0f);
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Mario.ogg", 2.0f, 1);
 				}
 				else {
-					App->audio->PlayMusic("VertX/Assets/Audio/Music/Zelda.ogg", 2.0f);
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Zelda.ogg", 2.0f, 2);
 				}
 
-				// Toggle the flag to indicate that music has been played and alternate tracks
 				musicPlayedThisCycle = true;
 				alternateTracks = !alternateTracks;
 			}
 		}
 		else {
-			// Reset the start time and the flags for the next cycle
 			musicCycleStart = currentTicks;
 			musicPlayedThisCycle = false;
 		}
 	}
 	else {
-		// Stop all audio immediately if musicplaying is false
 		Mix_HaltMusic();
 		Mix_HaltChannel(-1);
 
-		// Reset flags when music is stopped
 		musicPlayedThisCycle = false;
 		alternateTracks = false;
 	}
@@ -444,10 +441,11 @@ update_status ModuleImGUI::MainMenuBar()
 			if (ImGui::MenuItem("Delete", "Not implemented")) {}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Play", "Play Scene")) {
+				effectMusicPlayed = true;
 				musicplaying = true;
+				
 				musicCycleStart = 0;
 				// Handle initialization error
-				
 				App->game_engine->scene->paused = false;
 				canMoveGO = true;
 			}

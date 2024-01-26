@@ -15,9 +15,9 @@ ModuleAudio::~ModuleAudio()
 // Called before render is available
 bool ModuleAudio::Init()
 {
-	/*LOG("Loading Audio Mixer");*/
 	bool ret = true;
-	SDL_Init(0);
+
+	// Remove unnecessary SDL_Init(0)
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
@@ -25,7 +25,7 @@ bool ModuleAudio::Init()
 		ret = false;
 	}
 
-	// load support for the OGG format
+	// Load support for the OGG format
 	int flags = MIX_INIT_OGG;
 	int init = Mix_Init(flags);
 
@@ -35,14 +35,29 @@ bool ModuleAudio::Init()
 		ret = false;
 	}
 
-	//Initialize SDL_mixer
+	// Initialize SDL_mixer
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
 		LOG("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		ret = false;
 	}
 
+	// Adjust the number of channels according to your needs
+	Mix_AllocateChannels(16);  // Change the value based on your requirements
+
+	effectMusicPlayed = false;
+
 	return ret;
+}
+
+update_status ModuleAudio::PreUpdate()
+{
+	return UPDATE_CONTINUE;
+}
+
+update_status ModuleAudio::Update()
+{
+	return UPDATE_CONTINUE;
 }
 
 // Called before quitting
@@ -138,7 +153,7 @@ void ModuleAudio::playSoundEffect(const char* filePath, int repeatCount, double 
 }
 
 // Play a music file
-bool ModuleAudio::PlayMusic(const char* path, float fade_time)
+bool ModuleAudio::PlayMusic(const char* path, float fade_time, int effectChannel)
 {
 	bool ret = true;
 
@@ -153,7 +168,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 			Mix_HaltMusic();
 		}
 
-		// this call blocks until fade out is done
+		// This call blocks until fade out is done
 		Mix_FreeMusic(music);
 	}
 
@@ -166,6 +181,13 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	}
 	else
 	{
+		// Check if the effect channel is valid
+		if (effectChannel >= 0)
+		{
+			// Stop any existing sound on the specified channel
+			Mix_HaltChannel(effectChannel);
+		}
+
 		if (fade_time > 0.0f)
 		{
 			if (Mix_FadeInMusic(music, -1, (int)(fade_time * 1000.0f)) < 0)
@@ -211,7 +233,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 }
 
 // Play WAV
-bool ModuleAudio::PlayFx(unsigned int id, int repeat) 
+bool ModuleAudio::PlayFx(unsigned int id, int repeat, int channel)
 {
 	bool ret = false;
 
@@ -219,7 +241,7 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat)
 
 	if (fx.at(id - 1, chunk) == true)
 	{
-		Mix_PlayChannel(-1, chunk, repeat);
+		Mix_PlayChannel(channel, chunk, repeat);
 		ret = true;
 	}
 

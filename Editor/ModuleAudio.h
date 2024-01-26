@@ -15,10 +15,12 @@ public:
 	~ModuleAudio();
 
 	bool Init();
+	update_status PreUpdate();
+	update_status Update();
 	bool CleanUp();
 
 	// Play a music file
-	bool PlayMusic(const char* path, float fade_time);
+	bool PlayMusic(const char* path, float fade_time, int effectChannel);
 
 	void playFirstSong(const char* filePath, int durationInSeconds);
 
@@ -26,12 +28,37 @@ public:
 	unsigned int LoadFx(const char* path);
 
 	// Play a previously loaded WAV
-	bool PlayFx(unsigned int fx, int repeat = 0);
+	bool PlayFx(unsigned int fx, int repeat, int channel);
 
 	void playSoundEffect(const char* filePath, int repeatCount, double volumeLevel);
 
+	bool PlayEffectMusic(const char* path, int volume, int channel)
+	{
+		Mix_Chunk* effect = Mix_LoadWAV(path);
 
-	
+		if (effect == NULL)
+		{
+			LOG("Cannot load effect music %s. Mix_GetError(): %s\n", path, Mix_GetError());
+			return false;
+		}
+
+		// Set the volume for the channel
+		Mix_Volume(channel, volume);
+
+		// Play the effect on the specified channel
+		if (Mix_PlayChannel(channel, effect, -1) == -1)
+		{
+			LOG("Cannot play effect music %s. Mix_GetError(): %s\n", path, Mix_GetError());
+			Mix_FreeChunk(effect);
+			return false;
+		}
+
+		LOG("Successfully playing effect music %s on channel %d", path, channel);
+		return true;
+	}
+
+	bool effectMusicPlayed = false;
+
 
 private:
 	Mix_Music* music;

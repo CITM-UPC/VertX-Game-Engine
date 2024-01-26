@@ -34,7 +34,6 @@ Camera::~Camera() {}
 
 void Camera::Update()
 {
-	
 
 	//lookAtPos = this->owner->GetComponent<Transform>()->position() + this->owner->GetComponent<Transform>()->forward() * camOffset;
 }
