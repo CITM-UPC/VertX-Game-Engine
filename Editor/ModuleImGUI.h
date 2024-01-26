@@ -71,6 +71,10 @@ private:
 	void ShowFolderContents(const fs::path& folderPath);
 	void RenderImGUIAssetsWindow();
 	void MoveGOBackAndForward(int meters);
+	void InGameController();
+	void ToggleWindow();
+
+	bool controlNodeOpen = true;
 
 private:
 
@@ -91,20 +95,32 @@ private:
 	bool saveasMenu = false;
 	bool loadMenu = false;
 	bool fileExplorer = false;
+	bool controller = false;
+	bool toggle = false;
+
 	char Title[150] = "Write Text";
 	std::string name;
 
 	Uint32 engineFX;
 
+	bool fx = true;
+
 	bool soundeffectplayed = false;
 
 	bool effectMusicPlayed = false;
+
+	bool effectMusicPlayed2 = false;
 
 	bool snapshot = false;
 
 	bool autoScrollLog = true;
 
 	double distanceFromOrigin;
+
+	double movingdistanceFromOrigin;
+
+	int volumemove;
+
 
 	Uint32 set = 0;
 
@@ -113,6 +129,7 @@ private:
 
 	double volumeLevel;
 	bool fxplaying = false;
+	bool fxplaying2 = false;
 
 	bool reparentThis = true;
 	bool reparentTo = false;
@@ -124,7 +141,7 @@ private:
 	int movingTicks = 0;
 	bool increasing = true;
 
-	bool canMoveGO = false;
+	bool canMoveGO = true;
 
 	std::string aboutContent;
 	std::string filePath;

@@ -263,27 +263,36 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	//const glm::mat4& cameraGlobalTransform = App->game_engine->cameraGO.getGlobalTransform();
-
+	//STATIC
 	// Get the constant camera position vector
 	const glm::vec3& cameraPosition = App->game_engine->cameraGO.GetComponent<Transform>()->position();
-
-	// Calculate Euclidean distance from (0, 0, 0)
-	double distanceFromOrigin = glm::length(cameraPosition);
 
 	// Set a threshold distance, beyond which the sound is not heard
 	double thresholdDistance = 20;
 
-	// Map the distance to a volume level (adjust the mapping as needed)
-	double volumeLevel = 1.0 - std::min(distanceFromOrigin / thresholdDistance, 1.0);
+	// Get the position of the moving object (replace "movingObject" with the actual reference to your moving object)
+	
+		if (gameObjSelected != nullptr) {
+			const glm::vec3& movingObjectPosition = gameObjSelected->GetComponent<Transform>()->position();
 
-	// Adjust the volume level to the desired range for SDL_mixer (0-128)
-	int volume = int(volumeLevel * 128.0);
+			// Calculate Euclidean distance between the camera and the moving object
+			double distanceToMovingObject = glm::length(cameraPosition - movingObjectPosition);
 
-	if (fxplaying) {
-		App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volume, -1);
-		effectMusicPlayed = false;
-	}
+			// Map the distance to a volume level using an exponential function
+			double volumeLevel2 = 1.0 - std::pow(distanceToMovingObject / thresholdDistance, 2.0);
+			volumeLevel2 = std::max(0.0, volumeLevel2); // Ensure volumeLevel is not negative
+
+			// Scale down the volume by half
+			volumeLevel2 *= 0.5;
+
+			// Adjust the volume level to the desired range for SDL_mixer (0-128)
+			int volumemove = int(volumeLevel2 * 128.0);
+
+			if (fxplaying == true) {
+				App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volumemove, -1);
+				effectMusicPlayed = false;
+			}
+		}
 
 	if (musicplaying) {
 
@@ -299,10 +308,10 @@ update_status ModuleImGUI::PreUpdate()
 				SDL_Delay(10);
 
 				if (alternateTracks) {
-					App->audio->PlayMusic("VertX/Assets/Audio/Music/Mario.ogg", 2.0f, 1);
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Mario.ogg", 2.0f, 2);
 				}
 				else {
-					App->audio->PlayMusic("VertX/Assets/Audio/Music/Zelda.ogg", 2.0f, 2);
+					App->audio->PlayMusic("VertX/Assets/Audio/Music/Zelda.ogg", 2.0f, 3);
 				}
 
 				musicPlayedThisCycle = true;
@@ -332,6 +341,10 @@ update_status ModuleImGUI::PreUpdate()
 
 		if (FPSgraph)		FPSGraphWindow();
 		if (logWindow)		LogConsoleWindow();
+
+		if (controller) {
+			InGameController();
+		}
 
 		if (options)		OptionsWindow();
 		if (camDebug)		CamDebugWindow();
@@ -441,20 +454,22 @@ update_status ModuleImGUI::MainMenuBar()
 			if (ImGui::MenuItem("Delete", "Not implemented")) {}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Play", "Play Scene")) {
-				effectMusicPlayed = true;
 				fxplaying = true;
+				effectMusicPlayed = true;
+				canMoveGO = true;
 				musicplaying = true;
-				LOG("Successfully playing effect music %s on channel %d", "VertX/Assets/Music/Audio/FX/engineSFX.wav", -1);
+				controller = true;
 				
 				musicCycleStart = 0;
 				// Handle initialization error
 				App->game_engine->scene->paused = false;
-				canMoveGO = true;
+
 
 				//IMGUI
 				hierarchy = false;
 				inspector = false; 
 				assetsWindow = false;
+
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
 				//App->logHistory.push_back("[Editor] 'Pause' Scene");
@@ -624,6 +639,72 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 		ImGui::End();
 	}
 }
+
+void ModuleImGUI::InGameController() {
+	ImGui::Begin("Controller", &controller, ImGuiWindowFlags_NoNavInputs);
+	ImGui::Text("Select the GO to move around scene. Parent = all, Child = 1");
+	ImGui::Separator;
+	for (const auto& gOparentPtr : App->game_engine->scene->currentScene.gameObjectList)
+	{
+		HierarchyRecursive(gOparentPtr.get());
+	}
+	if (gameObjSelected != nullptr) {
+		if (gameObjSelected->name != "") {
+			char Title[256];
+			strncpy_s(Title, gameObjSelected->name.c_str(), sizeof(Title));
+			Title[sizeof(Title) - 1] = '\0';
+			for (auto& component : *gameObjSelected->GetComponents()) {		
+				if (component.get()->getType() == Component::Type::TRANSFORM) {
+					Transform* transform = dynamic_cast<Transform*>(component.get());
+					if (ImGui::TreeNodeEx("Controller Tree Toggle", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_NoTreePushOnOpen))
+					{
+						// ------------------------------------ //
+						// MOVE GAME OBJECT IF SCENE IS PLAYING //
+						// ------------------------------------ //
+						if (canMoveGO == true) {
+
+							if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+							{
+								// MOVE FORWARD
+								transform->Move(vec3(0, 0, -0.1), Transform::Space::LOCAL);
+
+								// ROTATE THE OBJECT
+								if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+									transform->_rotation.y += 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+								if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
+
+									transform->_rotation.y -= 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+							}
+							if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+								// MOVE BACKWARD
+								transform->Move(vec3(0, 0, 0.05), Transform::Space::LOCAL);
+
+								// ROTATE THE OBJECT
+								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+									transform->_rotation.y -= 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+
+									transform->_rotation.y += 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+							}
+						}
+						ImGui::TreePop();
+						// ------------------------------------ //
+					}
+				}
+			}
+		}
+	}
+	ImGui::EndMenu();
+}
+	
 
 void ModuleImGUI::SaveAsMenu()
 {
@@ -857,43 +938,6 @@ void ModuleImGUI::InspectorWindow()
 							ImGui::PopItemWidth();
 						}
 
-						// ------------------------------------ //
-						// MOVE GAME OBJECT IF SCENE IS PLAYING //
-						// ------------------------------------ //
-						if (canMoveGO == true) {
-							if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-							{
-								// MOVE FORWARD
-								transform->Move(vec3(0, 0, -0.1), Transform::Space::LOCAL);
-
-								// ROTATE THE OBJECT
-								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-									transform->_rotation.y += 0.7;
-									transform->RotateTo(transform->_rotation);
-								}
-								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-
-									transform->_rotation.y -= 0.7;
-									transform->RotateTo(transform->_rotation);
-								}
-							}
-							if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-								// MOVE BACKWARD
-								transform->Move(vec3(0, 0, 0.05), Transform::Space::LOCAL);
-
-								// ROTATE THE OBJECT
-								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-									transform->_rotation.y -= 0.7;
-									transform->RotateTo(transform->_rotation);
-								}
-								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-
-									transform->_rotation.y += 0.7;
-									transform->RotateTo(transform->_rotation);
-								}
-							}
-						}
-						// ------------------------------------ //
 					}
 
 					if (component.get()->getType() == Component::Type::MESH) {
