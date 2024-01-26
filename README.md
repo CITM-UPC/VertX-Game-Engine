@@ -16,6 +16,8 @@ This game engine has been made in **C/C++** programming language, and also using
 
 You can click [here](https://github.com/CITM-UPC/VertX-Game-Engine) to check out our Github repository where the project is hosted.
 
+You can click [here](https://citm-upc.github.io/VertX-Game-Engine/) to check out VertX Game Engine's official website.
+
 ## Controls
 
 **Camera**:
