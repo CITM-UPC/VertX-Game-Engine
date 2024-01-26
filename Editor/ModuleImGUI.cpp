@@ -480,6 +480,7 @@ update_status ModuleImGUI::MainMenuBar()
 				hierarchy = true;
 				inspector = true;
 				assetsWindow = true;
+				controller = false;
 			}
 			if (ImGui::MenuItem("Step", "Step Scene")) {
 				
@@ -673,11 +674,11 @@ void ModuleImGUI::InGameController() {
 								transform->Move(vec3(0, 0, 0.05), Transform::Space::LOCAL);
 
 								// ROTATE THE OBJECT
-								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+								if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
 									transform->_rotation.y -= 0.7;
 									transform->RotateTo(transform->_rotation);
 								}
-								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+								if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
 
 									transform->_rotation.y += 0.7;
 									transform->RotateTo(transform->_rotation);
