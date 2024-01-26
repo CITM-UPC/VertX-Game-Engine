@@ -100,8 +100,41 @@ void ModuleAudio::playFirstSong(const char* filePath, int durationInSeconds) {
 	// Stop playing the first song
 	Mix_HaltMusic();
 	Mix_FreeMusic(music);
+}
 
-	Mix_Quit();
+void ModuleAudio::playSoundEffect(const char* filePath, int repeatCount, double volumeLevel) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+		// handle error
+		return;
+	}
+
+	Mix_Chunk* soundEffect = Mix_LoadWAV(filePath);
+	if (!soundEffect) {
+		// handle error
+		return;
+	}
+
+	// Map the volume level to the valid range [0, 128]
+	int volume = static_cast<int>(volumeLevel * MIX_MAX_VOLUME);
+
+	// Play the sound effect
+	int channel = Mix_PlayChannel(-1, soundEffect, repeatCount);
+	if (channel == -1) {
+		// handle error
+		Mix_FreeChunk(soundEffect);
+		return;
+	}
+
+	// Set the volume for the channel
+	Mix_Volume(channel, volume);
+
+	// Optionally, you may want to wait until the sound effect finishes playing before freeing it
+	while (Mix_Playing(channel) != 0) {
+		SDL_Delay(10);  // Add a small delay to avoid a busy-wait loop
+	}
+
+	// Free the allocated sound effect
+	Mix_FreeChunk(soundEffect);
 }
 
 // Play a music file
@@ -155,6 +188,8 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	return ret;
 }
 
+
+
 // Load WAV
 unsigned int ModuleAudio::LoadFx(const char* path)
 {
@@ -176,7 +211,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 }
 
 // Play WAV
-bool ModuleAudio::PlayFx(unsigned int id, int repeat)
+bool ModuleAudio::PlayFx(unsigned int id, int repeat) 
 {
 	bool ret = false;
 

@@ -165,9 +165,10 @@ bool ModuleImGUI::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;		// Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;			// IF using Docking Branch
 
-
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->game_engine->renderer3D_engine->context);
 	ImGui_ImplOpenGL3_Init();
+
+	Uint32 engineFX = App->audio->LoadFx("VertX/Assets/Audio/FX/engineSFX.wav");
 
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -259,8 +260,28 @@ update_status ModuleImGUI::PreUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
+	
+	double distancex = App->game_engine->cameraGO.GetComponent<Transform>()->position().x;
+
+	double distancey = App->game_engine->cameraGO.GetComponent<Transform>()->position().y;
+
+	double distancez = App->game_engine->cameraGO.GetComponent<Transform>()->position().z;
+
+	// Calculate Euclidean distance from (0, 0, 0)
+	double distanceFromOrigin = std::sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
+
+	// Set a threshold distance, beyond which the sound is not heard
+
+	// Map the distance to a volume level (adjust the mapping as needed)
+	volumeLevel = 1.0 - std::min(distanceFromOrigin / thresholdDistance, 1.0);
 
 	if (musicplaying) {
+
+		if (soundeffectplayed == false) {
+			App->audio->PlayFx(engineFX, 2);
+			soundeffectplayed = true;
+		}
+
 		Uint32 currentTicks = SDL_GetTicks();
 		if (snapshot == false) {
 			set = currentTicks;
@@ -429,6 +450,8 @@ update_status ModuleImGUI::MainMenuBar()
 			if (ImGui::MenuItem("Play", "Play Scene")) {
 				musicplaying = true;
 				musicCycleStart = 0;
+				// Handle initialization error
+				
 				App->game_engine->scene->paused = false;
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {

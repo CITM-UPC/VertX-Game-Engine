@@ -93,6 +93,14 @@ private:
 	char Title[150] = "Write Text";
 	std::string name;
 
+	double volumeLevel;
+
+	Uint32 engineFX;
+
+	bool soundeffectplayed = false;
+
+	double thresholdDistance = 5.0;
+
 	bool snapshot = false;
 
 	bool autoScrollLog = true;
