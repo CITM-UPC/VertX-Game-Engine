@@ -24,7 +24,7 @@ bool Engine_ModuleScene::Init()
 	fs::create_directories("VertX/Library/Scripts/");
 
 	addGameObject("VertX/Assets/Street/StreetEnvironment.fbx");
-	addGameObject("VertX/Assets/Ambulance_LowPoly.fbx");
+	addGameObject("VertX/Assets/BakerHouse.fbx");
 
 	
 

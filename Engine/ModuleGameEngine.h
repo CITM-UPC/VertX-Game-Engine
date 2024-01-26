@@ -51,10 +51,6 @@ public:
 
 	int volume;
 
-	double volumeLevel;
-
-	glm::vec3 cameraPosition;
-
 private:
 
 	void AddModule(Engine_Module* mod);
