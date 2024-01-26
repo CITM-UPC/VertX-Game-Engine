@@ -25,8 +25,7 @@ bool Engine_ModuleScene::Init()
 
 	addGameObject("VertX/Assets/Street/StreetEnvironment.fbx");
 	addGameObject("VertX/Assets/BakerHouse.fbx");
-	//addGameObject("VertX/Assets/DefFountain.fbx");
-
+	//addGameObject("VertX/Assets/waterfountain.fbx");
 	
 
 	return true;
