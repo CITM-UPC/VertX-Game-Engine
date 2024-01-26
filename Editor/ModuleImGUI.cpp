@@ -449,11 +449,13 @@ update_status ModuleImGUI::MainMenuBar()
 				// Handle initialization error
 				
 				App->game_engine->scene->paused = false;
+				canMoveGO = true;
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
 				//App->logHistory.push_back("[Editor] 'Pause' Scene");
 				musicplaying = false;
 				App->game_engine->scene->paused = true;
+				canMoveGO = false;
 			}
 			if (ImGui::MenuItem("Step", "Step Scene")) {
 				//App->logHistory.push_back("[Editor] 'Step' Scene");
@@ -816,25 +818,6 @@ void ModuleImGUI::InspectorWindow()
 							ImGui::SameLine();
 							ImGui::DragScalar("Z-p", ImGuiDataType_Double, &transform->_position.z, 0.5, nullptr, nullptr, "%.3f");
 
-							// -------------------------- //
-
-							// Move selected GO back and forward 
-							if (increasing) {
-								movingTicks++;
-								if (movingTicks >= 30) {
-									increasing = false;
-								}
-							}
-							else {
-								movingTicks--;
-								if (movingTicks <= -30) {
-									increasing = true;
-								}
-							}
-							transform->_position.x = transform->_position.x + movingTicks * 0.01;
-
-							// -------------------------- //
-
 							ImGui::BulletText("Rotation");
 							if (ImGui::DragScalar("X-r", ImGuiDataType_Double, &transform->_rotation.x, 0.5, nullptr, nullptr, "%.3f")) transform->RotateTo(transform->_rotation);
 							ImGui::SameLine();
@@ -861,6 +844,44 @@ void ModuleImGUI::InspectorWindow()
 							}
 							ImGui::PopItemWidth();
 						}
+
+						// ------------------------------------ //
+						// MOVE GAME OBJECT IF SCENE IS PLAYING //
+						// ------------------------------------ //
+						if (canMoveGO == true) {
+							if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+							{
+								// MOVE FORWARD
+								transform->Move(vec3(0, 0, -0.1), Transform::Space::LOCAL);
+
+								// ROTATE THE OBJECT
+								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+									transform->_rotation.y += 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+
+									transform->_rotation.y -= 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+							}
+							if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+								// MOVE BACKWARD
+								transform->Move(vec3(0, 0, 0.05), Transform::Space::LOCAL);
+
+								// ROTATE THE OBJECT
+								if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+									transform->_rotation.y -= 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+								if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+
+									transform->_rotation.y += 0.7;
+									transform->RotateTo(transform->_rotation);
+								}
+							}
+						}
+						// ------------------------------------ //
 					}
 
 					if (component.get()->getType() == Component::Type::MESH) {
@@ -952,6 +973,7 @@ void ModuleImGUI::InspectorWindow()
 							ImGui::Text("Clipping Plane View Far: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->clippingPlaneViewFar).c_str());
 							ImGui::Text("Camera Offset: "); ImGui::SameLine(); ImGui::Text(std::to_string(cam->camOffset).c_str());
 						}
+
 					}
 				}
 			}

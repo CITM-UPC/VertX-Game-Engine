@@ -117,6 +117,8 @@ private:
 	int movingTicks = 0;
 	bool increasing = true;
 
+	bool canMoveGO = false;
+
 	std::string aboutContent;
 	std::string filePath;
 	std::string fileContent;
