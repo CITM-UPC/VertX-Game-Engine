@@ -48,6 +48,8 @@ public:
 	bool musicPlayedThisCycle = false;
 	bool alternateTracks = false;
 
+	bool ingame = false;
+
 private:
 
 	update_status MainMenuBar();
@@ -67,7 +69,6 @@ private:
 	void LoadSceneMenu();
 	void GetInfrastructureInfo();
 	void ShowFolderContents(const fs::path& folderPath);
-	void EditScript();
 	void RenderImGUIAssetsWindow();
 	void MoveGOBackAndForward(int meters);
 
@@ -90,7 +91,6 @@ private:
 	bool saveasMenu = false;
 	bool loadMenu = false;
 	bool fileExplorer = false;
-	bool editScript = false;
 	char Title[150] = "Write Text";
 	std::string name;
 

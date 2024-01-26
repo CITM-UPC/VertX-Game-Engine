@@ -119,14 +119,3 @@ void Texture2D::checker() const
 {
 	glBindTexture(GL_TEXTURE_2D, _id_checker);
 }
-
-//json Texture2D::SaveInfo()
-//{
-//	json obj;
-//
-//	obj["Owner"] = owner->UUID;
-//	obj["Binary Path"] = fileName;
-//	obj["Type"] = static_cast<int>(getType());
-//
-//	return obj;
-//}

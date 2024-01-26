@@ -201,36 +201,3 @@ void GameObject::removeChild(GameObject* child)
 		// The unique_ptr will automatically delete the removed child
 	}
 }
-
-//json GameObject::SaveInfo()
-//{
-//	json obj;
-//
-//	if (parent) obj["Parent UUID"] = parent->UUID;
-//
-//	json childArray;
-//
-//	for (auto& go : childs)
-//	{
-//		childArray.push_back(go.get()->SaveInfo());
-//	}
-//
-//	obj["Childs"] = childArray;
-//
-//	json compArray;
-//
-//	for (auto& comp : components)
-//	{
-//		compArray.push_back(comp.get()->SaveInfo());
-//	}
-//
-//	// Change order of compArray --> [mesh before texture]
-//
-//	obj["Components"] = compArray;
-//
-//	obj["Active"] = isActive;
-//	obj["UUID"] = UUID;
-//	obj["Name"] = name;
-//
-//	return obj;
-//}

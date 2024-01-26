@@ -51,10 +51,6 @@ public:
 
 	mat4 getGlobalTransform();
 
-	/*json SaveInfo();*/
-
-	//static GameObject* Find(std::string name, std::list<GameObject> gameObjectList);
-
 	AABBox computeAABB();
 	void drawAABBox(const AABBox& aabb);
 };

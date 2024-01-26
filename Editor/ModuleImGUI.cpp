@@ -280,13 +280,6 @@ update_status ModuleImGUI::PreUpdate()
 	// Adjust the volume level to the desired range for SDL_mixer (0-128)
 	int volume = int(volumeLevel * 128.0);
 
-	// Log debug information
-	LOG("Camera Position: (%f, %f, %f)", cameraPosition.x, cameraPosition.y, cameraPosition.z);
-	LOG("Distance from Origin: %f", distanceFromOrigin);
-	LOG("Volume Level: %f", volumeLevel);
-	LOG("Mapped Volume: %d", volume);
-
-
 	if (fxplaying) {
 		App->audio->PlayEffectMusic("VertX/Assets/Audio/FX/engineSFX.wav", volume, -1);
 		effectMusicPlayed = false;
@@ -336,31 +329,31 @@ update_status ModuleImGUI::PreUpdate()
 		ImGui::DockSpaceOverViewport(0, dock_flags);
 	}
 
-	if (FPSgraph)		FPSGraphWindow();
-	if (logWindow)		LogConsoleWindow();
 
-	if (options)		OptionsWindow();
-	if (camDebug)		CamDebugWindow();
-	if (about)      	AboutWindow();
-	if (inspector)		InspectorWindow();
-	if (hierarchy)		HierarchyWindow();
-	if (fileExplorer)	FileExplorerWindow();
-	if (demo)       	ImGui::ShowDemoWindow(&demo);
-	if (editScript)		EditScript();
+		if (FPSgraph)		FPSGraphWindow();
+		if (logWindow)		LogConsoleWindow();
 
-	if (saveasMenu) 	SaveAsMenu();
-	if (loadMenu)		LoadSceneMenu();
-	if (reparentMenu) 	ReparentMenu();
+		if (options)		OptionsWindow();
+		if (camDebug)		CamDebugWindow();
+		if (about)      	AboutWindow();
+		if (inspector)		InspectorWindow();
+		if (hierarchy)		HierarchyWindow();
+		if (fileExplorer)	FileExplorerWindow();
+		if (demo)       	ImGui::ShowDemoWindow(&demo);
 
-	ImGuiIO& io = ImGui::GetIO();
-	if (!io.WantCaptureMouse && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
-	{
-		if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) return MainMenuBar();
+		if (saveasMenu) 	SaveAsMenu();
+		if (loadMenu)		LoadSceneMenu();
+		if (reparentMenu) 	ReparentMenu();
 
-		gameObjSelected = App->renderer->DoClickRayCast();
-	}
+		ImGuiIO& io = ImGui::GetIO();
+		if (!io.WantCaptureMouse && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+		{
+			if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) return MainMenuBar();
 
-	return MainMenuBar();
+			gameObjSelected = App->renderer->DoClickRayCast();
+		}
+
+		return MainMenuBar();
 }
 
 bool ModuleImGUI::CleanUp()
@@ -457,6 +450,11 @@ update_status ModuleImGUI::MainMenuBar()
 				// Handle initialization error
 				App->game_engine->scene->paused = false;
 				canMoveGO = true;
+
+				//IMGUI
+				hierarchy = false;
+				inspector = false; 
+				assetsWindow = false;
 			}
 			if (ImGui::MenuItem("Pause", "Pause Scene")) {
 				//App->logHistory.push_back("[Editor] 'Pause' Scene");
@@ -465,6 +463,11 @@ update_status ModuleImGUI::MainMenuBar()
 				effectMusicPlayed = false;
 				App->game_engine->scene->paused = true;
 				canMoveGO = false;
+				ingame = true;
+				//IMGUI
+				hierarchy = true;
+				inspector = true;
+				assetsWindow = true;
 			}
 			if (ImGui::MenuItem("Step", "Step Scene")) {
 				//App->logHistory.push_back("[Editor] 'Step' Scene");
@@ -559,7 +562,7 @@ void ModuleImGUI::RenderImGUIAssetsWindow()
 		}
 
 		int assetsPerRow = 5.0f;
-		float assetWidth = 150.0f;
+		float assetWidth = 100.0f;
 		float assetHeight = 20.0f;
 		//std::string currentfolderPath = "Assets";
 		float buttonPadding = 20.0f;
@@ -651,7 +654,7 @@ void ModuleImGUI::LoadSceneMenu()
 	{
 		gameObjSelected = nullptr;
 
-		string path = "Assets/";
+		string path = "VertX/Assets/";
 		path += nameRecipient;
 		path += ".mdng";
 
@@ -1195,7 +1198,7 @@ void ModuleImGUI::AboutWindow()
 	ImGui::Bullet(); if (ImGui::Button("std:c++20")) { OsOpenInShell("https://en.cppreference.com/w/cpp/20"); }
 	ImGui::Separator();
 	ImGui::Text("MIT Licence\n");
-	ImGui::Text("Copyright (c) 2023 Adria Pons & Rylan Graham - VertX Game Engine\n");
+	ImGui::Text("Copyright (c) 2023 Adria Pons, Joel Chaves & Rylan Graham - VertX Game Engine\n");
 	ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the 'Software'), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\n");
 	ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.");
 	ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n");
@@ -1232,8 +1235,7 @@ void ModuleImGUI::ShowFolderContents(const fs::path& folderPath) {
 				ImGui::SameLine();
 				if (entry.path().filename().string().substr(entry.path().filename().string().find_last_of(".") + 1) == "cs") {
 					if (ImGui::Button("Edit")) {
-						editScript = true;
-						filePath = "Library/" + folderPath.filename().string() + "/" + entry.path().filename().string();
+						filePath = "VertX/Library/" + folderPath.filename().string() + "/" + entry.path().filename().string();
 						fileContent = loadTextFile(entry.path().string());
 						editor.SetText(fileContent);
 					}
@@ -1247,43 +1249,15 @@ void ModuleImGUI::ShowFolderContents(const fs::path& folderPath) {
 	}
 }
 
-void ModuleImGUI::EditScript()
-{
-	ImGui::OpenPopup("Edit Script");
-	if (ImGui::BeginPopupModal("Edit Script", NULL, ImGuiWindowFlags_MenuBar))
-	{
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("Save"))
-			{
-				fileContent = editor.GetText();
-				saveTextFile(filePath, fileContent);
-				ImGui::CloseCurrentPopup();
-				editScript = false;
-				//App->logHistory.push_back("[Editor] File edited and saved: " + filePath);
-			}
-			if (ImGui::BeginMenu("Close"))
-			{
-				ImGui::CloseCurrentPopup();
-				editScript = false;
-			}
-			ImGui::EndMenuBar();
-		}
-
-		editor.Render("CodeEditor");
-		ImGui::EndPopup();
-	}
-}
-
 void ModuleImGUI::FileExplorerWindow()
 {
 	ImGui::Begin("File Explorer", &fileExplorer);
 
-	const fs::path assetsPath = "Assets";
+	const fs::path assetsPath = "VertX/Assets";
 	ShowFolderContents(assetsPath);
 	ImGui::Separator();
 
-	const fs::path libraryPath = "Library";
+	const fs::path libraryPath = "VertX/Library";
 	ShowFolderContents(libraryPath);
 	ImGui::Separator();
 

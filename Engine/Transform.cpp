@@ -89,25 +89,3 @@ void Transform::Scale(vec3 scaleVector)
 void Transform::Update() {}
 
 void Transform::Render() {}
-
-//json Transform::SaveInfo()
-//{
-//	json obj;
-//
-//	obj["Owner"] = owner->UUID;
-//	obj["Type"] = static_cast<int>(getType());
-//
-//	json transformationMatrixArray;
-//
-//	for (int i = 0; i < 4; i++)
-//	{
-//		for (int j = 0; j < 4; j++)
-//		{
-//			transformationMatrixArray.push_back(_transformationMatrix[i][j]);
-//		}
-//	}
-//
-//	obj["Transformation Matrix"] = transformationMatrixArray;
-//
-//	return obj;
-//}

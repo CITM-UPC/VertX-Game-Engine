@@ -49,26 +49,14 @@ public:
 
 	void addGameObject(Primitive* shape);
 
-	// Load GameObject from a file
-	/*void CreateRootGOs(json rootGOjsValue);*/
-
 	// Load GameObject with information from scene loading
 	void LoadRootGameObject(string name, unsigned long UUID, bool active);
 
-	// Load a child from the json root of a parent
-	//void LoadChildGameObjectfromjson(json parentRoot);
-
-	//// Load a component from the json root of a parent
-	//void LoadComponentfromjson(json parentRoot);
-
 	// Load Mesh Component with the fileName and an owner
 	void LoadComponentMesh(GameObject* owner, string path);
+
 	// Load Texture Component with the fileName and an owner
 	void LoadComponentTexture(GameObject* owner, string path);
-	// Load Transform Component with the json component root and an owner
-	//void LoadComponentTransform(GameObject* owner, json transformjsonRoot);
-	//// Load Camera Component with the json component root and an owner
-	//void LoadComponentCamera(GameObject* owner, json camerajsonRoot);
 
 	// Only used when gameobject has no parent, removes a parent from the scene
 	void removeGameObject(GameObject* GOtoDelete);

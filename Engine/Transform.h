@@ -64,6 +64,4 @@ public:
 	inline const vec3& right() const { return _right; }
 	inline const vec3& up() const { return _up; }
 	inline const vec3& forward() const { return _forward; }
-
-	/*json SaveInfo();*/
 };

@@ -121,7 +121,7 @@ update_status ModuleInput::PreUpdate()
 				//App->logHistory.push_back("[Editor] .dds detected with path " + filePath + ". Added it in Library/Materials/");
 				//LOG(".dds file detected");
 				const fs::path sourcePath(filePath);
-				const fs::path destinationPath = "Library/Materials/" + sourcePath.filename().string();
+				const fs::path destinationPath = "VertX/Library/Materials/" + sourcePath.filename().string();
 				fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
 			}
 			// Check if the dropped file has the .mesh extension
@@ -129,7 +129,7 @@ update_status ModuleInput::PreUpdate()
 				//App->logHistory.push_back("[Editor] .mesh detected with path " + filePath + ". Added it in Library/Meshes/");
 				//LOG(".mesh file detected");
 				const fs::path sourcePath(filePath);
-				const fs::path destinationPath = "Library/Meshes/" + sourcePath.filename().string();
+				const fs::path destinationPath = "VertX/Library/Meshes/" + sourcePath.filename().string();
 				fs::copy_file(sourcePath, destinationPath, fs::copy_options::overwrite_existing);
 			}
 			// Check if the dropped file has the .fbx extension
