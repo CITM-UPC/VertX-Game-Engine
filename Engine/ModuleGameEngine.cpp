@@ -55,6 +55,7 @@ void ModuleGameEngine::FinishUpdate()
 
 engine_status ModuleGameEngine::PreUpdate()
 {
+
 	engine_status ret = ENGINE_UPDATE_CONTINUE;
 
 	return ret;
